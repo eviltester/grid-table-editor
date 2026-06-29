@@ -438,6 +438,16 @@ test.each([
     message: 'argument "multipleOf" must be greater than 0',
   },
   {
+    label: 'autoIncrement.sequence step zero',
+    textSpec: 'Sequence\nautoIncrement.sequence(start=1,step=0)',
+    message: 'argument "step" must be a non-zero integer',
+  },
+  {
+    label: 'autoIncrement.sequence negative zeropadding',
+    textSpec: 'Sequence\nautoIncrement.sequence(start=1,step=1,zeropadding=-1)',
+    message: 'argument "zeropadding" must be greater than or equal to 0',
+  },
+  {
     label: 'date.recent negative days',
     textSpec: 'Date\ndate.recent(days=-7)',
     message: 'argument "days" must be greater than or equal to 0',

@@ -481,6 +481,23 @@ describe('domain keyword arg validation', () => {
     });
   });
 
+  test('rejects invalid autoIncrement.sequence parameters before generation', () => {
+    const keyword = getDomainKeywordByAlias('autoIncrement.sequence');
+
+    expect(validateDomainKeywordArgs(keyword, [1, 0])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "step" must be a non-zero integer',
+    });
+    expect(validateDomainKeywordArgs(keyword, [1, -0])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "step" must be a non-zero integer',
+    });
+    expect(validateDomainKeywordArgs(keyword, [1, 1, '', '', -1])).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "zeropadding" must be greater than or equal to 0',
+    });
+  });
+
   test('rejects datatype.boolean probability outside documented range', () => {
     const keyword = getDomainKeywordByAlias('datatype.boolean');
 

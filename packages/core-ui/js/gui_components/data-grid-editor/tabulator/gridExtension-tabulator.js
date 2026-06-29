@@ -744,10 +744,13 @@ class GridExtensionTabulator {
   }
 
   _setBulkData(rows) {
-    if (typeof this.tabulator.replaceData === 'function') {
-      return this.tabulator.replaceData(rows);
-    }
-    return this.tabulator.setData(rows);
+    const setResult =
+      typeof this.tabulator.replaceData === 'function'
+        ? this.tabulator.replaceData(rows)
+        : this.tabulator.setData(rows);
+    return Promise.resolve(setResult).then(() => {
+      this._reapplyActiveFiltersAfterBulkMutation();
+    });
   }
 
   async _autoFitFirstColumn() {
@@ -1067,11 +1070,25 @@ class GridExtensionTabulator {
   _refreshTableAfterBulkMutation() {
     if (typeof this.tabulator.refreshData === 'function') {
       this.tabulator.refreshData();
+      this._reapplyActiveFiltersAfterBulkMutation();
       return;
     }
 
     if (typeof this.tabulator.redraw === 'function') {
       this.tabulator.redraw(true);
+    }
+    this._reapplyActiveFiltersAfterBulkMutation();
+  }
+
+  _reapplyActiveFiltersAfterBulkMutation() {
+    if (typeof this.tabulator.refreshFilter === 'function') {
+      this.tabulator.refreshFilter();
+      return;
+    }
+
+    const activeGlobalFilter = String(this.tabUtils?.getActiveGlobalFilterQuery?.() || '').trim();
+    if (activeGlobalFilter.length > 0) {
+      this.tabUtils.filterAcrossAllColumns(activeGlobalFilter);
     }
   }
 

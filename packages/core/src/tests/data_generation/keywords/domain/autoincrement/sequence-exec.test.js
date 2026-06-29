@@ -29,6 +29,6 @@ describe('autoIncrement.sequence domain keyword execution', () => {
   test('surfaces helper validation errors through the domain keyword interface', () => {
     expect(() =>
       executeDomainKeyword('autoIncrement.sequence', { faker, args: [1, 0], autoIncrementState: {} })
-    ).toThrow('Invalid argument for step: expected a non-zero integer.');
+    ).toThrow('Invalid keyword arguments: argument "step" must be a non-zero integer');
   });
 });

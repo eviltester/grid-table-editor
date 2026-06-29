@@ -1,5 +1,25 @@
 import { validateStringOrNumberValue } from '../../../command-help/command-help-validators.js';
 
+function validateAutoIncrementSequenceArgs(_args = [], context = {}) {
+  const argsByName = context?.argsByName || {};
+
+  if (argsByName.step === 0) {
+    return {
+      ok: false,
+      error: 'Invalid keyword arguments: argument "step" must be a non-zero integer',
+    };
+  }
+
+  if (typeof argsByName.zeropadding !== 'undefined' && argsByName.zeropadding < 0) {
+    return {
+      ok: false,
+      error: 'Invalid keyword arguments: argument "zeropadding" must be greater than or equal to 0',
+    };
+  }
+
+  return { ok: true };
+}
+
 const AUTO_INCREMENT_SEQUENCE_KEYWORD_DEFINITION = {
   keyword: 'autoIncrement.sequence',
   delegate: {
@@ -12,6 +32,7 @@ const AUTO_INCREMENT_SEQUENCE_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/auto-increment-sequences',
     fakerDocsUrl: '',
     validator: validateStringOrNumberValue,
+    argsValidator: validateAutoIncrementSequenceArgs,
     returnType: 'string|number',
     usageExamples: [
       {

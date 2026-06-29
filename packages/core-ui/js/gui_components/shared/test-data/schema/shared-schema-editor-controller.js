@@ -20,7 +20,7 @@ import {
 import { applySchemaCommandSelection } from './schema-row-mapper.js';
 import { schemaRowsToSpecWithTokens } from './schema-editor-core.js';
 import { schemaErrorsToText } from './schema-error-text.js';
-import { getSchemaRowSemanticValidationIssues } from './schema-row-validation.js';
+import { getSchemaRowSemanticValidationIssues, getStaticSchemaRowValidationIssues } from './schema-row-validation.js';
 import { captureActiveFieldState, restoreActiveFieldState } from './schema-focus-state.js';
 import { getDefaultDocumentObj, resolveWindowObj } from '../../dom/default-objects.js';
 import { createConfirmDialogService } from '../../dialog-services/confirm-dialog-service.js';
@@ -424,29 +424,71 @@ function createSharedSchemaEditorController({
     parsed.errors.length > 0 &&
     parsed.errors.every((error) => error?.code === 'compiler_validation_error');
 
-  const getInvalidSchemaRowIndexes = (parsed) => {
+  const SCHEMA_UI_BLOCKING_ROW_ERROR_CODES = new Set([
+    'missing_domain_command',
+    'unknown_domain_command',
+    'helpers_not_supported_in_domain',
+    'missing_faker_command',
+    'unknown_faker_command',
+    'forbidden_faker_command',
+  ]);
+
+  const getSchemaErrorRowIndex = (parsed, error) => {
     const rows = Array.isArray(parsed?.rows) ? parsed.rows : [];
+    const column = String(error?.column ?? '').trim();
+    if (column.length > 0) {
+      const columnIndex = rows.findIndex((row) => String(row?.name ?? '').trim() === column);
+      if (columnIndex >= 0) {
+        return columnIndex;
+      }
+    }
+
+    const line = Number(error?.line);
+    if (Number.isInteger(line)) {
+      const ruleIndex = (Array.isArray(parsed?.tokens) ? parsed.tokens : [])
+        .filter((token) => token?.kind === 'rule')
+        .findIndex((token) => token?.line === line || token?.ruleLine === line || token?.headerLine === line);
+      if (ruleIndex >= 0 && ruleIndex < rows.length) {
+        return ruleIndex;
+      }
+    }
+
+    return -1;
+  };
+
+  const getInvalidSchemaRowIndexes = (parsed) => {
     const invalidIndexes = new Set();
     (Array.isArray(parsed?.errors) ? parsed.errors : []).forEach((error) => {
-      const column = String(error?.column ?? '').trim();
-      if (column.length > 0) {
-        rows.forEach((row, index) => {
-          if (String(row?.name ?? '').trim() === column) {
-            invalidIndexes.add(index);
-          }
-        });
-      }
-      const line = Number(error?.line);
-      if (Number.isInteger(line)) {
-        const ruleIndex = (Array.isArray(parsed?.tokens) ? parsed.tokens : [])
-          .filter((token) => token?.kind === 'rule')
-          .findIndex((token) => token?.line === line || token?.ruleLine === line || token?.headerLine === line);
-        if (ruleIndex >= 0 && ruleIndex < rows.length) {
-          invalidIndexes.add(ruleIndex);
-        }
+      const rowIndex = getSchemaErrorRowIndex(parsed, error);
+      if (rowIndex >= 0) {
+        invalidIndexes.add(rowIndex);
       }
     });
     return invalidIndexes;
+  };
+
+  const isSchemaRowEditableForCompilerValidationError = (row, rowIndex) => {
+    const sourceType = normaliseSourceType(row?.sourceType);
+    if (sourceType !== SOURCE_TYPE_DOMAIN && sourceType !== SOURCE_TYPE_FAKER) {
+      return false;
+    }
+    return !getStaticSchemaRowValidationIssues(row, rowIndex).some((issue) =>
+      SCHEMA_UI_BLOCKING_ROW_ERROR_CODES.has(issue?.code)
+    );
+  };
+
+  const canEditCompilerValidationErrorsInSchemaRows = (parsed) => {
+    if (!canRecoverSchemaDefinitionErrorsAsLiterals(parsed)) {
+      return false;
+    }
+
+    return parsed.errors.every((error) => {
+      const rowIndex = getSchemaErrorRowIndex(parsed, error);
+      if (rowIndex < 0) {
+        return false;
+      }
+      return isSchemaRowEditableForCompilerValidationError(parsed.rows[rowIndex], rowIndex);
+    });
   };
 
   const convertInvalidSchemaRowsToLiterals = (parsed) => {
@@ -592,6 +634,13 @@ function createSharedSchemaEditorController({
     if (session.getTextMode()) {
       const parsed = syncFromText({ showErrors: true });
       if (parsed?.errors?.length > 0) {
+        if (canEditCompilerValidationErrorsInSchemaRows(parsed)) {
+          clearSchemaError();
+          session.setTextMode(false);
+          updateModeView();
+          applySemanticValidationForAllRows();
+          return { rows: session.getRows(), errors: parsed.errors, tokens: session.getTokens() };
+        }
         if (!canRecoverSchemaDefinitionErrorsAsLiterals(parsed)) {
           return parsed;
         }

@@ -1,7 +1,9 @@
 import { jest } from '@jest/globals';
 import { JSDOM } from 'jsdom';
 import { fireEvent, within } from '@testing-library/dom';
-import { dataRulesToSchemaText } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
+import { faker } from '@faker-js/faker';
+import RandExp from 'randexp';
+import { dataRulesToSchemaText, schemaTextToDataRules } from '@anywaydata/core/data_generation/schema-rules-adapter.js';
 import * as schemaControllerExports from '../../../js/gui_components/shared/test-data/schema/schema-controller.js';
 import * as schemaEditorCoreExports from '../../../js/gui_components/shared/test-data/schema/schema-editor-core.js';
 import { createSharedSchemaEditorController } from '../../../js/gui_components/shared/test-data/schema/shared-schema-editor-controller.js';
@@ -551,6 +553,138 @@ describe('createSharedSchemaEditorController', () => {
       }),
     ]);
     expect(root.querySelector('[data-role="schema-error"]')?.textContent || '').toBe('');
+  });
+
+  test('switches from text to schema rows without literal conversion when a known command has invalid params', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(true));
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      faker,
+      RandExp,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => {
+        const ruleSpec = String(rule?.ruleSpec ?? '');
+        const openParenIndex = ruleSpec.indexOf('(');
+        return {
+          id: rule.name,
+          name: rule.name,
+          sourceType: rule.type,
+          command: openParenIndex > 0 ? ruleSpec.slice(0, openParenIndex) : ruleSpec,
+          value: '',
+          params: openParenIndex > 0 ? ruleSpec.slice(openParenIndex) : '',
+          semanticValidationIssues: [],
+        };
+      },
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    root.querySelector('[data-role="schema-textbox"]').value = 'Num\nnumber.int(min=1, min=2, max=3)';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).not.toHaveBeenCalled();
+    expect(result.errors).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        column: 'Num',
+        message: expect.stringContaining('duplicate named argument "min"'),
+      }),
+    ]);
+    expect(controller.getState().isTextMode).toBe(false);
+    expect(controller.getState().rows).toEqual([
+      expect.objectContaining({
+        name: 'Num',
+        sourceType: 'domain',
+        command: 'number.int',
+        params: '(min=1, min=2, max=3)',
+        semanticValidationIssues: [
+          expect.objectContaining({
+            field: 'params',
+            message: expect.stringContaining('duplicate named argument "min"'),
+          }),
+        ],
+      }),
+    ]);
+    expect(root.querySelector('[data-role="schema-error"]')?.textContent || '').toBe('');
+  });
+
+  test('keeps text mode when compiler validation includes an unmatched error', async () => {
+    const root = createRoot(dom.window.document);
+    const requestConfirm = jest.fn(() => Promise.resolve(false));
+    const onSchemaError = jest.fn();
+    const schemaTextToDataRules = jest.fn(() => ({
+      dataRules: [{ name: 'Num', ruleSpec: 'number.int(min=1, min=2)', type: 'domain' }],
+      errors: [
+        {
+          code: 'compiler_validation_error',
+          column: 'Num',
+          message: 'Num failed domain validation - Invalid keyword arguments: duplicate named argument "min"',
+        },
+        {
+          code: 'compiler_validation_error',
+          message: 'Constraint validation failed without a row anchor',
+        },
+      ],
+      schemaTokens: [{ kind: 'rule', name: 'Num', rule: 'number.int(min=1, min=2)', ruleLine: 2 }],
+      constraints: [],
+    }));
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      requestConfirm,
+      createBlankRow: () => ({
+        id: 'blank',
+        name: '',
+        sourceType: 'domain',
+        command: '',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: (rule) => ({
+        id: rule.name,
+        name: rule.name,
+        sourceType: rule.type,
+        command: 'number.int',
+        value: '',
+        params: '(min=1, min=2)',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules,
+      dataRulesToSchemaText,
+      onSchemaError,
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    controller.setTextMode(true);
+    root.querySelector('[data-role="schema-textbox"]').value = 'Num\nnumber.int(min=1, min=2)';
+
+    const result = await controller.toggleMode();
+
+    expect(requestConfirm).toHaveBeenCalledTimes(1);
+    expect(result.errors).toHaveLength(2);
+    expect(controller.getState().isTextMode).toBe(true);
+    expect(onSchemaError).toHaveBeenLastCalledWith(expect.stringContaining('Constraint validation failed'));
   });
 
   test('stays in text mode when invalid text definition literal conversion is declined', async () => {

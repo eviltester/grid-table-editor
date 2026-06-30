@@ -42,13 +42,13 @@ helpers.mustache("Hello {{name}}", { name: "Ada" })
 helpers.fromRegExp("[A-Z]{2}[0-9]{3}")
 ```
 
-## Risky Helper Variants
+## Unsafe Helper Variants
 
 AnyWayData accepts literal helper arguments by default. Literal arguments include strings, numbers, booleans, `null`, arrays, and plain objects that contain only literal values.
 
-Some Faker helper variants accept JavaScript expressions such as callback functions. These are **risky** because they execute expression-style schema text. Only enable them for schemas you trust.
+Some Faker helper variants accept JavaScript expressions such as callback functions. These are **unsafe** because they execute expression-style schema text. Only enable them for schemas you trust.
 
-| Helper command | Safe by default | Risky variant |
+| Helper command | Safe by default | Unsafe variant |
 | --- | --- | --- |
 | `helpers.mustache` | `helpers.mustache("Hello {{name}}", { name: "Ada" })` | `helpers.mustache("Hello {{name}}", { name: () => this.person.firstName() })` |
 | `helpers.maybe` | not available in safe mode because its first argument is a callback | `helpers.maybe(() => "enabled", { probability: 1 })` |
@@ -57,9 +57,9 @@ Some Faker helper variants accept JavaScript expressions such as callback functi
 
 Opt in only when the schema source is trusted:
 
-- Web UI: open the **Generation settings** cog in the Test Data toolbar and enable `allow risky faker`.
+- Web UI: open the **Generation settings** cog in the Test Data toolbar and enable `allow unsafe faker`.
 - CLI: add `--unsafe-faker-expressions`.
-- REST API: send `unsafeFakerExpressions: true` in the JSON body, or use `?unsafeFakerExpressions=true` with `/v1/generate/fromschema`.
+- REST API: send `unsafeFakerExpressions: true` in the `/v1/generate` or `/v1/generate/amend` JSON body, or use `?unsafeFakerExpressions=true` with `/v1/generate/fromschema`.
 - MCP: pass `unsafeFakerExpressions: true` in the `generate_data_from_spec` or `amend_data_from_spec` tool arguments.
 
 ## Helper Methods
@@ -103,8 +103,10 @@ helpers.shuffle(["a", "b", "c"], { inplace: false })
 ### `helpers.uniqueArray`
 
 ```txt
-helpers.uniqueArray(this.word.sample, 5)
+helpers.uniqueArray(["red", "green", "blue"], 2)
 ```
+
+The callback form `helpers.uniqueArray(() => this.word.sample(), 5)` is an unsafe variant and requires the unsafe faker opt-in.
 
 ### `helpers.weightedArrayElement`
 
@@ -134,7 +136,7 @@ helpers.multiple(() => this.person.firstName(), { count: 3 })
 
 - Many helper functions can return arrays or objects depending on method and inputs.
 - Prefer scalar-returning helpers when using grid/display flows that expect single values.
-- Some Faker helper callback shapes require the risky faker opt-in. Use literal helper arguments unless you explicitly trust the schema source.
+- Some Faker helper callback shapes require the unsafe faker opt-in. Use literal helper arguments unless you explicitly trust the schema source.
 
 ## Faker Reference
 

@@ -104,6 +104,11 @@ class PopulationActionsView {
     }
 
     this.root.innerHTML = this.template();
+    this.bindElements();
+    this.render();
+  }
+
+  bindElements() {
     this.generateButton = this.root.querySelector(`[data-role="${this.getRoleName('generateButton')}"]`);
     this.generatePairwiseButton = this.root.querySelector(
       `[data-role="${this.getRoleName('generatePairwiseButton')}"]`
@@ -124,7 +129,25 @@ class PopulationActionsView {
     this.generationSettingsButton?.addEventListener('click', this.handleGenerationSettingsClick);
     this.generationSettingsCloseButton?.addEventListener('click', this.handleGenerationSettingsClose);
     this.unsafeFakerExpressionsCheckbox?.addEventListener('change', this.handleUnsafeFakerExpressionsChange);
-    this.render();
+  }
+
+  unbindElements() {
+    this.generateButton?.removeEventListener('click', this.handleGenerate);
+    this.generatePairwiseButton?.removeEventListener('click', this.handleGeneratePairwise);
+    this.generateSchemaButton?.removeEventListener('click', this.handleGenerateSchemaFromGrid);
+    this.generationSettingsButton?.removeEventListener('click', this.handleGenerationSettingsClick);
+    this.generationSettingsCloseButton?.removeEventListener('click', this.handleGenerationSettingsClose);
+    this.unsafeFakerExpressionsCheckbox?.removeEventListener('change', this.handleUnsafeFakerExpressionsChange);
+  }
+
+  rebuildTemplate() {
+    this.syncGenerationSettingsDocumentClick({
+      unsafeFakerExpressionsVisible: false,
+      generationSettingsOpen: false,
+    });
+    this.unbindElements();
+    this.root.innerHTML = this.template();
+    this.bindElements();
   }
 
   template() {
@@ -230,6 +253,10 @@ class PopulationActionsView {
 
   render() {
     const state = this.controller.getState();
+    const hasGenerationSettings = Boolean(this.generationSettingsContainer);
+    if (hasGenerationSettings !== (state.unsafeFakerExpressionsVisible === true)) {
+      this.rebuildTemplate();
+    }
     if (this.generateButton) {
       this.generateButton.disabled = state.generateBusy === true;
       this.generateButton.setAttribute('aria-disabled', state.generateBusy === true ? 'true' : 'false');
@@ -266,12 +293,7 @@ class PopulationActionsView {
       unsafeFakerExpressionsVisible: false,
       generationSettingsOpen: false,
     });
-    this.generateButton?.removeEventListener('click', this.handleGenerate);
-    this.generatePairwiseButton?.removeEventListener('click', this.handleGeneratePairwise);
-    this.generateSchemaButton?.removeEventListener('click', this.handleGenerateSchemaFromGrid);
-    this.generationSettingsButton?.removeEventListener('click', this.handleGenerationSettingsClick);
-    this.generationSettingsCloseButton?.removeEventListener('click', this.handleGenerationSettingsClose);
-    this.unsafeFakerExpressionsCheckbox?.removeEventListener('change', this.handleUnsafeFakerExpressionsChange);
+    this.unbindElements();
     this.root.replaceChildren();
   }
 }

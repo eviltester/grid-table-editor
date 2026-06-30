@@ -137,6 +137,26 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('allows unsafe faker semantic validation when explicitly opted in', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Choice',
+        sourceType: 'faker',
+        command: 'helpers.fake',
+        params: '(faker.person.firstName())',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+        unsafeFakerExpressions: true,
+      }
+    );
+
+    expect(issues).toEqual([]);
+  });
+
   test('reports malformed helpers.arrayElement params with array guidance', () => {
     const issues = getSchemaRowSemanticValidationIssues(
       {

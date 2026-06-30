@@ -406,10 +406,11 @@ function createTestDataGenerationPanelManager({
           RandExp: resolvedRandExpClass,
           getMethodPickerOptions,
           fakerCommands: FAKER_COMMANDS.filter((command) => command !== 'RegEx' && command.startsWith('helpers.')),
-          validateSchemaRows: (schemaRows) =>
+          validateSchemaRows: (schemaRows, validationOptions = {}) =>
             validateSharedSchemaRows({
               schemaRows,
               schemaRowsToDataRules,
+              unsafeFakerExpressions: validationOptions.unsafeFakerExpressions === true,
             }),
           getVisibleDomainCommandOptions: (currentValue) => {
             const options = getMethodPickerOptions(currentValue).filter((option) => option.sourceType === 'domain');

@@ -6,11 +6,14 @@
 
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 
-function parseSchemaText({ schemaTextToDataRules, schemaText, faker, RandExp }) {
+function parseSchemaText({ schemaTextToDataRules, schemaText, faker, RandExp, unsafeFakerExpressions = false }) {
   return schemaTextToDataRules({
     schemaText: String(schemaText ?? ''),
     faker,
     RandExp,
+    options: {
+      unsafeFakerExpressions: unsafeFakerExpressions === true,
+    },
     includeInvalidRules: true,
   });
 }

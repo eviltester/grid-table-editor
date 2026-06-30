@@ -170,6 +170,30 @@ describe('PopulationActions', () => {
     component.destroy();
   });
 
+  test('can show and hide generation settings after mount', () => {
+    const component = createPopulationActionsComponent({
+      root: document.getElementById('root'),
+      props: {
+        unsafeFakerExpressionsVisible: false,
+      },
+    });
+
+    expect(document.querySelector('[data-role="generation-settings-button"]')).toBeNull();
+
+    component.update({ unsafeFakerExpressionsVisible: true });
+    const settingsButton = document.querySelector('[data-role="generation-settings-button"]');
+    expect(settingsButton).not.toBeNull();
+
+    settingsButton.click();
+    expect(document.querySelector('[data-role="generation-settings-dialog"]').hidden).toBe(false);
+
+    component.update({ unsafeFakerExpressionsVisible: false });
+    expect(document.querySelector('[data-role="generation-settings-button"]')).toBeNull();
+    expect(document.querySelector('[data-role="generation-settings-dialog"]')).toBeNull();
+
+    component.destroy();
+  });
+
   test('supports two instances in one document with distinct ids', () => {
     const onGenerateA = jest.fn();
     const onGenerateB = jest.fn();

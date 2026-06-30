@@ -286,7 +286,7 @@ function getStaticSchemaRowValidationIssues(row, rowIndex) {
 function getSchemaRowSemanticValidationIssues(
   row,
   rowIndex,
-  { schemaTextToDataRules, faker, RandExp, includeBracketGuidance = true } = {}
+  { schemaTextToDataRules, faker, RandExp, includeBracketGuidance = true, unsafeFakerExpressions = false } = {}
 ) {
   if (isBlankSchemaRow(row)) {
     return [];
@@ -319,6 +319,9 @@ function getSchemaRowSemanticValidationIssues(
     schemaText: `${name}\n${ruleSpec}`,
     faker: validationFaker,
     RandExp,
+    options: {
+      unsafeFakerExpressions: unsafeFakerExpressions === true,
+    },
     includeInvalidRules: true,
   });
   const errors = Array.isArray(result?.errors) ? result.errors : [];

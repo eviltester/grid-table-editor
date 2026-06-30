@@ -29,10 +29,11 @@ function schemaRowsToSpecWithTokens({ schemaRows, schemaTokens, dataRulesToSchem
   });
 }
 
-function validateSchemaRows({ schemaRows }) {
+function validateSchemaRows({ schemaRows, unsafeFakerExpressions = false }) {
   return validateSchemaRowsCore({
     schemaRows,
     schemaRowsToDataRules,
+    unsafeFakerExpressions,
   });
 }
 

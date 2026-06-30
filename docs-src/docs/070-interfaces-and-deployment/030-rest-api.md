@@ -154,7 +154,7 @@ Generation mode behavior:
 
 - REST generation endpoints currently run in buffered mode.
 - Stream-mode generation behavior is available via the core helper/CLI paths, not via `/v1/generate`.
-- REST generation endpoints are safe-by-default for faker helper arguments. To allow risky helper variants such as `helpers.mustache("Hello {{name}}", { name: () => "Ada" })`, send `unsafeFakerExpressions: true` in the JSON body, or pass `?unsafeFakerExpressions=true` to `/v1/generate/fromschema`. Only enable this for trusted schemas.
+- REST generation endpoints are safe-by-default for faker helper arguments. To allow unsafe helper variants such as `helpers.mustache("Hello {{name}}", { name: () => "Ada" })`, send `unsafeFakerExpressions: true` in the `/v1/generate` or `/v1/generate/amend` JSON body, or pass `?unsafeFakerExpressions=true` to `/v1/generate/fromschema`. Only enable this for trusted schemas.
 
 ## Schema Formatting
 
@@ -210,7 +210,7 @@ curl -X POST "http://localhost:3000/v1/generate/fromschema?outputFormat=markdown
   --data-binary $'# markdown sample\n\nName\nBob\n\n# numeric id\nId\n1'
 ```
 
-Generate with a trusted risky helper variant:
+Generate with a trusted unsafe helper variant:
 
 ```bash
 curl -X POST http://localhost:3000/v1/generate \
@@ -223,7 +223,7 @@ curl -X POST http://localhost:3000/v1/generate \
   }'
 ```
 
-For more helper examples and the safe/risky split, see [Faker Helpers](/docs/test-data/faker/helpers).
+For more helper examples and the safe/unsafe split, see [Faker Helpers](/docs/test-data/faker/helpers).
 
 Amend imported data (CSV input to tab-delimited output):
 

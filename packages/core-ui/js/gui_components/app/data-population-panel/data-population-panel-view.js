@@ -67,7 +67,10 @@ class DataPopulationPanelView {
         schemaDefinitionRootDataRole: 'schema-definition-root',
         ariaLabel: 'Test data schema panel',
         ids: this.ids,
-        schemaDefinitionProps: state.schemaDefinitionProps,
+        schemaDefinitionProps: {
+          ...state.schemaDefinitionProps,
+          getUnsafeFakerExpressions: () => this.getUnsafeFakerExpressions(),
+        },
         storedSchemasEnabled: state.storedSchemasEnabled,
         storedSchemasProps: state.storedSchemasProps,
       },
@@ -94,7 +97,10 @@ class DataPopulationPanelView {
       rootDataRole: 'test-data-schema-panel-root',
       schemaDefinitionRootDataRole: 'schema-definition-root',
       ariaLabel: 'Test data schema panel',
-      schemaDefinitionProps: state.schemaDefinitionProps,
+      schemaDefinitionProps: {
+        ...state.schemaDefinitionProps,
+        getUnsafeFakerExpressions: () => this.getUnsafeFakerExpressions(),
+      },
       storedSchemasEnabled: state.storedSchemasEnabled,
       storedSchemasProps: state.storedSchemasProps,
     });

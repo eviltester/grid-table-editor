@@ -2206,9 +2206,11 @@ body.theme-dark .shared-schema-row-validation {
   }
   .shared-schema-row-actions {
     grid-column: 1 / span 3;
+    grid-row: 1;
   }
   .shared-schema-row > input[data-field='name'] {
     grid-column: 1 / span 3;
+    grid-row: 2;
   }
   .shared-schema-row > select[data-field='sourceType'] {
     grid-column: 1;

@@ -90,6 +90,7 @@ function createFocusedAppTestDataHarness() {
     }
     await user.selectOptions(element, value);
     await user.tab();
+    await waitForFocusToLeave(element);
   }
 
   function reset() {

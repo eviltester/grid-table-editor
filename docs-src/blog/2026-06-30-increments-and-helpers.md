@@ -1,3 +1,4 @@
+---
 slug: auto-increments-helpers
 authors: [alan]
 tags: [release, feature]
@@ -47,7 +48,7 @@ Generated values:
 
 ```text
 filename001.txt
-filename0006.txt
+filename006.txt
 filename011.txt
 ```
 

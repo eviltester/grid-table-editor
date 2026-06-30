@@ -11,6 +11,7 @@ class DataPopulationPanelController {
       storedSchemasEnabled: props.storedSchemasEnabled === true,
       storedSchemasProps: { ...(props.storedSchemasProps || {}) },
       generateSchemaBusy: props.generateSchemaBusy === true,
+      unsafeFakerExpressions: props.unsafeFakerExpressions === true,
     };
   }
 
@@ -32,6 +33,7 @@ class DataPopulationPanelController {
         ? { ...this.state.storedSchemasProps, ...nextProps.storedSchemasProps }
         : this.state.storedSchemasProps,
       generateSchemaBusy: nextProps.generateSchemaBusy ?? this.state.generateSchemaBusy,
+      unsafeFakerExpressions: nextProps.unsafeFakerExpressions ?? this.state.unsafeFakerExpressions,
     };
   }
 
@@ -52,6 +54,14 @@ class DataPopulationPanelController {
       selectedMode: mode,
     };
     this.callbacks.onModeChange?.(mode);
+  }
+
+  handleUnsafeFakerExpressionsChange(isEnabled) {
+    this.state = {
+      ...this.state,
+      unsafeFakerExpressions: isEnabled === true,
+    };
+    this.callbacks.onUnsafeFakerExpressionsChange?.(this.state.unsafeFakerExpressions);
   }
 }
 

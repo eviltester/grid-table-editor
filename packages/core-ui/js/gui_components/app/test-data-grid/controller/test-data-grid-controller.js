@@ -187,6 +187,7 @@ function createTestDataGenerationPanelManager({
       getMainGridExtras,
       getGenerationMode,
       getRequestedRowCount: () => state.dataPopulationPanel?.getRowCountInputValue?.(),
+      getUnsafeFakerExpressions: () => state.dataPopulationPanel?.getUnsafeFakerExpressions?.() ?? false,
       setGenerateBusy: (isBusy) => state.dataPopulationPanel?.setGenerateBusy?.(isBusy),
       setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
@@ -405,10 +406,11 @@ function createTestDataGenerationPanelManager({
           RandExp: resolvedRandExpClass,
           getMethodPickerOptions,
           fakerCommands: FAKER_COMMANDS.filter((command) => command !== 'RegEx' && command.startsWith('helpers.')),
-          validateSchemaRows: (schemaRows) =>
+          validateSchemaRows: (schemaRows, validationOptions = {}) =>
             validateSharedSchemaRows({
               schemaRows,
               schemaRowsToDataRules,
+              unsafeFakerExpressions: validationOptions.unsafeFakerExpressions === true,
             }),
           getVisibleDomainCommandOptions: (currentValue) => {
             const options = getMethodPickerOptions(currentValue).filter((option) => option.sourceType === 'domain');
@@ -418,6 +420,7 @@ function createTestDataGenerationPanelManager({
         }),
         storedSchemasEnabled: true,
         storedSchemasProps: {},
+        unsafeFakerExpressions: false,
       },
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),

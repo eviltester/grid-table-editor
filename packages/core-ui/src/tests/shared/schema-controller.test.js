@@ -105,6 +105,31 @@ describe('schema-controller', () => {
     ]);
   });
 
+  test('parseSchemaTextToRows passes the unsafe faker opt-in to the parser', () => {
+    const parser = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'Name', ruleSpec: 'helpers.mustache("Hello {{name}}", { name: () => "Ada" })' }],
+      errors: [],
+      schemaTokens: [{ kind: 'rule' }],
+    });
+
+    parseSchemaTextToRows({
+      schemaTextToDataRules: parser,
+      schemaText: 'Name\nhelpers.mustache("Hello {{name}}", { name: () => "Ada" })',
+      faker: {},
+      RandExp: function RandExp() {},
+      unsafeFakerExpressions: true,
+      mapRuleToRow: (rule) => ({ name: rule.name, value: rule.ruleSpec }),
+    });
+
+    expect(parser).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: {
+          unsafeFakerExpressions: true,
+        },
+      })
+    );
+  });
+
   test('row mutation helpers add remove and move rows immutably', () => {
     const blank = () => ({ name: '', sourceType: 'regex', value: '' });
     const baseRows = [{ name: 'A' }, { name: 'B' }];
@@ -268,5 +293,39 @@ describe('schema-controller', () => {
     expect(toggleResult.ok).toBe(false);
     expect(session.getTextMode()).toBe(true);
     expect(session.getRows()).toEqual([{ name: 'Previous', sourceType: 'literal', value: 'ok' }]);
+  });
+
+  test('schema editing session uses the current unsafe faker setting when syncing text rows', () => {
+    const blank = () => ({
+      name: '',
+      sourceType: 'regex',
+      command: '',
+      params: '',
+      value: '',
+      comments: '',
+    });
+    const schemaTextToDataRules = jest.fn().mockReturnValue({
+      dataRules: [{ name: 'Name', ruleSpec: 'helpers.mustache("Hello {{name}}", { name: () => "Ada" })' }],
+      errors: [],
+      schemaTokens: [{ kind: 'rule' }],
+    });
+    let unsafeFakerExpressions = false;
+    const session = createSchemaEditingSession({
+      createBlankSchemaRow: blank,
+      schemaTextToDataRules,
+      faker: {},
+      RandExp: function RandExp() {},
+      mapRuleToRow: (rule) => ({ name: rule.name, value: rule.ruleSpec }),
+      schemaRowsToSpecWithTokens: jest.fn(() => ''),
+      getUnsafeFakerExpressions: () => unsafeFakerExpressions,
+      initialTextMode: true,
+    });
+
+    session.syncRowsFromText({ schemaText: 'Name\nhelpers.mustache("Hello {{name}}", { name: () => "Ada" })' });
+    unsafeFakerExpressions = true;
+    session.syncRowsFromText({ schemaText: 'Name\nhelpers.mustache("Hello {{name}}", { name: () => "Ada" })' });
+
+    expect(schemaTextToDataRules.mock.calls[0][0].options.unsafeFakerExpressions).toBe(false);
+    expect(schemaTextToDataRules.mock.calls[1][0].options.unsafeFakerExpressions).toBe(true);
   });
 });

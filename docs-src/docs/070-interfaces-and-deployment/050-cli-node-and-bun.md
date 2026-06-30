@@ -152,6 +152,14 @@ To allow expression-style faker arguments, opt in explicitly:
 anywaydata generate -i input.txt -n 10 -f csv --unsafe-faker-expressions
 ```
 
+This is required for unsafe helper variants that use callbacks or other expression-style arguments, for example:
+
+```txt
+helpers.mustache("Hello {{name}}", { name: () => this.person.firstName() })
+```
+
+Use the flag only for schema files you trust. For more examples, see [Faker Helpers](/docs/test-data/faker/helpers).
+
 ## Choose CLI vs API/MCP
 
 - Choose **CLI** for local scripts and shell pipelines.

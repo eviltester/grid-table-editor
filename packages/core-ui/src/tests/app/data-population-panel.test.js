@@ -102,6 +102,7 @@ describe('DataPopulationPanel', () => {
     const generatePairwiseWrapper = panelRoot.querySelector('[data-role="generate-pairwise-button-wrapper"]');
     const generateSchemaButton = panelQueries.getByRole('button', { name: /^grid to enum schema$/i });
     const rowCountInput = panelQueries.getByRole('spinbutton', { name: 'How Many?' });
+    const generationSettingsButton = panelQueries.getByRole('button', { name: 'Generation settings' });
 
     expect(panelRoot).not.toBeNull();
     expect(panelRoot?.classList.contains('testDataSchemaGui')).toBe(true);
@@ -114,7 +115,12 @@ describe('DataPopulationPanel', () => {
     expect(document.getElementById('populationActionsRoot')).toBeNull();
     expect(document.getElementById('generateCountControl')).toBeNull();
     expect(document.getElementById('populationModeSelectorRoot')).toBeNull();
-    expect(panelRoot.querySelectorAll('[data-help-role="help-icon"]')).toHaveLength(3);
+    expect(panelRoot.querySelectorAll('[data-help-role="help-icon"]')).toHaveLength(4);
+    expect(generationSettingsButton.getAttribute('aria-expanded')).toBe('false');
+    generationSettingsButton.click();
+    const unsafeFakerCheckbox = panelQueries.getByRole('checkbox', { name: 'allow unsafe faker' });
+    expect(unsafeFakerCheckbox.checked).toBe(false);
+    expect(component.getUnsafeFakerExpressions()).toBe(false);
 
     component.setPairwiseVisible(true);
     expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
@@ -135,6 +141,10 @@ describe('DataPopulationPanel', () => {
     expect(onGenerate).toHaveBeenCalled();
     generateSchemaButton.click();
     expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
+
+    unsafeFakerCheckbox.checked = true;
+    unsafeFakerCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(component.getUnsafeFakerExpressions()).toBe(true);
 
     const amendSelected = document.querySelector('input[name="testDataGenerationMode"][value="amend-selected"]');
     amendSelected.checked = true;

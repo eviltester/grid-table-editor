@@ -100,7 +100,8 @@ const openApiDocument = {
                   unsafeFakerExpressions: {
                     type: 'boolean',
                     default: false,
-                    description: 'Allow expression-style faker arguments (unsafe for untrusted input)',
+                    description:
+                      'Allow expression-style faker arguments such as callbacks in helpers.* commands. Unsafe for untrusted input.',
                   },
                   responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
                 },
@@ -168,7 +169,8 @@ const openApiDocument = {
                   unsafeFakerExpressions: {
                     type: 'boolean',
                     default: false,
-                    description: 'Allow expression-style faker arguments (unsafe for untrusted input)',
+                    description:
+                      'Allow expression-style faker arguments such as callbacks in helpers.* commands. Unsafe for untrusted input.',
                   },
                   responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
                 },
@@ -317,7 +319,8 @@ const openApiDocument = {
               type: 'boolean',
               default: false,
             },
-            description: 'Allow expression-style faker arguments (unsafe for untrusted input)',
+            description:
+              'Allow expression-style faker arguments such as callbacks in helpers.* commands. Unsafe for untrusted input.',
           },
           {
             in: 'query',
@@ -428,7 +431,12 @@ const openApiDocument = {
                     description:
                       'Comma-separated imported field names whose values should be trimmed before amend processing.',
                   },
-                  unsafeFakerExpressions: { type: 'boolean', default: false },
+                  unsafeFakerExpressions: {
+                    type: 'boolean',
+                    default: false,
+                    description:
+                      'Allow expression-style faker arguments such as callbacks in helpers.* commands. Unsafe for untrusted input.',
+                  },
                   responseFormat: { type: 'string', enum: ['rows', 'rendered', 'all', 'raw'], default: 'rows' },
                   stream: { type: 'boolean', description: 'Accepted for compatibility and ignored for amend mode.' },
                 },

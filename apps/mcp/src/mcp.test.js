@@ -233,6 +233,27 @@ test('MCP server rejects unsafe faker expression arguments', () => {
   expect(payload.error.message).toMatch(/Unsafe faker rule syntax detected/);
 });
 
+test('MCP server opts in to unsafe faker expression arguments', () => {
+  const response = requestServer({
+    jsonrpc: '2.0',
+    id: 4.5,
+    method: 'tools/call',
+    params: {
+      name: 'generate_data_from_spec',
+      arguments: {
+        textSpec: 'Sentence\nhelpers.mustache("Hello {{name}}", { name: () => "Ada" })',
+        rowCount: 1,
+        outputFormat: 'json',
+        unsafeFakerExpressions: true,
+      },
+    },
+  });
+  const payload = JSON.parse(response?.result?.content?.[0]?.text || '{}');
+  expect(response?.result?.isError).toBe(false);
+  expect(payload.ok).toBe(true);
+  expect(payload.rows).toEqual([['Hello Ada']]);
+});
+
 test('MCP server returns discoverable options schema for xml output format', () => {
   const response = requestServer({
     jsonrpc: '2.0',

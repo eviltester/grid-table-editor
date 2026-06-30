@@ -10,7 +10,7 @@ class TestDataPopulationToolbarController {
       generateBusy: props.generateBusy === true,
       generatePairwiseBusy: props.generatePairwiseBusy === true,
       generateSchemaBusy: props.generateSchemaBusy === true,
-      unsafeFakerExpressions: props.unsafeFakerExpressions !== false,
+      unsafeFakerExpressions: props.unsafeFakerExpressions === true,
     };
   }
 

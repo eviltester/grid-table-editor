@@ -57,7 +57,7 @@ describe('ui-generation-session-service', () => {
     expect(createGenerationSessionFn).toHaveBeenCalledWith(
       expect.objectContaining({
         textSpec: 'Status\nenum(open,closed)\n\nIF [Status] = "open" THEN [Status] = "closed" ENDIF',
-        unsafeFakerExpressions: true,
+        unsafeFakerExpressions: false,
       })
     );
   });

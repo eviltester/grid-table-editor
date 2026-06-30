@@ -179,7 +179,7 @@ const meta = {
     selectedMode: 'new-table',
     pairwiseVisible: false,
     rowCount: 1,
-    unsafeFakerExpressions: true,
+    unsafeFakerExpressions: false,
     schemaRows: [],
     textMode: false,
   },
@@ -220,7 +220,7 @@ export const NewTableMode = {
     docs: {
       description: {
         story:
-          'Shows the embedded panel in its default new-table mode. Review the generation settings cog, shared row-count control, schema editor, and primary Generate action without combinations generation enabled. Open settings to inspect allow risky faker, then try Generate to confirm the composed panel callback fires through the interaction log.',
+          'Shows the embedded panel in its default new-table mode. Review the generation settings cog, shared row-count control, schema editor, and primary Generate action without combinations generation enabled. Open settings to inspect allow unsafe faker, then try Generate to confirm the composed panel callback fires through the interaction log.',
       },
     },
   },
@@ -228,7 +228,7 @@ export const NewTableMode = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeVisible();
     await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
-    await expect(canvas.getByRole('checkbox', { name: 'allow risky faker' })).toBeChecked();
+    await expect(canvas.getByRole('checkbox', { name: 'allow unsafe faker' })).not.toBeChecked();
     await expect(canvas.getByLabelText('How Many?')).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
     await expect(canvas.queryByRole('button', { name: 'Generate Combinations' })).toBeNull();

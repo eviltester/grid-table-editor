@@ -17,12 +17,12 @@ class PopulationActionsController {
       generateSchemaHelpLabel: props.generateSchemaHelpLabel || 'Show grid to schema help',
       generateSchemaVisible: props.generateSchemaVisible !== false,
       unsafeFakerExpressionsVisible: props.unsafeFakerExpressionsVisible === true,
-      unsafeFakerExpressions: props.unsafeFakerExpressions !== false,
-      unsafeFakerExpressionsLabel: props.unsafeFakerExpressionsLabel || 'allow risky faker',
+      unsafeFakerExpressions: props.unsafeFakerExpressions === true,
+      unsafeFakerExpressionsLabel: props.unsafeFakerExpressionsLabel || 'allow unsafe faker',
       unsafeFakerExpressionsHelpHtml:
         props.unsafeFakerExpressionsHelpHtml ||
         '<p>Allows expression-style Faker helper arguments such as functions in helper data objects. Example: <code>helpers.mustache("Hi {{name}}", { name: () => this.person.firstName() })</code>.</p><p>Only use schemas you trust. See <a href="/docs/test-data/faker/helpers">Faker Helpers</a>.</p>',
-      unsafeFakerExpressionsHelpLabel: props.unsafeFakerExpressionsHelpLabel || 'Show risky Faker help',
+      unsafeFakerExpressionsHelpLabel: props.unsafeFakerExpressionsHelpLabel || 'Show unsafe Faker help',
       generationSettingsOpen: props.generationSettingsOpen === true,
       generationSettingsLabel: props.generationSettingsLabel || 'Generation settings',
       statusVisible: props.statusVisible === true,

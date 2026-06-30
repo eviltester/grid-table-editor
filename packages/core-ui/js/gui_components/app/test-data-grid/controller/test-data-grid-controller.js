@@ -187,7 +187,7 @@ function createTestDataGenerationPanelManager({
       getMainGridExtras,
       getGenerationMode,
       getRequestedRowCount: () => state.dataPopulationPanel?.getRowCountInputValue?.(),
-      getUnsafeFakerExpressions: () => state.dataPopulationPanel?.getUnsafeFakerExpressions?.() ?? true,
+      getUnsafeFakerExpressions: () => state.dataPopulationPanel?.getUnsafeFakerExpressions?.() ?? false,
       setGenerateBusy: (isBusy) => state.dataPopulationPanel?.setGenerateBusy?.(isBusy),
       setGeneratePairwiseBusy: (isBusy) => state.dataPopulationPanel?.setGeneratePairwiseBusy?.(isBusy),
       setPairwiseVisible: (isVisible) => state.dataPopulationPanel?.setPairwiseVisible?.(isVisible),
@@ -419,7 +419,7 @@ function createTestDataGenerationPanelManager({
         }),
         storedSchemasEnabled: true,
         storedSchemasProps: {},
-        unsafeFakerExpressions: true,
+        unsafeFakerExpressions: false,
       },
       callbacks: {
         onGenerate: () => state.actionAdapter.generateTestData(),

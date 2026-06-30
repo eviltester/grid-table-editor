@@ -72,9 +72,9 @@ describe('TestDataPopulationToolbar', () => {
     expect(toolbarQueries.getByRole('radio', { name: 'New Table' }).checked).toBe(true);
     expect(generationSettingsButton.getAttribute('aria-expanded')).toBe('false');
     generationSettingsButton.click();
-    const riskyFakerCheckbox = toolbarQueries.getByRole('checkbox', { name: 'allow risky faker' });
-    expect(riskyFakerCheckbox.checked).toBe(true);
-    expect(component.getUnsafeFakerExpressions()).toBe(true);
+    const unsafeFakerCheckbox = toolbarQueries.getByRole('checkbox', { name: 'allow unsafe faker' });
+    expect(unsafeFakerCheckbox.checked).toBe(false);
+    expect(component.getUnsafeFakerExpressions()).toBe(false);
 
     component.setPairwiseVisible(true);
     expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
@@ -100,9 +100,9 @@ describe('TestDataPopulationToolbar', () => {
     expect(onGenerate).toHaveBeenCalled();
     expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
 
-    riskyFakerCheckbox.checked = false;
-    riskyFakerCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(component.getUnsafeFakerExpressions()).toBe(false);
+    unsafeFakerCheckbox.checked = true;
+    unsafeFakerCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(component.getUnsafeFakerExpressions()).toBe(true);
 
     const amendSelected = toolbarQueries.getByRole('radio', { name: 'Amend Selected' });
     amendSelected.checked = true;

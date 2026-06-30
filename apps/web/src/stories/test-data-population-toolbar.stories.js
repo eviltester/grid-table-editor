@@ -61,7 +61,7 @@ function renderToolbarStory(args) {
       },
       onUnsafeFakerExpressionsChange: (isEnabled) => {
         args.onUnsafeFakerExpressionsChange?.(isEnabled);
-        log.textContent = `risky-faker:${isEnabled}`;
+        log.textContent = `unsafe-faker:${isEnabled}`;
       },
     },
   });
@@ -98,7 +98,7 @@ const meta = {
     generateBusy: false,
     generatePairwiseBusy: false,
     generateSchemaBusy: false,
-    unsafeFakerExpressions: true,
+    unsafeFakerExpressions: false,
     rowCount: 1,
     maxWidth: '',
     onGenerate: fn(),
@@ -152,7 +152,7 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the default horizontal toolbar composition: generation settings cog, Generate action, row count, and mode selector on one line. Open settings to review allow risky faker, then try **Generate** and confirm the log updates without needing the larger schema editor panel around it.',
+          'Shows the default horizontal toolbar composition: generation settings cog, Generate action, row count, and mode selector on one line. Open settings to review allow unsafe faker, then try **Generate** and confirm the log updates without needing the larger schema editor panel around it.',
       },
     },
   },
@@ -161,7 +161,9 @@ export const Default = {
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
     await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
-    await expect(canvas.getByRole('checkbox', { name: 'allow risky faker' })).toBeChecked();
+    await expect(canvas.getByRole('checkbox', { name: 'allow unsafe faker' })).not.toBeChecked();
+    await userEvent.click(canvas.getByRole('checkbox', { name: 'allow unsafe faker' }));
+    await expect(canvas.getByText('unsafe-faker:true')).toBeVisible();
     await expect(canvas.getByRole('spinbutton', { name: 'How Many?' })).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate' }));

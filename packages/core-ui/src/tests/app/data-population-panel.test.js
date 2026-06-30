@@ -118,9 +118,9 @@ describe('DataPopulationPanel', () => {
     expect(panelRoot.querySelectorAll('[data-help-role="help-icon"]')).toHaveLength(4);
     expect(generationSettingsButton.getAttribute('aria-expanded')).toBe('false');
     generationSettingsButton.click();
-    const riskyFakerCheckbox = panelQueries.getByRole('checkbox', { name: 'allow risky faker' });
-    expect(riskyFakerCheckbox.checked).toBe(true);
-    expect(component.getUnsafeFakerExpressions()).toBe(true);
+    const unsafeFakerCheckbox = panelQueries.getByRole('checkbox', { name: 'allow unsafe faker' });
+    expect(unsafeFakerCheckbox.checked).toBe(false);
+    expect(component.getUnsafeFakerExpressions()).toBe(false);
 
     component.setPairwiseVisible(true);
     expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
@@ -142,9 +142,9 @@ describe('DataPopulationPanel', () => {
     generateSchemaButton.click();
     expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
 
-    riskyFakerCheckbox.checked = false;
-    riskyFakerCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
-    expect(component.getUnsafeFakerExpressions()).toBe(false);
+    unsafeFakerCheckbox.checked = true;
+    unsafeFakerCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(component.getUnsafeFakerExpressions()).toBe(true);
 
     const amendSelected = document.querySelector('input[name="testDataGenerationMode"][value="amend-selected"]');
     amendSelected.checked = true;

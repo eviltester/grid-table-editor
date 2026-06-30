@@ -11,7 +11,7 @@ class DataPopulationPanelController {
       storedSchemasEnabled: props.storedSchemasEnabled === true,
       storedSchemasProps: { ...(props.storedSchemasProps || {}) },
       generateSchemaBusy: props.generateSchemaBusy === true,
-      unsafeFakerExpressions: props.unsafeFakerExpressions !== false,
+      unsafeFakerExpressions: props.unsafeFakerExpressions === true,
     };
   }
 

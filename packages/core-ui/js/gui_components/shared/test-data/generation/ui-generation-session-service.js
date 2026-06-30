@@ -134,7 +134,7 @@ function createUiGenerationSessionService({
   CombinationsTestDataGeneratorClass,
   createConfiguredGenerator = null,
   createGenerationSessionFn = createGenerationSession,
-  getUnsafeFakerExpressions = () => true,
+  getUnsafeFakerExpressions = () => false,
   faker,
   RandExp,
 }) {

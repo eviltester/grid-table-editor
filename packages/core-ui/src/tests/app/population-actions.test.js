@@ -106,7 +106,7 @@ describe('PopulationActions', () => {
     component.destroy();
   });
 
-  test('opens generation settings, updates the browser risky faker option, and closes on outside click', () => {
+  test('opens generation settings, updates the browser unsafe faker option, and closes on outside click', () => {
     const onUnsafeFakerExpressionsChange = jest.fn();
     const onGenerate = jest.fn();
 
@@ -114,7 +114,6 @@ describe('PopulationActions', () => {
       root: document.getElementById('root'),
       props: {
         unsafeFakerExpressionsVisible: true,
-        unsafeFakerExpressions: true,
       },
       callbacks: {
         onGenerate,
@@ -139,17 +138,17 @@ describe('PopulationActions', () => {
     expect(settingsDialog.hidden).toBe(false);
     expect(optionHelp.getAttribute('data-help-text')).toContain('helpers.mustache');
     expect(optionHelp.getAttribute('data-help-text')).toContain('/docs/test-data/faker/helpers');
-    expect(checkbox.checked).toBe(true);
-    expect(component.getUnsafeFakerExpressions()).toBe(true);
-
-    checkbox.checked = false;
-    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-
-    expect(onUnsafeFakerExpressionsChange).toHaveBeenCalledWith(false);
+    expect(checkbox.checked).toBe(false);
     expect(component.getUnsafeFakerExpressions()).toBe(false);
 
-    component.setUnsafeFakerExpressions(true);
-    expect(checkbox.checked).toBe(true);
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(onUnsafeFakerExpressionsChange).toHaveBeenCalledWith(true);
+    expect(component.getUnsafeFakerExpressions()).toBe(true);
+
+    component.setUnsafeFakerExpressions(false);
+    expect(checkbox.checked).toBe(false);
 
     document.querySelector('[data-role="generation-settings-close"]').click();
     expect(settingsDialog.hidden).toBe(true);

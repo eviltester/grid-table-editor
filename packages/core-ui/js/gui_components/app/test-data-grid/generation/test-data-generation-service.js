@@ -62,7 +62,7 @@ function createTestDataGenerationService({
   setGenerateBusy = () => {},
   setGeneratePairwiseBusy = () => {},
   setPairwiseVisible = () => {},
-  getUnsafeFakerExpressions = () => true,
+  getUnsafeFakerExpressions = () => false,
   requestConfirm,
   recordLastUsedSchema = () => null,
   createGenerationSessionFn = createGenerationSession,

@@ -23,7 +23,7 @@ function createGeneratorSchemaGenerationService({
   schemaTextToDataRules,
   getSchemaText,
   TestDataGeneratorClass,
-  getUnsafeFakerExpressions = () => true,
+  getUnsafeFakerExpressions = () => false,
   faker,
   RandExp,
 } = {}) {

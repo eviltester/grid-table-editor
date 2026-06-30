@@ -46,6 +46,12 @@ function createFocusedAppTestDataHarness() {
     return getPanelRoot()?.querySelector('[data-role="schema-definition-root"]') || null;
   }
 
+  async function waitForFocusToLeave(element) {
+    await waitFor(() => {
+      expect(element.ownerDocument.activeElement).not.toBe(element);
+    });
+  }
+
   async function setInputValue(element, value) {
     if (!element) {
       throw new Error('Target input element was not found in focused app test-data harness');
@@ -60,9 +66,7 @@ function createFocusedAppTestDataHarness() {
         initialSelectionEnd: String(element.value || '').length,
       });
       await user.tab();
-      await new Promise((resolve) => {
-        setTimeout(resolve, 0);
-      });
+      await waitForFocusToLeave(element);
       return;
     }
 
@@ -77,9 +81,7 @@ function createFocusedAppTestDataHarness() {
     }
 
     await user.tab();
-    await new Promise((resolve) => {
-      setTimeout(resolve, 0);
-    });
+    await waitForFocusToLeave(element);
   }
 
   async function setSelectValue(element, value) {

@@ -37,6 +37,35 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('tabs through schema row fields before row action buttons', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    const row = generatorPage.schema.row(0);
+    const nameInput = row.locator('input[data-field="name"]');
+    const sourceTypeSelect = row.locator('select[data-field="sourceType"]');
+    const helpLink = row.locator('[data-field="faker-doc-link"]');
+    const valueInput = row.locator('input[data-field="value"]');
+    const dragButton = row.locator('[data-action="drag"]');
+
+    await nameInput.focus();
+    await expect(nameInput).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(sourceTypeSelect).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(helpLink).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(valueInput).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(dragButton).toBeFocused();
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('can edit as schema then edit as text', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

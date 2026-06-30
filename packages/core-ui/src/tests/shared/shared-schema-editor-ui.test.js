@@ -89,6 +89,28 @@ describe('shared schema editor ui', () => {
     expect(shadowSelect.getAttribute('tabindex')).toBe('-1');
   });
 
+  test('orders focusable row controls from editable fields to row actions', () => {
+    renderSharedSchemaRows({
+      documentObj: document,
+      rowsElement,
+      schemaRows: [{ id: '1', name: 'First', sourceType: 'regex', value: '[A-Z]{2}' }],
+      getSchemaHelpData: () => ({
+        show: true,
+        docsUrl: '/docs/regex',
+        title: 'Regex data help',
+        html: '<p>Regex help</p>',
+      }),
+      updateAllPairsButtonVisibility: () => {},
+    });
+
+    const row = rowsElement.querySelector('.shared-schema-row');
+    const focusableOrder = Array.from(row.querySelectorAll('input, select, a, button'))
+      .filter((element) => !element.disabled && !element.hidden && element.tabIndex >= 0)
+      .map((element) => element.getAttribute('data-field') || element.getAttribute('data-action'));
+
+    expect(focusableOrder).toEqual(['name', 'sourceType', 'faker-doc-link', 'value', 'drag', 'add', 'remove']);
+  });
+
   test('hides the shared schema mode help tooltip when present', () => {
     const hide = jest.fn();
     modeHelpIconElement._tippy = { hide };

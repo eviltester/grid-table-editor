@@ -315,6 +315,16 @@ function createSharedSchemaEditorController({
     semanticValidationTimers.set(rowId, timerId);
   };
 
+  const scheduleFocusSettledSemanticValidationForRow = (rowId) => {
+    clearSemanticValidationTimer(rowId);
+    if (typeof timerApi?.setTimeout !== 'function') {
+      applySemanticValidationForRow(rowId);
+      return;
+    }
+    const timerId = timerApi.setTimeout(() => applySemanticValidationForRow(rowId), 0);
+    semanticValidationTimers.set(rowId, timerId);
+  };
+
   const updateTextElementFromRows = () => {
     const textElement = getTextElement();
     if (textElement) {
@@ -785,7 +795,7 @@ function createSharedSchemaEditorController({
     if (!rowId) {
       return;
     }
-    scheduleSemanticValidationForRow(rowId, { immediate: true });
+    scheduleFocusSettledSemanticValidationForRow(rowId);
   };
 
   const handleClick = async (event) => {

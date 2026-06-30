@@ -50,8 +50,10 @@ function createFocusedAppTestDataHarness() {
     if (!element) {
       throw new Error('Target input element was not found in focused app test-data harness');
     }
-    await user.click(element);
-    await user.clear(element);
+    element.focus();
+    element.value = '';
+    fireEvent.input(element, { target: { value: '' } });
+    fireEvent.change(element, { target: { value: '' } });
     if (value) {
       if (element.type === 'number' || /[\n\\[\]{}]/.test(value)) {
         element.value = value;
@@ -62,6 +64,9 @@ function createFocusedAppTestDataHarness() {
       }
     }
     element.blur();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
   }
 
   async function setSelectValue(element, value) {

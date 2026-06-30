@@ -102,6 +102,9 @@ function createFocusedGeneratorHarness() {
     fireEvent.input(element, { target: { value: element.value } });
     fireEvent.change(element, { target: { value: element.value } });
     element.blur();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 0);
+    });
   }
 
   function reset() {
@@ -143,7 +146,11 @@ function createFocusedGeneratorHarness() {
     await waitFor(() => expect(getRow(index)).toBeTruthy());
 
     if (row.sourceType === 'faker' || row.sourceType === 'domain') {
-      const commandSelect = getRow(index).querySelector('[data-field="command"]');
+      let commandSelect = null;
+      await waitFor(() => {
+        commandSelect = getRow(index)?.querySelector('[data-field="command"]') || null;
+        expect(commandSelect).toBeTruthy();
+      });
       await user.selectOptions(commandSelect, row.command);
       const paramsInput = within(getRow(index)).getByPlaceholderText('Params e.g. (10)');
       await setInputValue(paramsInput, row.params || '');

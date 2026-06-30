@@ -134,6 +134,7 @@ function createUiGenerationSessionService({
   CombinationsTestDataGeneratorClass,
   createConfiguredGenerator = null,
   createGenerationSessionFn = createGenerationSession,
+  getUnsafeFakerExpressions = () => true,
   faker,
   RandExp,
 }) {
@@ -180,6 +181,7 @@ function createUiGenerationSessionService({
       schemaSource,
       fakerInstance: faker,
       RandExpClass: RandExp,
+      unsafeFakerExpressions: getUnsafeFakerExpressions({ validationOptions, schemaState }) === true,
     });
 
     if (!session.isValid()) {

@@ -47,12 +47,14 @@ class DataPopulationPanelView {
         rowCountProps: state.rowCountProps,
         actionIds: state.actionIds,
         generateSchemaBusy: state.generateSchemaBusy,
+        unsafeFakerExpressions: state.unsafeFakerExpressions,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
         onGenerateSchemaFromGrid: this.callbacks.onGenerateSchemaFromGrid,
         onModeChange: (mode) => this.controller.handleModeChange(mode),
+        onUnsafeFakerExpressionsChange: (isEnabled) => this.controller.handleUnsafeFakerExpressionsChange(isEnabled),
       },
     });
 
@@ -85,6 +87,7 @@ class DataPopulationPanelView {
       rowCountProps: state.rowCountProps,
       actionIds: state.actionIds,
       generateSchemaBusy: state.generateSchemaBusy,
+      unsafeFakerExpressions: state.unsafeFakerExpressions,
     });
     this.schemaPanel?.update?.({
       className: 'test-data-schema-edit-zone shared-schema-section',
@@ -133,6 +136,10 @@ class DataPopulationPanelView {
 
   setGenerateSchemaBusy(isBusy) {
     this.toolbar?.setGenerateSchemaBusy?.(isBusy);
+  }
+
+  getUnsafeFakerExpressions() {
+    return this.toolbar?.getUnsafeFakerExpressions?.() ?? this.controller.getState().unsafeFakerExpressions;
   }
 
   getSchemaDefinition() {

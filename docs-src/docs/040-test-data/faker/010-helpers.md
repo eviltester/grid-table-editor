@@ -42,6 +42,26 @@ helpers.mustache("Hello {{name}}", { name: "Ada" })
 helpers.fromRegExp("[A-Z]{2}[0-9]{3}")
 ```
 
+## Risky Helper Variants
+
+AnyWayData accepts literal helper arguments by default. Literal arguments include strings, numbers, booleans, `null`, arrays, and plain objects that contain only literal values.
+
+Some Faker helper variants accept JavaScript expressions such as callback functions. These are **risky** because they execute expression-style schema text. Only enable them for schemas you trust.
+
+| Helper command | Safe by default | Risky variant |
+| --- | --- | --- |
+| `helpers.mustache` | `helpers.mustache("Hello {{name}}", { name: "Ada" })` | `helpers.mustache("Hello {{name}}", { name: () => this.person.firstName() })` |
+| `helpers.maybe` | not available in safe mode because its first argument is a callback | `helpers.maybe(() => "enabled", { probability: 1 })` |
+| `helpers.multiple` | not available in safe mode because its first argument is a callback | `helpers.multiple(() => this.person.firstName(), { count: 3 })` |
+| `helpers.uniqueArray` | `helpers.uniqueArray(["red", "green", "blue"], 2)` | `helpers.uniqueArray(() => this.person.firstName(), 5)` |
+
+Opt in only when the schema source is trusted:
+
+- Web UI: open the **Generation settings** cog in the Test Data toolbar and enable `allow risky faker`.
+- CLI: add `--unsafe-faker-expressions`.
+- REST API: send `unsafeFakerExpressions: true` in the JSON body, or use `?unsafeFakerExpressions=true` with `/v1/generate/fromschema`.
+- MCP: pass `unsafeFakerExpressions: true` in the `generate_data_from_spec` or `amend_data_from_spec` tool arguments.
+
 ## Helper Methods
 
 ### `helpers.arrayElement`
@@ -114,7 +134,7 @@ helpers.multiple(() => this.person.firstName(), { count: 3 })
 
 - Many helper functions can return arrays or objects depending on method and inputs.
 - Prefer scalar-returning helpers when using grid/display flows that expect single values.
-- Some Faker helper callback shapes are not supported in browser schema text. Use the executable schema examples on this page when copying examples into AnyWayData.
+- Some Faker helper callback shapes require the risky faker opt-in. Use literal helper arguments unless you explicitly trust the schema source.
 
 ## Faker Reference
 

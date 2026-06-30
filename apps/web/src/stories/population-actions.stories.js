@@ -30,6 +30,8 @@ function renderPopulationActionsStory(args) {
       generateHelpHtml: args.generateHelpHtml,
       generatePairwiseHelpHtml: args.generatePairwiseHelpHtml,
       generateSchemaHelpHtml: '<p>Scan the current grid and build an enum-only schema from visible values.</p>',
+      unsafeFakerExpressionsVisible: args.unsafeFakerExpressionsVisible,
+      unsafeFakerExpressions: args.unsafeFakerExpressions,
     },
     callbacks: {
       onGenerate: () => {
@@ -43,6 +45,10 @@ function renderPopulationActionsStory(args) {
       onGenerateSchemaFromGrid: () => {
         args.onGenerateSchemaFromGrid?.();
         result.textContent = 'action:generate-schema';
+      },
+      onUnsafeFakerExpressionsChange: (isEnabled) => {
+        args.onUnsafeFakerExpressionsChange?.(isEnabled);
+        result.textContent = `risky-faker:${isEnabled}`;
       },
     },
   });
@@ -69,7 +75,7 @@ const meta = {
         ),
       description: {
         component:
-          'PopulationActions is the reusable action cluster shared by the app test-data panel and the generator controls. It owns the Generate action plus an optional secondary combination action, with host-configured labels and help tippies for each action.',
+          'PopulationActions is the reusable action cluster shared by the app test-data panel and the generator controls. It owns the Generate action, the app-side risky Faker generation setting when enabled by the host, and an optional secondary combination action, with host-configured labels and help tippies for each action.',
       },
     },
   },
@@ -83,9 +89,12 @@ const meta = {
       '<p>Generate data from the current schema directly into the grid.</p><p><a class="helplink" href="/docs/test-data/test-data-generation" target="anywaydatadocs">Test-data generation docs</a></p>',
     generatePairwiseHelpHtml:
       '<p>Generate n-wise combinations from enum columns in the current schema directly into the grid.</p><p><a class="helplink" href="/docs/test-data/n-wise-testing" target="_blank" rel="noopener noreferrer">N-wise generation docs</a></p>',
+    unsafeFakerExpressionsVisible: true,
+    unsafeFakerExpressions: true,
     onGenerate: fn(),
     onGeneratePairwise: fn(),
     onGenerateSchemaFromGrid: fn(),
+    onUnsafeFakerExpressionsChange: fn(),
   },
   argTypes: {
     pairwiseVisible: {
@@ -116,6 +125,14 @@ const meta = {
       control: 'text',
       description: 'Raw HTML used as the secondary action help tippy content, including links.',
     },
+    unsafeFakerExpressionsVisible: {
+      control: 'boolean',
+      description: 'Shows the app-side generation settings cog before the Generate help tippy.',
+    },
+    unsafeFakerExpressions: {
+      control: 'boolean',
+      description: 'Whether browser generation allows expression-style Faker helper arguments.',
+    },
     onGenerate: {
       description: 'Storybook action fired when the primary Generate button is clicked.',
       table: { category: 'Events' },
@@ -126,6 +143,10 @@ const meta = {
     },
     onGenerateSchemaFromGrid: {
       description: 'Storybook action fired when the Grid to Enum Schema button is clicked.',
+      table: { category: 'Events' },
+    },
+    onUnsafeFakerExpressionsChange: {
+      description: 'Storybook action fired when the risky Faker setting changes.',
       table: { category: 'Events' },
     },
   },
@@ -140,7 +161,7 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the default app-style action cluster with the generator-style icon button and a host-configured help tippy that talks about generating into the grid. Click **Generate** and confirm the story log updates.',
+          'Shows the default app-style action cluster with the generation settings cog beside Generate and a host-configured help tippy that talks about generating into the grid. Open settings, uncheck allow risky faker, and confirm the setting event; click **Generate** to confirm the main action still fires.',
       },
     },
   },
@@ -149,7 +170,13 @@ export const Default = {
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toBeEnabled();
     await expect(canvas.queryByRole('button', { name: 'Generate Combinations' })).toBeNull();
     await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
+    await expect(canvas.getByRole('button', { name: 'Generation settings' })).toHaveAttribute('aria-expanded', 'false');
     await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(2);
+    await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
+    await expect(canvas.getByRole('checkbox', { name: 'allow risky faker' })).toBeChecked();
+    await expect(canvas.getByRole('button', { name: 'Show risky Faker help' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('checkbox', { name: 'allow risky faker' }));
+    await expect(canvas.getByText('risky-faker:false')).toBeVisible();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate', exact: true }));
     await expect(canvas.getByText('action:generate')).toBeVisible();
   },
@@ -174,6 +201,8 @@ export const PairwiseAvailable = {
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeEnabled();
     await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
     await expect(canvas.getAllByRole('button', { name: /show .* help/i })).toHaveLength(3);
+    await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
+    await expect(canvas.getByRole('checkbox', { name: 'allow risky faker' })).toBeChecked();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate Combinations' }));
     await expect(canvas.getByText('action:generate-secondary')).toBeVisible();
   },
@@ -199,6 +228,8 @@ export const BusyStates = {
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Generate Combinations' })).toBeDisabled();
     await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeEnabled();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
+    await expect(canvas.getByRole('checkbox', { name: 'allow risky faker' })).toBeChecked();
     await expect(canvas.getByRole('button', { name: 'Generate', exact: true })).toHaveAttribute(
       'aria-disabled',
       'true'

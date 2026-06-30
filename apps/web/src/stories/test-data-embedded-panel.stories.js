@@ -124,6 +124,7 @@ function renderDataPopulationPanelStory(args) {
         normalizeOnInput: true,
       },
       schemaDefinitionProps: createSchemaDefinitionProps(schemaTextSyncState),
+      unsafeFakerExpressions: args.unsafeFakerExpressions,
     },
     callbacks: {
       onGenerate: () => {
@@ -178,6 +179,7 @@ const meta = {
     selectedMode: 'new-table',
     pairwiseVisible: false,
     rowCount: 1,
+    unsafeFakerExpressions: true,
     schemaRows: [],
     textMode: false,
   },
@@ -194,6 +196,10 @@ const meta = {
     rowCount: {
       control: 'number',
       description: 'Initial count shown in the shared row-count control.',
+    },
+    unsafeFakerExpressions: {
+      control: 'boolean',
+      description: 'Initial browser generation setting for expression-style Faker helper arguments.',
     },
     schemaRows: {
       control: false,
@@ -214,13 +220,15 @@ export const NewTableMode = {
     docs: {
       description: {
         story:
-          'Shows the embedded panel in its default new-table mode. Review the shared row-count control, schema editor, and primary Generate action without combinations generation enabled. Try Generate to confirm the composed panel callback fires through the interaction log.',
+          'Shows the embedded panel in its default new-table mode. Review the generation settings cog, shared row-count control, schema editor, and primary Generate action without combinations generation enabled. Open settings to inspect allow risky faker, then try Generate to confirm the composed panel callback fires through the interaction log.',
       },
     },
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
+    await expect(canvas.getByRole('checkbox', { name: 'allow risky faker' })).toBeChecked();
     await expect(canvas.getByLabelText('How Many?')).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
     await expect(canvas.queryByRole('button', { name: 'Generate Combinations' })).toBeNull();

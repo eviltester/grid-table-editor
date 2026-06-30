@@ -57,8 +57,41 @@ describe('ui-generation-session-service', () => {
     expect(createGenerationSessionFn).toHaveBeenCalledWith(
       expect.objectContaining({
         textSpec: 'Status\nenum(open,closed)\n\nIF [Status] = "open" THEN [Status] = "closed" ENDIF',
+        unsafeFakerExpressions: true,
       })
     );
+  });
+
+  test('createSessionContext passes the current unsafe faker setting into generation sessions', () => {
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      diagnostics: {},
+    }));
+    let unsafeFakerExpressions = false;
+
+    const service = createUiGenerationSessionService({
+      getValidatedSchemaState: () => ({
+        errors: [],
+        rows: [{ name: 'Sentence', sourceType: 'faker', command: 'helpers.mustache', params: '("x")' }],
+      }),
+      getSchemaText: () => '',
+      schemaRowsToSpec: () => 'Sentence\nhelpers.mustache("x")',
+      schemaSource: 'test',
+      GenericDataTableClass: FakeGenericDataTable,
+      CombinationsTestDataGeneratorClass: class {},
+      createGenerationSessionFn,
+      getUnsafeFakerExpressions: () => unsafeFakerExpressions,
+      faker: {},
+      RandExp: function RandExp() {},
+    });
+
+    service.createSessionContext();
+    unsafeFakerExpressions = true;
+    service.createSessionContext();
+
+    expect(createGenerationSessionFn.mock.calls[0][0].unsafeFakerExpressions).toBe(false);
+    expect(createGenerationSessionFn.mock.calls[1][0].unsafeFakerExpressions).toBe(true);
   });
 
   test('counts domain datatype.enum rows as enum-capable', () => {

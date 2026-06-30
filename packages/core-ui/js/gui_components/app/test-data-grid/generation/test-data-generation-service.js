@@ -62,6 +62,7 @@ function createTestDataGenerationService({
   setGenerateBusy = () => {},
   setGeneratePairwiseBusy = () => {},
   setPairwiseVisible = () => {},
+  getUnsafeFakerExpressions = () => true,
   requestConfirm,
   recordLastUsedSchema = () => null,
   createGenerationSessionFn = createGenerationSession,
@@ -93,6 +94,9 @@ function createTestDataGenerationService({
       TestDataGeneratorClass,
       faker,
       RandExp,
+      generatorOptions: {
+        unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
+      },
       buildRuleSpecFromSchemaRow,
       extractLiteralValueFromRuleSpec,
       extractRegexValueFromRuleSpec,
@@ -119,6 +123,7 @@ function createTestDataGenerationService({
     CombinationsTestDataGeneratorClass,
     createConfiguredGenerator,
     createGenerationSessionFn,
+    getUnsafeFakerExpressions,
     faker,
     RandExp,
   });

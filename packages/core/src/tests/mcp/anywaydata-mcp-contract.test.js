@@ -54,6 +54,18 @@ describe('AnyWayData MCP contract', () => {
     });
   });
 
+  test('allows unsafe faker expressions when explicitly requested', () => {
+    const result = executeAnyWayDataMcpTool('generate_data_from_spec', {
+      textSpec: 'Sentence\nhelpers.mustache("Hello {{name}}", { name: () => "Ada" })',
+      rowCount: 1,
+      outputFormat: 'json',
+      unsafeFakerExpressions: true,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(result.rows).toEqual([['Hello Ada']]);
+  });
+
   test('preserves session diagnostics for invalid generation specs', () => {
     const result = executeAnyWayDataMcpTool('generate_data_from_spec', {
       textSpec: 'Name',
@@ -79,6 +91,8 @@ describe('AnyWayData MCP contract', () => {
       expect(tool.inputSchema.properties.options.properties).toHaveProperty('delimiter');
       expect(tool.inputSchema.properties.options.properties).not.toHaveProperty('outputFormat');
       expect(tool.inputSchema.properties.options.properties).not.toHaveProperty('options');
+      expect(tool.inputSchema.properties.unsafeFakerExpressions.type).toBe('boolean');
+      expect(tool.inputSchema.properties.unsafeFakerExpressions.description).toContain('helpers.*');
     }
   });
 

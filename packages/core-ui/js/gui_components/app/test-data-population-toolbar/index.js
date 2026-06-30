@@ -71,6 +71,9 @@ function createTestDataPopulationToolbarComponent({
       controller.updateProps({ generateSchemaBusy: isBusy === true });
       view.setGenerateSchemaBusy(isBusy);
     },
+    getUnsafeFakerExpressions() {
+      return view.getUnsafeFakerExpressions();
+    },
     getState() {
       return controller.getState();
     },

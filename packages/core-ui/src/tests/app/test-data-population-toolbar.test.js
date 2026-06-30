@@ -63,12 +63,18 @@ describe('TestDataPopulationToolbar', () => {
     const generateButton = toolbarQueries.getByRole('button', { name: /^generate$/i });
     const generateSchemaButton = toolbarQueries.getByRole('button', { name: /^grid to enum schema$/i });
     const rowCountInput = toolbarQueries.getByRole('spinbutton', { name: 'How Many?' });
+    const generationSettingsButton = toolbarQueries.getByRole('button', { name: 'Generation settings' });
     const generatePairwiseWrapper = toolbarRoot.querySelector('[data-role="generate-pairwise-button-wrapper"]');
 
     expect(toolbarRoot).not.toBeNull();
     expect(toolbarRoot.classList.contains('data-population-toolbar')).toBe(true);
     expect(generatePairwiseWrapper.style.display).toBe('none');
     expect(toolbarQueries.getByRole('radio', { name: 'New Table' }).checked).toBe(true);
+    expect(generationSettingsButton.getAttribute('aria-expanded')).toBe('false');
+    generationSettingsButton.click();
+    const riskyFakerCheckbox = toolbarQueries.getByRole('checkbox', { name: 'allow risky faker' });
+    expect(riskyFakerCheckbox.checked).toBe(true);
+    expect(component.getUnsafeFakerExpressions()).toBe(true);
 
     component.setPairwiseVisible(true);
     expect(generatePairwiseWrapper.style.display).toBe('inline-flex');
@@ -93,6 +99,10 @@ describe('TestDataPopulationToolbar', () => {
     generateSchemaButton.click();
     expect(onGenerate).toHaveBeenCalled();
     expect(onGenerateSchemaFromGrid).toHaveBeenCalled();
+
+    riskyFakerCheckbox.checked = false;
+    riskyFakerCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(component.getUnsafeFakerExpressions()).toBe(false);
 
     const amendSelected = toolbarQueries.getByRole('radio', { name: 'Amend Selected' });
     amendSelected.checked = true;

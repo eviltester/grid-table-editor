@@ -23,6 +23,7 @@ function createGeneratorSchemaGenerationService({
   schemaTextToDataRules,
   getSchemaText,
   TestDataGeneratorClass,
+  getUnsafeFakerExpressions = () => true,
   faker,
   RandExp,
 } = {}) {
@@ -55,6 +56,9 @@ function createGeneratorSchemaGenerationService({
       TestDataGeneratorClass,
       faker,
       RandExp,
+      generatorOptions: {
+        unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
+      },
       buildRuleSpecFromSchemaRow,
       extractLiteralValueFromRuleSpec,
       extractRegexValueFromRuleSpec,
@@ -80,6 +84,7 @@ function createGeneratorSchemaGenerationService({
     GenericDataTableClass: GenericDataTable,
     CombinationsTestDataGeneratorClass: CombinationsTestDataGenerator,
     createConfiguredGenerator,
+    getUnsafeFakerExpressions,
     faker,
     RandExp,
   });

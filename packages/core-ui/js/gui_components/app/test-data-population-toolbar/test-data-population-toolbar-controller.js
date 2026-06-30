@@ -10,6 +10,7 @@ class TestDataPopulationToolbarController {
       generateBusy: props.generateBusy === true,
       generatePairwiseBusy: props.generatePairwiseBusy === true,
       generateSchemaBusy: props.generateSchemaBusy === true,
+      unsafeFakerExpressions: props.unsafeFakerExpressions === true,
     };
   }
 
@@ -26,6 +27,7 @@ class TestDataPopulationToolbarController {
       generateBusy: nextProps.generateBusy ?? this.state.generateBusy,
       generatePairwiseBusy: nextProps.generatePairwiseBusy ?? this.state.generatePairwiseBusy,
       generateSchemaBusy: nextProps.generateSchemaBusy ?? this.state.generateSchemaBusy,
+      unsafeFakerExpressions: nextProps.unsafeFakerExpressions ?? this.state.unsafeFakerExpressions,
     };
   }
 
@@ -44,6 +46,14 @@ class TestDataPopulationToolbarController {
       selectedMode: mode,
     };
     this.callbacks.onModeChange?.(mode);
+  }
+
+  handleUnsafeFakerExpressionsChange(isEnabled) {
+    this.state = {
+      ...this.state,
+      unsafeFakerExpressions: isEnabled === true,
+    };
+    this.callbacks.onUnsafeFakerExpressionsChange?.(this.state.unsafeFakerExpressions);
   }
 }
 

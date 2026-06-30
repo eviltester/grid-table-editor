@@ -230,6 +230,12 @@ function createGenerateDataTool() {
           type: 'boolean',
           description: 'Generate pairwise combinations for ENUM fields (requires at least 2 ENUM rules).',
         },
+        unsafeFakerExpressions: {
+          type: 'boolean',
+          default: false,
+          description:
+            'Allow expression-style faker arguments such as callbacks in helpers.* commands. Unsafe for untrusted input.',
+        },
       },
       required: ['textSpec', 'rowCount', 'outputFormat'],
     },
@@ -268,6 +274,12 @@ function createAmendDataTool() {
         stream: {
           type: 'boolean',
           description: 'Accepted for compatibility and ignored for amend operation (always buffered).',
+        },
+        unsafeFakerExpressions: {
+          type: 'boolean',
+          default: false,
+          description:
+            'Allow expression-style faker arguments such as callbacks in helpers.* commands. Unsafe for untrusted input.',
         },
       },
       required: ['textSpec', 'inputData', 'inputFormat', 'outputFormat'],
@@ -342,11 +354,12 @@ function executeGenerateOrAmendTool(toolName, args = {}) {
     return textSpecLengthError;
   }
 
+  const unsafeFakerExpressions = normalizedArgs.unsafeFakerExpressions === true;
   const safeSession = createGenerationSession({
     textSpec: normalizedArgs.textSpec,
     seed: normalizedArgs.seed,
-    unsafeFakerExpressions: false,
-    safeFakerRules: true,
+    unsafeFakerExpressions,
+    safeFakerRules: !unsafeFakerExpressions,
     schemaSource: 'mcp',
   });
 
@@ -359,7 +372,8 @@ function executeGenerateOrAmendTool(toolName, args = {}) {
     : toolName === 'amend_data_from_spec'
       ? amendFromTextSpecAndData({
           ...normalizedArgs,
-          safeFakerRules: true,
+          unsafeFakerExpressions,
+          safeFakerRules: !unsafeFakerExpressions,
         })
       : normalizedArgs.pairwise
         ? safeSession.generatePairwise({

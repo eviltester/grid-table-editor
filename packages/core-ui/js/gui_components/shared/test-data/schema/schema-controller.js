@@ -12,12 +12,21 @@ function isRecoverableSchemaParseError(error) {
   return error?.code === 'compiler_validation_error';
 }
 
-function parseSchemaTextToRows({ schemaTextToDataRules, schemaText, faker, RandExp, mapRuleToRow, previousRows = [] }) {
+function parseSchemaTextToRows({
+  schemaTextToDataRules,
+  schemaText,
+  faker,
+  RandExp,
+  mapRuleToRow,
+  previousRows = [],
+  unsafeFakerExpressions = false,
+}) {
   const parseResult = parseSchemaText({
     schemaTextToDataRules,
     schemaText,
     faker,
     RandExp,
+    unsafeFakerExpressions,
   });
 
   const tokens = Array.isArray(parseResult.schemaTokens) ? parseResult.schemaTokens : [];
@@ -136,6 +145,7 @@ function createSchemaEditingSession({
   RandExp,
   mapRuleToRow,
   schemaRowsToSpecWithTokens,
+  getUnsafeFakerExpressions = () => false,
   initialRows,
   initialTokens = [],
   initialConstraints = [],
@@ -251,6 +261,7 @@ function createSchemaEditingSession({
       RandExp,
       mapRuleToRow,
       previousRows: state.rows,
+      unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
     });
   }
 

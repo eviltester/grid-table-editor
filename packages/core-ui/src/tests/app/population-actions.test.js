@@ -106,6 +106,95 @@ describe('PopulationActions', () => {
     component.destroy();
   });
 
+  test('opens generation settings, updates the browser unsafe faker option, and closes on outside click', () => {
+    const onUnsafeFakerExpressionsChange = jest.fn();
+    const onGenerate = jest.fn();
+
+    const component = createPopulationActionsComponent({
+      root: document.getElementById('root'),
+      props: {
+        unsafeFakerExpressionsVisible: true,
+      },
+      callbacks: {
+        onGenerate,
+        onUnsafeFakerExpressionsChange,
+      },
+    });
+
+    const settingsButton = document.querySelector('[data-role="generation-settings-button"]');
+    const settingsDialog = document.querySelector('[data-role="generation-settings-dialog"]');
+
+    expect(settingsButton).not.toBeNull();
+    expect(settingsButton.getAttribute('aria-expanded')).toBe('false');
+    expect(settingsDialog.hidden).toBe(true);
+
+    settingsButton.click();
+
+    const checkbox = document.querySelector('[data-role="unsafe-faker-expressions-checkbox"]');
+    const optionHelp = settingsDialog.querySelector('[data-help-role="help-icon"]');
+
+    expect(checkbox).not.toBeNull();
+    expect(settingsButton.getAttribute('aria-expanded')).toBe('true');
+    expect(settingsDialog.hidden).toBe(false);
+    expect(optionHelp.getAttribute('data-help-text')).toContain('helpers.mustache');
+    expect(optionHelp.getAttribute('data-help-text')).toContain('https://anywaydata.com/docs/test-data/faker/helpers');
+    expect(optionHelp.getAttribute('data-help-text')).not.toContain('href="/docs/test-data/faker/helpers"');
+    expect(checkbox.checked).toBe(false);
+    expect(component.getUnsafeFakerExpressions()).toBe(false);
+
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(onUnsafeFakerExpressionsChange).toHaveBeenCalledWith(true);
+    expect(component.getUnsafeFakerExpressions()).toBe(true);
+
+    component.setUnsafeFakerExpressions(false);
+    expect(checkbox.checked).toBe(false);
+
+    document.querySelector('[data-role="generation-settings-close"]').click();
+    expect(settingsDialog.hidden).toBe(true);
+    expect(settingsButton.getAttribute('aria-expanded')).toBe('false');
+
+    settingsButton.click();
+    expect(settingsDialog.hidden).toBe(false);
+    document.body.click();
+    expect(settingsDialog.hidden).toBe(true);
+    expect(settingsButton.getAttribute('aria-expanded')).toBe('false');
+
+    settingsButton.click();
+    expect(settingsDialog.hidden).toBe(false);
+    document.querySelector('[data-role="generate-button"]').click();
+    expect(onGenerate).toHaveBeenCalledTimes(1);
+    expect(settingsDialog.hidden).toBe(true);
+    expect(settingsButton.getAttribute('aria-expanded')).toBe('false');
+
+    component.destroy();
+  });
+
+  test('can show and hide generation settings after mount', () => {
+    const component = createPopulationActionsComponent({
+      root: document.getElementById('root'),
+      props: {
+        unsafeFakerExpressionsVisible: false,
+      },
+    });
+
+    expect(document.querySelector('[data-role="generation-settings-button"]')).toBeNull();
+
+    component.update({ unsafeFakerExpressionsVisible: true });
+    const settingsButton = document.querySelector('[data-role="generation-settings-button"]');
+    expect(settingsButton).not.toBeNull();
+
+    settingsButton.click();
+    expect(document.querySelector('[data-role="generation-settings-dialog"]').hidden).toBe(false);
+
+    component.update({ unsafeFakerExpressionsVisible: false });
+    expect(document.querySelector('[data-role="generation-settings-button"]')).toBeNull();
+    expect(document.querySelector('[data-role="generation-settings-dialog"]')).toBeNull();
+
+    component.destroy();
+  });
+
   test('supports two instances in one document with distinct ids', () => {
     const onGenerateA = jest.fn();
     const onGenerateB = jest.fn();

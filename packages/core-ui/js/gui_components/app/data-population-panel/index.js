@@ -106,6 +106,9 @@ function createDataPopulationPanelComponent({ root, props = {}, services = {}, c
     getSchemaText() {
       return view.getSchemaDefinition()?.getSchemaText?.() || '';
     },
+    getUnsafeFakerExpressions() {
+      return view.getUnsafeFakerExpressions();
+    },
     replaceSchemaRows(rows) {
       return view.getSchemaDefinition()?.replaceRows?.(rows);
     },

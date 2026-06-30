@@ -93,6 +93,7 @@ class SharedSchemaDefinitionController {
       onRowsChanged: this.callbacks.onRowsChanged,
       onSchemaTextChanged: this.callbacks.onSchemaTextChanged,
       validateSchemaRows: this.props.validateSchemaRows,
+      getUnsafeFakerExpressions: this.props.getUnsafeFakerExpressions,
       updatePairwiseButtonVisibility: this.props.updatePairwiseButtonVisibility,
       updateHelpHints: this.props.updateHelpHints,
       timerApi: this.props.timerApi,

@@ -154,6 +154,7 @@ Generation mode behavior:
 
 - REST generation endpoints currently run in buffered mode.
 - Stream-mode generation behavior is available via the core helper/CLI paths, not via `/v1/generate`.
+- REST generation endpoints are safe-by-default for faker helper arguments. To allow unsafe helper variants such as `helpers.mustache("Hello {{name}}", { name: () => "Ada" })`, send `unsafeFakerExpressions: true` in the `/v1/generate` or `/v1/generate/amend` JSON body, or pass `?unsafeFakerExpressions=true` to `/v1/generate/fromschema`. Only enable this for trusted schemas.
 
 ## Schema Formatting
 
@@ -208,6 +209,21 @@ curl -X POST "http://localhost:3000/v1/generate/fromschema?outputFormat=markdown
   -H "Content-Type: text/plain" \
   --data-binary $'# markdown sample\n\nName\nBob\n\n# numeric id\nId\n1'
 ```
+
+Generate with a trusted unsafe helper variant:
+
+```bash
+curl -X POST http://localhost:3000/v1/generate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "textSpec": "Greeting\nhelpers.mustache(\"Hello {{name}}\", { name: () => \"Ada\" })",
+    "rowCount": 1,
+    "outputFormat": "json",
+    "unsafeFakerExpressions": true
+  }'
+```
+
+For more helper examples and the safe/unsafe split, see [Faker Helpers](/docs/test-data/faker/helpers).
 
 Amend imported data (CSV input to tab-delimited output):
 
@@ -270,4 +286,3 @@ curl http://localhost:3000/openapi.json
 
 - If you run on a non-default port, replace `3000` in all examples.
 - For MCP tool integrations, see [MCP](/docs/interfaces-and-deployment/mcp).
-

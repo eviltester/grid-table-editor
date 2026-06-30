@@ -19,8 +19,11 @@ function createGeneratorPageDefaults() {
         dataRulesToSchemaText,
       });
     },
-    validateSchemaRows(schemaRows) {
-      return validateSchemaRowsHelper({ schemaRows });
+    validateSchemaRows(schemaRows, validationOptions = {}) {
+      return validateSchemaRowsHelper({
+        schemaRows,
+        unsafeFakerExpressions: validationOptions.unsafeFakerExpressions === true,
+      });
     },
     dataRulesToSchemaText,
     sampleSchemaText: GENERATOR_DEFAULT_EXAMPLE_SCHEMA_TEXT,

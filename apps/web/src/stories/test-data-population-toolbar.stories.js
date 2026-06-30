@@ -28,6 +28,7 @@ function renderToolbarStory(args) {
       generateBusy: args.generateBusy,
       generatePairwiseBusy: args.generatePairwiseBusy,
       generateSchemaBusy: args.generateSchemaBusy,
+      unsafeFakerExpressions: args.unsafeFakerExpressions,
       modeOptions: [
         { value: 'new-table', label: 'New Table' },
         { value: 'amend-table', label: 'Amend Table' },
@@ -58,6 +59,10 @@ function renderToolbarStory(args) {
         args.onModeChange?.(mode);
         log.textContent = `selected:${mode}`;
       },
+      onUnsafeFakerExpressionsChange: (isEnabled) => {
+        args.onUnsafeFakerExpressionsChange?.(isEnabled);
+        log.textContent = `unsafe-faker:${isEnabled}`;
+      },
     },
   });
 
@@ -83,7 +88,7 @@ const meta = {
         ),
       description: {
         component:
-          'TestDataPopulationToolbar is the composed MVC surface for the app-side generation actions, row count, and mode selector. Storybook now documents this visible layout seam directly instead of only through the full test-data panel.',
+          'TestDataPopulationToolbar is the composed MVC surface for the app-side generation actions, generation settings, row count, and mode selector. Storybook now documents this visible layout seam directly instead of only through the full test-data panel.',
       },
     },
   },
@@ -93,12 +98,14 @@ const meta = {
     generateBusy: false,
     generatePairwiseBusy: false,
     generateSchemaBusy: false,
+    unsafeFakerExpressions: false,
     rowCount: 1,
     maxWidth: '',
     onGenerate: fn(),
     onGenerateCombinations: fn(),
     onGenerateSchema: fn(),
     onModeChange: fn(),
+    onUnsafeFakerExpressionsChange: fn(),
   },
   argTypes: {
     selectedMode: {
@@ -122,6 +129,10 @@ const meta = {
       control: 'boolean',
       description: 'Disables the Grid to Enum Schema action when true.',
     },
+    unsafeFakerExpressions: {
+      control: 'boolean',
+      description: 'Initial browser generation setting for expression-style Faker helper arguments.',
+    },
     rowCount: {
       control: 'number',
       description: 'Initial count shown by the shared row-count control.',
@@ -141,7 +152,7 @@ export const Default = {
     docs: {
       description: {
         story:
-          'Shows the default horizontal toolbar composition: Generate action, row count, and mode selector on one line. Try **Generate** and confirm the log updates without needing the larger schema editor panel around it.',
+          'Shows the default horizontal toolbar composition: generation settings cog, Generate action, row count, and mode selector on one line. Open settings to review allow unsafe faker, then try **Generate** and confirm the log updates without needing the larger schema editor panel around it.',
       },
     },
   },
@@ -149,6 +160,10 @@ export const Default = {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button', { name: 'Generate' })).toBeVisible();
     await expect(canvas.getByRole('button', { name: 'Grid to Enum Schema' })).toBeVisible();
+    await userEvent.click(canvas.getByRole('button', { name: 'Generation settings' }));
+    await expect(canvas.getByRole('checkbox', { name: 'allow unsafe faker' })).not.toBeChecked();
+    await userEvent.click(canvas.getByRole('checkbox', { name: 'allow unsafe faker' }));
+    await expect(canvas.getByText('unsafe-faker:true')).toBeVisible();
     await expect(canvas.getByRole('spinbutton', { name: 'How Many?' })).toHaveValue(1);
     await expect(canvas.getByRole('radio', { name: 'New Table' })).toBeChecked();
     await userEvent.click(canvas.getByRole('button', { name: 'Generate' }));

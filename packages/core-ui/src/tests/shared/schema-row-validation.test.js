@@ -135,6 +135,27 @@ describe('schema-row-validation', () => {
         message: expect.stringContaining('Unsafe faker rule syntax detected'),
       }),
     ]);
+    expect(issues[0].message).toContain("Configure in Test Data Settings 'allow unsafe faker'.");
+  });
+
+  test('allows unsafe faker semantic validation when explicitly opted in', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Choice',
+        sourceType: 'faker',
+        command: 'helpers.fake',
+        params: '(faker.person.firstName())',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+        unsafeFakerExpressions: true,
+      }
+    );
+
+    expect(issues).toEqual([]);
   });
 
   test('reports malformed helpers.arrayElement params with array guidance', () => {

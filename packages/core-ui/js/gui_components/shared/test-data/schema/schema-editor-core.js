@@ -104,7 +104,11 @@ function schemaRowsToSpecWithTokens({
   return renderResult.text;
 }
 
-function validateSchemaRows({ schemaRows = [], schemaRowsToDataRules }) {
+function isUnsafeFakerRuleIssue(error) {
+  return error?.reasonCode === 'unsafe_faker_rule';
+}
+
+function validateSchemaRows({ schemaRows = [], schemaRowsToDataRules, unsafeFakerExpressions = false }) {
   const annotatedRows = annotateSchemaRowsWithValidation(schemaRows);
   const result = schemaRowsToDataRules({ schemaRows: annotatedRows });
   const rowErrors = collectSchemaRowValidationErrors(annotatedRows);
@@ -115,7 +119,9 @@ function validateSchemaRows({ schemaRows = [], schemaRowsToDataRules }) {
           candidate?.code === error?.code && candidate?.line === error?.line && candidate?.message === error?.message
       ) === index
   );
-  return { errors: dedupedErrors, rows: annotatedRows };
+  const errors =
+    unsafeFakerExpressions === true ? dedupedErrors.filter((error) => !isUnsafeFakerRuleIssue(error)) : dedupedErrors;
+  return { errors, rows: annotatedRows };
 }
 
 export {

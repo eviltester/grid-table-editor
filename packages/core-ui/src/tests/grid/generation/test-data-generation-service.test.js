@@ -269,6 +269,157 @@ describe('test-data-generation-service', () => {
     );
   });
 
+  test('generateTestData passes the browser unsafe faker setting into generation sessions', async () => {
+    const createGenerationSessionFn = jest.fn(() => ({
+      isValid: () => true,
+      getErrors: () => [],
+      generateRows: async () => ({
+        ok: true,
+        headers: ['Sentence'],
+        rows: [['I found 1 instances.']],
+        diagnostics: { rowCount: 1 },
+      }),
+    }));
+
+    const service = createTestDataGenerationService({
+      schemaTextToDataRules: jest.fn(),
+      TestDataGeneratorClass: class {},
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class FakeGenericDataTable {
+        constructor() {
+          this.headers = [];
+          this.rows = [];
+        }
+        setHeaders(headers) {
+          this.headers = headers;
+        }
+        appendDataRow(row) {
+          this.rows.push(row);
+        }
+      },
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Sentence\nhelpers.mustache("x", { count: () => `${this.number.int()}` })'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      getSchemaText: () => '',
+      setTestDataStatus: jest.fn(),
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        errors: [],
+        rows: [
+          {
+            name: 'Sentence',
+            sourceType: 'faker',
+            command: 'helpers.mustache',
+            params: '("x", { count: () => `${this.number.int()}` })',
+          },
+        ],
+      })),
+      getImporter: () => ({ setGridFromGenericDataTable: jest.fn() }),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: jest.fn(),
+      getGenerationMode: () => 'new-table',
+      getRequestedRowCount: () => 1,
+      getUnsafeFakerExpressions: () => false,
+      createGenerationSessionFn,
+    });
+
+    await service.generateTestData();
+
+    expect(createGenerationSessionFn).toHaveBeenCalledWith(
+      expect.objectContaining({
+        unsafeFakerExpressions: false,
+      })
+    );
+  });
+
+  test('direct amend generator creation receives the browser unsafe faker setting', async () => {
+    const generatorOptions = [];
+    const gridExtras = {
+      applyGeneratedSchemaAmend: jest.fn(() => ({ amendedRowCount: 1 })),
+    };
+
+    const service = createTestDataGenerationService({
+      schemaTextToDataRules: jest.fn(),
+      TestDataGeneratorClass: class FakeGenerator {
+        constructor(_faker, _RandExp, options) {
+          generatorOptions.push(options);
+          this.compiler = { validate: jest.fn() };
+          this.rulesParser = { testDataRules: { rules: [{ name: 'Sentence' }] } };
+        }
+        importSpec() {}
+        compile() {}
+        testDataRules() {
+          return [{ name: 'Sentence' }];
+        }
+        isValid() {
+          return true;
+        }
+        errors() {
+          return [];
+        }
+        generateHeadersArray() {
+          return ['Sentence'];
+        }
+        generateRow() {
+          return ['I found 1 instances.'];
+        }
+      },
+      PairwiseTestDataGeneratorClass: class {},
+      GenericDataTableClass: class {},
+      TEST_DATA_MODES: {
+        NEW_TABLE: 'new-table',
+        AMEND_TABLE: 'amend-table',
+        AMEND_SELECTED: 'amend-selected',
+      },
+      normaliseCount: () => 1,
+      createTableFromGenerator: jest.fn(),
+      createAmendedTable: jest.fn(),
+      schemaRowsToSpec: jest.fn(() => 'Sentence\nhelpers.mustache("x", { count: () => `${this.number.int()}` })'),
+      faker: {},
+      RandExp: function RandExp() {},
+      debouncer: { clear: jest.fn() },
+      syncSchemaTextFromGridBeforeGenerate: jest.fn(),
+      setTestDataStatus: jest.fn(),
+      setTestDataLoadingStatus: jest.fn(),
+      showSchemaError: jest.fn(),
+      yieldToUi: jest.fn(() => Promise.resolve()),
+      validateCurrentSchemaRows: jest.fn(() => ({
+        errors: [],
+        rows: [
+          {
+            name: 'Sentence',
+            sourceType: 'faker',
+            command: 'helpers.mustache',
+            params: '("x", { count: () => `${this.number.int()}` })',
+          },
+        ],
+      })),
+      getImporter: () => ({ setGridFromGenericDataTable: jest.fn() }),
+      getTextPreviewRenderer: jest.fn(),
+      getMainGridExtras: () => gridExtras,
+      getGenerationMode: () => 'amend-table',
+      getRequestedRowCount: () => 1,
+      getUnsafeFakerExpressions: () => false,
+    });
+
+    await service.generateTestData();
+
+    expect(generatorOptions[0]).toEqual({ unsafeFakerExpressions: false });
+    expect(gridExtras.applyGeneratedSchemaAmend).toHaveBeenCalled();
+  });
+
   test('generatePairwiseTestData validates schema rows once before creating the generator', async () => {
     const validateCurrentSchemaRows = jest.fn(() => ({
       errors: [],

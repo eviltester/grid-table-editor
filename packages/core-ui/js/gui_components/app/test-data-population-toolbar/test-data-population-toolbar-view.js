@@ -68,12 +68,15 @@ class TestDataPopulationToolbarView {
         generateSchemaLabel: 'Grid to Enum Schema',
         generateSchemaHelpHtml: GRID_TO_SCHEMA_HELP_HTML,
         generateSchemaHelpLabel: 'Show grid to enum schema help',
+        unsafeFakerExpressionsVisible: true,
+        unsafeFakerExpressions: state.unsafeFakerExpressions,
         statusVisible: true,
       },
       callbacks: {
         onGenerate: this.callbacks.onGenerate,
         onGeneratePairwise: this.callbacks.onGeneratePairwise,
         onGenerateSchemaFromGrid: this.callbacks.onGenerateSchemaFromGrid,
+        onUnsafeFakerExpressionsChange: (isEnabled) => this.controller.handleUnsafeFakerExpressionsChange(isEnabled),
       },
     });
 
@@ -111,6 +114,8 @@ class TestDataPopulationToolbarView {
       generateSchemaLabel: 'Grid to Enum Schema',
       generateSchemaHelpHtml: GRID_TO_SCHEMA_HELP_HTML,
       generateSchemaHelpLabel: 'Show grid to enum schema help',
+      unsafeFakerExpressionsVisible: true,
+      unsafeFakerExpressions: state.unsafeFakerExpressions,
       statusVisible: true,
       generateSchemaBusy: state.generateSchemaBusy,
     });
@@ -163,6 +168,10 @@ class TestDataPopulationToolbarView {
 
   setGenerateSchemaBusy(isBusy) {
     this.populationActions?.setGenerateSchemaBusy?.(isBusy);
+  }
+
+  getUnsafeFakerExpressions() {
+    return this.populationActions?.getUnsafeFakerExpressions?.() ?? this.controller.getState().unsafeFakerExpressions;
   }
 }
 

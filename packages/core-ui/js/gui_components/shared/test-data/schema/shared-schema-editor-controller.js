@@ -67,6 +67,7 @@ function createSharedSchemaEditorController({
   onRowsChanged,
   onSchemaTextChanged,
   validateSchemaRows,
+  getUnsafeFakerExpressions = () => false,
   updatePairwiseButtonVisibility = () => {},
   updateHelpHints,
   elements = {},
@@ -100,6 +101,7 @@ function createSharedSchemaEditorController({
         buildDataRuleFromSchemaRow,
         dataRulesToSchemaText,
       }),
+    getUnsafeFakerExpressions,
   });
   const getElementByRole = (role) => rootElement?.querySelector?.(`[data-role="${role}"]`);
   const getRowsElement = () => elements.rowsElement || getElementByRole(SCHEMA_ROWS_ROLE);
@@ -226,6 +228,7 @@ function createSharedSchemaEditorController({
       faker,
       RandExp,
       includeBracketGuidance: false,
+      unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
     })
       .map((issue) => ({
         message: issue?.message,
@@ -238,7 +241,9 @@ function createSharedSchemaEditorController({
     if (typeof validateSchemaRows !== 'function') {
       return { rows: session.getRows(), errors: [] };
     }
-    const validation = validateSchemaRows(session.getRows());
+    const validation = validateSchemaRows(session.getRows(), {
+      unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
+    });
     if (Array.isArray(validation?.rows) && validation.rows.length > 0) {
       session.setRows(validation.rows);
     }
@@ -276,6 +281,7 @@ function createSharedSchemaEditorController({
       schemaTextToDataRules,
       faker,
       RandExp,
+      unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
     });
     session.updateRowAtIndex(rowIndex, (row) => ({
       ...row,
@@ -296,6 +302,7 @@ function createSharedSchemaEditorController({
         schemaTextToDataRules,
         faker,
         RandExp,
+        unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
       }),
     }));
     session.setRows(nextRows);
@@ -549,6 +556,7 @@ function createSharedSchemaEditorController({
       faker,
       RandExp,
       previousRows: session.getRows(),
+      unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
       mapRuleToRow: (rule, leadingTextLines = []) => {
         const mapped =
           typeof mapRuleToRow === 'function' ? mapRuleToRow(rule, leadingTextLines) : createBlankRow(leadingTextLines);
@@ -610,6 +618,7 @@ function createSharedSchemaEditorController({
       faker,
       RandExp,
       previousRows: session.getRows(),
+      unsafeFakerExpressions: getUnsafeFakerExpressions() === true,
       mapRuleToRow: (rule, leadingTextLines = []) => {
         const mapped =
           typeof mapRuleToRow === 'function' ? mapRuleToRow(rule, leadingTextLines) : createBlankRow(leadingTextLines);

@@ -12,8 +12,14 @@ import {
 } from './generation-runtime.js';
 import { EnumParser } from '@anywaydata/core/data_generation/utils/enumParser.js';
 
-function createGeneratorFromDataRules({ dataRules = [], TestDataGeneratorClass, faker, RandExp }) {
-  const generator = new TestDataGeneratorClass(faker, RandExp);
+function createGeneratorFromDataRules({
+  dataRules = [],
+  TestDataGeneratorClass,
+  faker,
+  RandExp,
+  generatorOptions = {},
+}) {
+  const generator = new TestDataGeneratorClass(faker, RandExp, generatorOptions);
   generator.rulesParser.testDataRules.rules = dataRules.map((rule) => ({ ...rule }));
   return generator;
 }
@@ -62,8 +68,9 @@ function createConfiguredGeneratorFromSchemaText({
   TestDataGeneratorClass,
   faker,
   RandExp,
+  generatorOptions = {},
 }) {
-  const generator = new TestDataGeneratorClass(faker, RandExp);
+  const generator = new TestDataGeneratorClass(faker, RandExp, generatorOptions);
   if (typeof generator.importSpec === 'function' && typeof generator.compile === 'function') {
     generator.importSpec(String(schemaText ?? ''));
     generator.compile();
@@ -100,6 +107,7 @@ function createConfiguredGeneratorFromSchemaText({
         TestDataGeneratorClass,
         faker,
         RandExp,
+        generatorOptions,
       }),
     errors: [],
     dataRules: parseResult.dataRules,
@@ -116,6 +124,7 @@ function createConfiguredGeneratorFromSchemaRows({
   TestDataGeneratorClass,
   faker,
   RandExp,
+  generatorOptions = {},
   buildRuleSpecFromSchemaRow,
   extractLiteralValueFromRuleSpec,
   extractRegexValueFromRuleSpec,
@@ -147,10 +156,11 @@ function createConfiguredGeneratorFromSchemaRows({
       TestDataGeneratorClass,
       faker,
       RandExp,
+      generatorOptions,
     });
   }
 
-  const generator = new TestDataGeneratorClass(faker, RandExp);
+  const generator = new TestDataGeneratorClass(faker, RandExp, generatorOptions);
   generator.importSpec(schemaRowsToSpec(rows));
   generator.compile();
 

@@ -12,6 +12,18 @@ class PopulationActionsView {
     this.handleGenerate = () => this.controller.handleGenerate();
     this.handleGeneratePairwise = () => this.controller.handleGeneratePairwise();
     this.handleGenerateSchemaFromGrid = () => this.controller.handleGenerateSchemaFromGrid();
+    this.handleUnsafeFakerExpressionsChange = (event) =>
+      this.controller.handleUnsafeFakerExpressionsChange(event.target?.checked === true);
+    this.handleGenerationSettingsClick = () => {
+      this.controller.toggleGenerationSettings();
+      this.render();
+    };
+    this.handleGenerationSettingsClose = () => {
+      this.controller.closeGenerationSettings();
+      this.render();
+    };
+    this.handleGenerationSettingsDocumentClick = (event) => this.handleDocumentClickOutsideGenerationSettings(event);
+    this.isGenerationSettingsDocumentClickBound = false;
   }
 
   buildOptionalIdAttr(id) {
@@ -34,12 +46,69 @@ class PopulationActionsView {
       ></button>`;
   }
 
+  renderGenerationSettings(state) {
+    if (state.unsafeFakerExpressionsVisible !== true) {
+      return '';
+    }
+
+    return `
+      <span class="population-generation-settings">
+        <button
+          type="button"
+          class="population-generation-settings__button"
+          data-role="generation-settings-button"
+          aria-label="${escapeHtml(state.generationSettingsLabel)}"
+          title="${escapeHtml(state.generationSettingsLabel)}"
+          aria-expanded="${state.generationSettingsOpen ? 'true' : 'false'}"
+        >
+          ${renderIconHtml('settings', { className: 'app-icon population-generation-settings__icon' })}
+        </button>
+        <div
+          class="population-generation-settings__dialog"
+          data-role="generation-settings-dialog"
+          role="dialog"
+          aria-label="${escapeHtml(state.generationSettingsLabel)}"
+          ${state.generationSettingsOpen ? '' : 'hidden'}
+        >
+          <div class="population-generation-settings__dialog-head">
+            <strong>${escapeHtml(state.generationSettingsLabel)}</strong>
+            <button
+              type="button"
+              class="population-generation-settings__close"
+              data-role="generation-settings-close"
+              aria-label="Close settings"
+              title="Close settings"
+            >
+              ${renderIconHtml('x', { className: 'app-icon population-generation-settings__close-icon' })}
+            </button>
+          </div>
+          <label class="population-generation-setting" data-role="unsafe-faker-expressions-setting">
+            <input
+              type="checkbox"
+              data-role="unsafe-faker-expressions-checkbox"
+              ${state.unsafeFakerExpressions ? 'checked' : ''}
+            >
+            <span>${escapeHtml(state.unsafeFakerExpressionsLabel)}</span>
+            ${this.renderHelpButton({
+              helpHtml: state.unsafeFakerExpressionsHelpHtml,
+              ariaLabel: state.unsafeFakerExpressionsHelpLabel,
+            })}
+          </label>
+        </div>
+      </span>`;
+  }
+
   mount() {
     if (!this.root) {
       throw new Error('PopulationActionsView requires a root element');
     }
 
     this.root.innerHTML = this.template();
+    this.bindElements();
+    this.render();
+  }
+
+  bindElements() {
     this.generateButton = this.root.querySelector(`[data-role="${this.getRoleName('generateButton')}"]`);
     this.generatePairwiseButton = this.root.querySelector(
       `[data-role="${this.getRoleName('generatePairwiseButton')}"]`
@@ -48,11 +117,37 @@ class PopulationActionsView {
     this.generatePairwiseWrapper = this.root.querySelector(
       `[data-role="${this.getRoleName('generatePairwiseWrapper')}"]`
     );
+    this.generationSettingsButton = this.root.querySelector('[data-role="generation-settings-button"]');
+    this.generationSettingsContainer = this.root.querySelector('.population-generation-settings');
+    this.generationSettingsDialog = this.root.querySelector('[data-role="generation-settings-dialog"]');
+    this.generationSettingsCloseButton = this.root.querySelector('[data-role="generation-settings-close"]');
+    this.unsafeFakerExpressionsCheckbox = this.root.querySelector('[data-role="unsafe-faker-expressions-checkbox"]');
 
     this.generateButton?.addEventListener('click', this.handleGenerate);
     this.generatePairwiseButton?.addEventListener('click', this.handleGeneratePairwise);
     this.generateSchemaButton?.addEventListener('click', this.handleGenerateSchemaFromGrid);
-    this.render();
+    this.generationSettingsButton?.addEventListener('click', this.handleGenerationSettingsClick);
+    this.generationSettingsCloseButton?.addEventListener('click', this.handleGenerationSettingsClose);
+    this.unsafeFakerExpressionsCheckbox?.addEventListener('change', this.handleUnsafeFakerExpressionsChange);
+  }
+
+  unbindElements() {
+    this.generateButton?.removeEventListener('click', this.handleGenerate);
+    this.generatePairwiseButton?.removeEventListener('click', this.handleGeneratePairwise);
+    this.generateSchemaButton?.removeEventListener('click', this.handleGenerateSchemaFromGrid);
+    this.generationSettingsButton?.removeEventListener('click', this.handleGenerationSettingsClick);
+    this.generationSettingsCloseButton?.removeEventListener('click', this.handleGenerationSettingsClose);
+    this.unsafeFakerExpressionsCheckbox?.removeEventListener('change', this.handleUnsafeFakerExpressionsChange);
+  }
+
+  rebuildTemplate() {
+    this.syncGenerationSettingsDocumentClick({
+      unsafeFakerExpressionsVisible: false,
+      generationSettingsOpen: false,
+    });
+    this.unbindElements();
+    this.root.innerHTML = this.template();
+    this.bindElements();
   }
 
   template() {
@@ -64,6 +159,7 @@ class PopulationActionsView {
 
     return `
       <span class="shared-button-with-help">
+        ${this.renderGenerationSettings(state)}
         ${this.renderHelpButton({
           helpHtml: state.generateHelpHtml,
           ariaLabel: state.generateHelpLabel,
@@ -129,8 +225,38 @@ class PopulationActionsView {
     return state.roleNames?.[key] || '';
   }
 
+  handleDocumentClickOutsideGenerationSettings(event) {
+    if (this.controller.getState().generationSettingsOpen !== true) {
+      return;
+    }
+    if (this.generationSettingsContainer?.contains(event.target)) {
+      return;
+    }
+
+    this.controller.closeGenerationSettings();
+    this.render();
+  }
+
+  syncGenerationSettingsDocumentClick(state) {
+    const shouldBind =
+      state.unsafeFakerExpressionsVisible === true && state.generationSettingsOpen === true && this.documentObj;
+    if (shouldBind && !this.isGenerationSettingsDocumentClickBound) {
+      this.documentObj.addEventListener('click', this.handleGenerationSettingsDocumentClick, true);
+      this.isGenerationSettingsDocumentClickBound = true;
+      return;
+    }
+    if (!shouldBind && this.isGenerationSettingsDocumentClickBound) {
+      this.documentObj.removeEventListener('click', this.handleGenerationSettingsDocumentClick, true);
+      this.isGenerationSettingsDocumentClickBound = false;
+    }
+  }
+
   render() {
     const state = this.controller.getState();
+    const hasGenerationSettings = Boolean(this.generationSettingsContainer);
+    if (hasGenerationSettings !== (state.unsafeFakerExpressionsVisible === true)) {
+      this.rebuildTemplate();
+    }
     if (this.generateButton) {
       this.generateButton.disabled = state.generateBusy === true;
       this.generateButton.setAttribute('aria-disabled', state.generateBusy === true ? 'true' : 'false');
@@ -149,13 +275,25 @@ class PopulationActionsView {
     if (this.generatePairwiseWrapper) {
       this.generatePairwiseWrapper.style.display = state.pairwiseVisible ? 'inline-flex' : 'none';
     }
+    if (this.generationSettingsButton) {
+      this.generationSettingsButton.setAttribute('aria-expanded', state.generationSettingsOpen ? 'true' : 'false');
+    }
+    if (this.generationSettingsDialog) {
+      this.generationSettingsDialog.hidden = state.generationSettingsOpen !== true;
+    }
+    if (this.unsafeFakerExpressionsCheckbox) {
+      this.unsafeFakerExpressionsCheckbox.checked = state.unsafeFakerExpressions === true;
+    }
+    this.syncGenerationSettingsDocumentClick(state);
     this.services.updateHelpHints?.();
   }
 
   destroy() {
-    this.generateButton?.removeEventListener('click', this.handleGenerate);
-    this.generatePairwiseButton?.removeEventListener('click', this.handleGeneratePairwise);
-    this.generateSchemaButton?.removeEventListener('click', this.handleGenerateSchemaFromGrid);
+    this.syncGenerationSettingsDocumentClick({
+      unsafeFakerExpressionsVisible: false,
+      generationSettingsOpen: false,
+    });
+    this.unbindElements();
     this.root.replaceChildren();
   }
 }

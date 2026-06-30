@@ -48,6 +48,13 @@ function createPopulationActionsComponent({
       controller.updateProps({ generateSchemaBusy: isBusy === true });
       view.render();
     },
+    setUnsafeFakerExpressions(isEnabled) {
+      controller.updateProps({ unsafeFakerExpressions: isEnabled === true });
+      view.render();
+    },
+    getUnsafeFakerExpressions() {
+      return controller.getState().unsafeFakerExpressions === true;
+    },
     getState() {
       return controller.getState();
     },

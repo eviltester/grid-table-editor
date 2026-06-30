@@ -135,6 +135,7 @@ describe('schema-row-validation', () => {
         message: expect.stringContaining('Unsafe faker rule syntax detected'),
       }),
     ]);
+    expect(issues[0].message).toContain("Configure in Test Data Settings 'allow unsafe faker'.");
   });
 
   test('allows unsafe faker semantic validation when explicitly opted in', () => {

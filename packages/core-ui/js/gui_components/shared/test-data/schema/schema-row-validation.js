@@ -12,6 +12,7 @@ import {
 import { Faker } from '@faker-js/faker';
 import { getKnownFakerCommandsAlphabetical, isForbiddenFakerCommand } from '../../faker-commands.js';
 import { getKnownDomainCommandsAlphabetical } from '../../domain-commands.js';
+import { appendUnsafeFakerUiHint } from './schema-error-text.js';
 
 const KNOWN_FAKER_COMMANDS = new Set(
   getKnownFakerCommandsAlphabetical().map((command) => normaliseFakerCommand(command))
@@ -68,7 +69,7 @@ function isBlankSchemaRow(row) {
   );
 }
 
-function createSemanticValidationMessage(row, errorMessage, rowIndex) {
+function createSemanticValidationMessage(row, errorMessage, rowIndex, reasonCode) {
   const rowNumber = rowIndex + 1;
   const sourceType = normaliseSourceType(row?.sourceType);
   const name = String(row?.name ?? '').trim();
@@ -95,9 +96,9 @@ function createSemanticValidationMessage(row, errorMessage, rowIndex) {
   }
 
   if (sourceType === SOURCE_TYPE_DOMAIN || sourceType === SOURCE_TYPE_FAKER) {
-    return `Row ${rowNumber}: invalid ${sourceType} params - ${detail}`;
+    return appendUnsafeFakerUiHint(`Row ${rowNumber}: invalid ${sourceType} params - ${detail}`, reasonCode);
   }
-  return `Row ${rowNumber}: invalid ${sourceType} value - ${detail}`;
+  return appendUnsafeFakerUiHint(`Row ${rowNumber}: invalid ${sourceType} value - ${detail}`, reasonCode);
 }
 
 function getSemanticValidationField(row) {
@@ -336,7 +337,7 @@ function getSchemaRowSemanticValidationIssues(
         rowIndex,
         code: error?.code || 'semantic_validation_failed',
         field,
-        message: createSemanticValidationMessage(row, error?.message, rowIndex),
+        message: createSemanticValidationMessage(row, error?.message, rowIndex, error?.reasonCode),
         severity: getSemanticValidationSeverity(error),
         reasonCode: error?.reasonCode,
       })

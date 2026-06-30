@@ -1,3 +1,7 @@
+import { buildDocsUrl } from '@anywaydata/site-config';
+
+const DEFAULT_UNSAFE_FAKER_HELP_HTML = `<p>Allows expression-style Faker helper arguments such as functions in helper data objects. Example: <code>helpers.mustache("Hi {{name}}", { name: () => this.person.firstName() })</code>.</p><p>Only use schemas you trust. See <a href="${buildDocsUrl('test-data/faker/helpers')}">Faker Helpers</a>.</p>`;
+
 class PopulationActionsController {
   constructor({ props = {}, callbacks = {} } = {}) {
     this.callbacks = callbacks;
@@ -19,9 +23,7 @@ class PopulationActionsController {
       unsafeFakerExpressionsVisible: props.unsafeFakerExpressionsVisible === true,
       unsafeFakerExpressions: props.unsafeFakerExpressions === true,
       unsafeFakerExpressionsLabel: props.unsafeFakerExpressionsLabel || 'allow unsafe faker',
-      unsafeFakerExpressionsHelpHtml:
-        props.unsafeFakerExpressionsHelpHtml ||
-        '<p>Allows expression-style Faker helper arguments such as functions in helper data objects. Example: <code>helpers.mustache("Hi {{name}}", { name: () => this.person.firstName() })</code>.</p><p>Only use schemas you trust. See <a href="/docs/test-data/faker/helpers">Faker Helpers</a>.</p>',
+      unsafeFakerExpressionsHelpHtml: props.unsafeFakerExpressionsHelpHtml || DEFAULT_UNSAFE_FAKER_HELP_HTML,
       unsafeFakerExpressionsHelpLabel: props.unsafeFakerExpressionsHelpLabel || 'Show unsafe Faker help',
       generationSettingsOpen: props.generationSettingsOpen === true,
       generationSettingsLabel: props.generationSettingsLabel || 'Generation settings',

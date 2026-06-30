@@ -137,7 +137,8 @@ describe('PopulationActions', () => {
     expect(settingsButton.getAttribute('aria-expanded')).toBe('true');
     expect(settingsDialog.hidden).toBe(false);
     expect(optionHelp.getAttribute('data-help-text')).toContain('helpers.mustache');
-    expect(optionHelp.getAttribute('data-help-text')).toContain('/docs/test-data/faker/helpers');
+    expect(optionHelp.getAttribute('data-help-text')).toContain('https://anywaydata.com/docs/test-data/faker/helpers');
+    expect(optionHelp.getAttribute('data-help-text')).not.toContain('href="/docs/test-data/faker/helpers"');
     expect(checkbox.checked).toBe(false);
     expect(component.getUnsafeFakerExpressions()).toBe(false);
 

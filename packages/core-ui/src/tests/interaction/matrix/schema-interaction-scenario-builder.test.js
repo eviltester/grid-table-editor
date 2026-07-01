@@ -16,8 +16,8 @@ import {
   getScenarioExecutionStatus,
 } from './support/schema-interaction-scenario-builder.js';
 
-function isScenarioArgCoverageRequired(command, argName) {
-  return !(command === 'location.zipCode' && argName === 'state');
+function isScenarioArgCoverageRequired(arg) {
+  return arg?.usageExampleSupported !== false;
 }
 
 describe('schema interaction scenario builder', () => {
@@ -87,7 +87,7 @@ describe('schema interaction scenario builder', () => {
       const bucket = byCommand.get(`domain:${command}`);
       expect(bucket.scenarios.length).toBeGreaterThan(0);
       (metadata.args || [])
-        .filter((arg) => isScenarioArgCoverageRequired(command, arg.name))
+        .filter((arg) => isScenarioArgCoverageRequired(arg))
         .forEach((arg) => {
           expect(bucket.coveredArgs.has(arg.name)).toBe(true);
         });

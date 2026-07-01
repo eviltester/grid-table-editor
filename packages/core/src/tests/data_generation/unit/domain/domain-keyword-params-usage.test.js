@@ -1,6 +1,7 @@
 import { DOMAIN_KEYWORDS, executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
 import { faker } from '@faker-js/faker';
 import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
+import { sampleValueForKeywordArg, sampleValueForType } from './domain-keyword-sample-values.test-helper.js';
 
 function setDeepMethod(root, target, fn) {
   const parts = String(target || '')
@@ -47,128 +48,6 @@ function createResultForPath(resultPath) {
   return root;
 }
 
-function sampleValueForType(type) {
-  const allowed = String(type || '')
-    .split('|')
-    .map((entry) => entry.trim());
-  const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
-  const stringLiterals = allowed
-    .filter(
-      (entry) =>
-        !['bigint', 'string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
-        !/^[+-]?\d+(\.\d+)?$/.test(entry)
-    )
-    .map((entry) =>
-      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
-        ? entry.slice(1, -1)
-        : entry
-    );
-
-  if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
-    return numericLiterals[0];
-  }
-  if (stringLiterals.length > 0) return stringLiterals[0];
-
-  if (allowed.includes('bigint')) {
-    return 7;
-  }
-  if (allowed.includes('integer')) {
-    return 7;
-  }
-  if (allowed.includes('number')) {
-    return 7;
-  }
-  if (allowed.includes('regexp')) {
-    return '[A-Z]';
-  }
-  if (allowed.includes('boolean')) {
-    return true;
-  }
-  if (allowed.includes('array')) {
-    return ['a', 'b'];
-  }
-  if (allowed.includes('object')) {
-    return { key: 'value' };
-  }
-  return 'sample';
-}
-
-function sampleValueForKeywordArg(keywordName, argName, typeName) {
-  const key = `${keywordName}.${argName}`;
-  const type = String(typeName || '');
-
-  if (key === 'date.between.from' || key === 'date.betweens.from')
-    return new Date('2020-01-01T00:00:00.000Z').getTime();
-  if (key === 'date.between.to' || key === 'date.betweens.to') return new Date('2020-12-31T00:00:00.000Z').getTime();
-  if (key === 'date.betweens.count') return 3;
-  if (key === 'date.birthdate.min') return 18;
-  if (key === 'date.birthdate.max') return 65;
-  if (key === 'date.birthdate.mode') return 'age';
-  if (key === 'datatype.boolean.probability') return 0.5;
-  if (key === 'airline.flightNumber.length') return 4;
-  if (key === 'image.dataUri.type') return 'svg-base64';
-  if (key === 'internet.httpStatusCode.types') return ['success'];
-  if (key === 'location.zipCode.state') return 'CA';
-  if (key === 'location.zipCode.format') return '#####';
-  if (key === 'system.networkInterface.interfaceType') return 'en';
-  if (key === 'system.networkInterface.interfaceSchema') return 'mac';
-
-  if (key === 'location.latitude.min' || key === 'location.longitude.min') return -10;
-  if (key === 'location.latitude.max' || key === 'location.longitude.max') return 10;
-  if (key === 'location.latitude.precision' || key === 'location.longitude.precision') return 2;
-
-  if (key === 'number.int.min') return 1;
-  if (key === 'number.int.max') return 10;
-  if (key === 'number.int.multipleOf') return 1;
-
-  if (key === 'commerce.price.dec') return 2;
-  if (key === 'commerce.price.min') return 10;
-  if (key === 'commerce.price.max') return 100;
-  if (key === 'finance.iban.countryCode') return 'GB';
-
-  if (key === 'airline.seat.aircraftType') return 'narrowbody';
-  if (key === 'internet.emoji.types') return ['smiley'];
-  if (key === 'internet.jwt.header') return { alg: 'HS256', typ: 'JWT' };
-  if (key === 'internet.jwt.payload') return { iss: 'Acme' };
-  if (key === 'internet.ipv4.cidrBlock') return '192.168.0.0/24';
-  if (key === 'internet.ipv4.network') return 'private-a';
-  if (key === 'finance.bitcoinAddress.network') return 'testnet';
-  if (key === 'internet.password.pattern') return '[A-Za-z0-9]';
-  if (key === 'phone.number.style') return 'human';
-  if (key === 'string.alpha.casing') return 'lower';
-  if (key === 'color.rgb.format') return 'hex';
-  if (key === 'color.cmyk.format') return 'css';
-  if (key === 'color.hsl.format') return 'css';
-  if (key === 'color.hwb.format') return 'css';
-  if (key === 'color.lab.format') return 'css';
-  if (key === 'color.lch.format') return 'css';
-
-  if (argName === 'min') return 1;
-  if (argName === 'max') return 10;
-  if (argName === 'count') return 3;
-  if (argName === 'length') return 5;
-  if (argName === 'lengthMin') return 3;
-  if (argName === 'lengthMax') return 6;
-  if (argName === 'precision') return 2;
-  if (argName === 'dec') return 2;
-  if (argName === 'multipleOf') return 1;
-  if (key === 'commerce.upc.prefix') return '01234';
-  if (argName === 'prefix') return 'pre';
-  if (argName === 'symbol') return '$';
-  if (argName === 'version') return 7;
-  if (argName === 'refDate') return Date.now();
-  if (argName === 'from') return Date.now() - 86400000;
-  if (argName === 'to') return Date.now() + 86400000;
-  if (argName === 'exclude') return ['x', 'y'];
-
-  if (type.includes('integer')) return 7;
-  if (type.includes('number')) return 7;
-  if (type.includes('regexp')) return '[A-Z]';
-  if (type.includes('boolean')) return true;
-  if (type.includes('array')) return ['a', 'b'];
-  return sampleValueForType(type);
-}
-
 function buildValidArgs(keyword) {
   const args = new Array(keyword.help.args.length).fill(undefined);
   for (let index = 0; index < keyword.help.args.length; index += 1) {
@@ -210,9 +89,8 @@ function expectsRuntimeRejection(keywordName, argName) {
   return false;
 }
 
-function shouldSkipRuntimeExecution(keywordName, argName) {
-  if (keywordName === 'location.zipCode' && argName === 'state') return true;
-  return false;
+function shouldSkipRuntimeExecution(argSpec) {
+  return argSpec?.usageExampleSupported === false;
 }
 
 describe('domain keyword parameter usage', () => {
@@ -256,7 +134,7 @@ describe('domain keyword parameter usage', () => {
         const args = applyKeywordExecutionDefaults(keyword, buildValidArgs(keyword));
         args[argIndex] = sampleValueForKeywordArg(keyword.keyword, argSpec.name, argSpec.type);
 
-        if (shouldSkipRuntimeExecution(keyword.keyword, argSpec.name)) {
+        if (shouldSkipRuntimeExecution(argSpec)) {
           return;
         }
 

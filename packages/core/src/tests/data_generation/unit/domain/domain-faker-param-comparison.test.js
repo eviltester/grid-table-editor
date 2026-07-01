@@ -50,6 +50,24 @@ describe('domain faker option param comparison', () => {
     ).toBe(false);
   });
 
+  test('merges option params from overloaded Faker method declarations', async () => {
+    const { extractFakerOptionMethods } = await loadComparisonScript();
+    const modules = extractFakerOptionMethods(`
+      declare class ExampleModule {
+        sample(options?: { first?: string; shared?: boolean }): string;
+        sample(options?: { second?: number; shared?: boolean }): string;
+        sample(value?: string): string;
+      }
+    `);
+
+    expect(modules.get('example').get('sample')).toEqual(
+      expect.objectContaining({
+        optionParams: ['first', 'shared', 'second'],
+        signatures: ['{ first?: string; shared?: boolean }', '{ second?: number; shared?: boolean }'],
+      })
+    );
+  });
+
   test('number.bigInt exposes Faker range params instead of the old value placeholder', async () => {
     const { getFakerOptionParamComparison } = await loadComparisonScript();
     const comparison = getFakerOptionParamComparison();

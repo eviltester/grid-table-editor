@@ -121,6 +121,9 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
           required: arg?.required === true,
           optional: arg?.optional === true || arg?.required === false,
           variadic: arg?.variadic === true,
+          ...(Object.prototype.hasOwnProperty.call(arg || {}, 'usageExampleSupported')
+            ? { usageExampleSupported: arg.usageExampleSupported !== false }
+            : {}),
           description: String(arg?.description || '').trim(),
           example: String(arg?.example || '').trim(),
           ...(Object.prototype.hasOwnProperty.call(arg || {}, 'defaultValue')

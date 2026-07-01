@@ -17,6 +17,7 @@ import {
   getFakerCommandHelp,
 } from '../../../../../js/faker/faker-helper-keyword-definitions.js';
 import { FAKER_HELPER_KEYWORD_DEFINITIONS } from '../../../../../js/faker/faker-helper-keyword-definitions.js';
+import { sampleValueForKeywordArg, valueToInvocationLiteral } from './domain-keyword-sample-values.test-helper.js';
 
 describe('domain keyword catalog', () => {
   test('registers canonical awd.domain keywords for faker commands', () => {
@@ -448,6 +449,17 @@ describe('domain keyword arg validation', () => {
     });
   });
 
+  test('rejects unsupported internet.httpStatusCode types before generation', () => {
+    const keyword = getDomainKeywordByAlias('internet.httpStatusCode');
+    const result = validateDomainKeywordArgs(keyword, [['success', 'redirect']]);
+
+    expect(result).toEqual({
+      ok: false,
+      error:
+        'Invalid keyword arguments: argument "types" contains unsupported value "redirect". Allowed values are informational, success, redirection, clientError, serverError',
+    });
+  });
+
   test('treats comma-separated list metadata as string-compatible for datatype.enum', () => {
     const keyword = getDomainKeywordByAlias('datatype.enum');
     const result = validateDomainKeywordArgs(keyword, ['active,inactive,pending']);
@@ -554,38 +566,6 @@ function setDeepMethod(root, target, fn) {
   node[parts[parts.length - 1]] = fn;
 }
 
-function sampleValueForType(type) {
-  const allowed = String(type || '')
-    .split('|')
-    .map((entry) => entry.trim());
-  const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
-  const stringLiterals = allowed
-    .filter(
-      (entry) =>
-        !['bigint', 'string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
-        !/^[+-]?\d+(\.\d+)?$/.test(entry)
-    )
-    .map((entry) =>
-      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
-        ? entry.slice(1, -1)
-        : entry
-    );
-
-  if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
-    return numericLiterals[0];
-  }
-  if (stringLiterals.length > 0) return stringLiterals[0];
-
-  if (allowed.includes('bigint')) return 7;
-  if (allowed.includes('integer')) return 7;
-  if (allowed.includes('number')) return 7;
-  if (allowed.includes('regexp')) return '[A-Z]';
-  if (allowed.includes('boolean')) return true;
-  if (allowed.includes('array')) return ['x', 'y'];
-  if (allowed.includes('object')) return { key: 'value' };
-  return 'sample';
-}
-
 function normalizeExampleValue(value) {
   if (typeof value === 'bigint') {
     return {
@@ -611,22 +591,6 @@ function normalizeExampleValue(value) {
 
 function serializeExampleValue(value) {
   return JSON.stringify(normalizeExampleValue(value));
-}
-
-function valueToInvocationLiteral(value) {
-  if (typeof value === 'string') {
-    return JSON.stringify(value);
-  }
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-  if (Array.isArray(value)) {
-    return JSON.stringify(value);
-  }
-  if (value && typeof value === 'object') {
-    return JSON.stringify(value);
-  }
-  throw new Error(`Unsupported invocation literal value: ${String(value)}`);
 }
 
 function inferTypeFromExampleLiteral(example) {
@@ -678,7 +642,7 @@ describe('faker keyword invocation styles', () => {
 
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
-      const sampleArgs = keyword.help.args.map((arg) => sampleValueForType(arg.type));
+      const sampleArgs = keyword.help.args.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg.name, arg.type));
       if (keyword.keyword === 'datatype.boolean') {
         sampleArgs[0] = 0.5;
       }

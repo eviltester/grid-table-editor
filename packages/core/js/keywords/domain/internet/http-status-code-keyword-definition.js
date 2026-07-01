@@ -1,5 +1,29 @@
 import { validateNumberValue } from '../../../command-help/command-help-validators.js';
 
+const HTTP_STATUS_CODE_TYPES = ['informational', 'success', 'redirection', 'clientError', 'serverError'];
+
+function validateHttpStatusCodeTypes(_args = [], context = {}) {
+  const types = context?.argsByName?.types;
+  if (typeof types === 'undefined') {
+    return { ok: true };
+  }
+  if (!Array.isArray(types)) {
+    return { ok: true };
+  }
+
+  const invalidType = types.find((type) => !HTTP_STATUS_CODE_TYPES.includes(type));
+  if (typeof invalidType !== 'undefined') {
+    return {
+      ok: false,
+      error: `Invalid keyword arguments: argument "types" contains unsupported value "${String(
+        invalidType
+      )}". Allowed values are ${HTTP_STATUS_CODE_TYPES.join(', ')}`,
+    };
+  }
+
+  return { ok: true };
+}
+
 const INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION = {
   keyword: 'internet.httpStatusCode',
   delegate: {
@@ -12,6 +36,7 @@ const INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/internet',
     fakerDocsUrl: 'https://fakerjs.dev/api/internet',
     validator: validateNumberValue,
+    argsValidator: validateHttpStatusCodeTypes,
     returnType: 'number',
     usageExamples: [
       {

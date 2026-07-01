@@ -67,20 +67,41 @@ function getObjectOptionKeys(optionsSignature) {
 
 function getFakerDeclarationPath() {
   const packageJsonPath = require.resolve('@faker-js/faker/package.json');
-  const distDir = path.join(path.dirname(packageJsonPath), 'dist');
+  const packageRoot = path.dirname(packageJsonPath);
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const typesEntry = packageJson.exports?.['.']?.default?.types || packageJson.types;
 
-  for (const fileName of fs.readdirSync(distDir)) {
-    if (!fileName.endsWith('.d.ts') || fileName === 'index.d.ts') {
-      continue;
-    }
-    const filePath = path.join(distDir, fileName);
-    const contents = fs.readFileSync(filePath, 'utf8');
-    if (contents.includes('declare class NumberModule')) {
-      return filePath;
+  if (!typesEntry) {
+    throw new Error('Unable to resolve Faker declaration entry from package exports.');
+  }
+
+  const typesEntryPath = path.join(packageRoot, typesEntry);
+  const typesEntryText = fs.readFileSync(typesEntryPath, 'utf8');
+  const bundleMatch = typesEntryText.match(/\bfrom\s+['"]\.\/([^'"]+\.js)['"]/);
+
+  if (bundleMatch) {
+    const bundlePath = path.join(path.dirname(typesEntryPath), bundleMatch[1].replace(/\.js$/u, '.d.ts'));
+    if (fs.existsSync(bundlePath)) {
+      return bundlePath;
     }
   }
 
+  if (typesEntryText.includes('declare class')) {
+    return typesEntryPath;
+  }
+
   throw new Error('Unable to find Faker declaration bundle with module method signatures.');
+}
+
+function mergeMethodOverload(method, optionsSignature) {
+  const signatures = [...(method?.signatures || []), optionsSignature];
+  const optionParams = [...new Set([...(method?.optionParams || []), ...getObjectOptionKeys(optionsSignature)])];
+
+  return {
+    signature: signatures.join(' | '),
+    signatures,
+    optionParams,
+  };
 }
 
 function extractFakerOptionMethods(declarationText) {
@@ -128,10 +149,7 @@ function extractFakerOptionMethods(declarationText) {
       }
 
       const optionsSignature = paramsText.slice(optionsIndex + 'options?:'.length).trim();
-      methods.set(methodName, {
-        signature: optionsSignature,
-        optionParams: getObjectOptionKeys(optionsSignature),
-      });
+      methods.set(methodName, mergeMethodOverload(methods.get(methodName), optionsSignature));
       methodMatch = methodStartRegex.exec(body);
     }
 
@@ -241,4 +259,9 @@ if (isCli) {
   runCli();
 }
 
-export { formatMarkdownComparisonReport, getFakerOptionParamComparison, hasParamComparisonFailures };
+export {
+  extractFakerOptionMethods,
+  formatMarkdownComparisonReport,
+  getFakerOptionParamComparison,
+  hasParamComparisonFailures,
+};

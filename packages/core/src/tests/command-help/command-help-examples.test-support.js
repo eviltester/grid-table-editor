@@ -30,11 +30,7 @@ function isRequiredParam(param) {
   return param?.required === true || param?.optional === false;
 }
 
-function isUsageExampleSupportedParam(entry, param) {
-  if (entry?.command === 'location.zipCode' && param?.name === 'state') {
-    return false;
-  }
-
+function isUsageExampleSupportedParam(_entry, param) {
   return param?.usageExampleSupported !== false;
 }
 

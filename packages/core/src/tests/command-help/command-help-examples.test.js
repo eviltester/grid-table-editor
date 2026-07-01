@@ -102,6 +102,7 @@ describe('command help usage examples', () => {
   test('each optional parameter has a focused usage example and all-optional commands include a zero-arg example', () => {
     const failures = commandCases.flatMap((entry) => {
       const usageExamples = Array.isArray(entry.help?.usageExamples) ? entry.help.usageExamples : [];
+      const exampleSupportedParams = entry.params.filter((param) => isUsageExampleSupportedParam(entry, param));
       const optionalParams = entry.params
         .map((param, index) => ({ ...param, index }))
         .filter((param) => isUsageExampleSupportedParam(entry, param))
@@ -113,7 +114,7 @@ describe('command help usage examples', () => {
       );
       const entryFailures = [];
 
-      if (entry.params.length > 0 && optionalParams.length === entry.params.length) {
+      if (optionalParams.length > 0 && optionalParams.length === exampleSupportedParams.length) {
         const hasZeroArgExample = usageExamples.some((usageExample) => {
           if (entry.command.startsWith('helpers.')) {
             return getHelperExampleArgCount(usageExample.functionCall) === 0;

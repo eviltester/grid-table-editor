@@ -21,6 +21,35 @@ describe('domain faker option param comparison', () => {
     expect(comparison.filter((row) => row.domainOnlyParams.length > 0)).toEqual([]);
   });
 
+  test('check failures include params missing in either direction', async () => {
+    const { hasParamComparisonFailures } = await loadComparisonScript();
+
+    expect(
+      hasParamComparisonFailures([
+        {
+          missingInDomain: [],
+          domainOnlyParams: ['legacyOnly'],
+        },
+      ])
+    ).toBe(true);
+    expect(
+      hasParamComparisonFailures([
+        {
+          missingInDomain: ['fakerOnly'],
+          domainOnlyParams: [],
+        },
+      ])
+    ).toBe(true);
+    expect(
+      hasParamComparisonFailures([
+        {
+          missingInDomain: [],
+          domainOnlyParams: [],
+        },
+      ])
+    ).toBe(false);
+  });
+
   test('number.bigInt exposes Faker range params instead of the old value placeholder', async () => {
     const { getFakerOptionParamComparison } = await loadComparisonScript();
     const comparison = getFakerOptionParamComparison();

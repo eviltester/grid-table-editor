@@ -217,10 +217,13 @@ function formatMarkdownComparisonReport(rows = getFakerOptionParamComparison()) 
   return `${lines.join('\n')}\n`;
 }
 
+function hasParamComparisonFailures(rows = []) {
+  return rows.some((row) => row.missingInDomain.length > 0 || row.domainOnlyParams.length > 0);
+}
+
 function runCli() {
   const args = process.argv.slice(2);
   const rows = getFakerOptionParamComparison();
-  const missingRows = rows.filter((row) => row.missingInDomain.length > 0);
 
   if (args.includes('--markdown')) {
     process.stdout.write(formatMarkdownComparisonReport(rows));
@@ -228,7 +231,7 @@ function runCli() {
     process.stdout.write(`${JSON.stringify(rows, null, 2)}\n`);
   }
 
-  if (args.includes('--check') && missingRows.length > 0) {
+  if (args.includes('--check') && hasParamComparisonFailures(rows)) {
     process.exitCode = 1;
   }
 }
@@ -238,4 +241,4 @@ if (isCli) {
   runCli();
 }
 
-export { formatMarkdownComparisonReport, getFakerOptionParamComparison };
+export { formatMarkdownComparisonReport, getFakerOptionParamComparison, hasParamComparisonFailures };

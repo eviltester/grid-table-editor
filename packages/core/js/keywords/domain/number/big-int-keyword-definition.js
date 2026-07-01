@@ -54,21 +54,21 @@ const NUMBER_BIG_INT_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'min',
-        type: 'bigint|number|string|boolean',
+        type: 'integer',
         required: false,
         description: 'Optional minimum bound for the generated BigInt value.',
         examples: [100],
       },
       {
         name: 'max',
-        type: 'bigint|number|string|boolean',
+        type: 'integer',
         required: false,
         description: 'Optional maximum bound for the generated BigInt value.',
         examples: [1000],
       },
       {
         name: 'multipleOf',
-        type: 'bigint|number|string|boolean',
+        type: 'integer',
         required: false,
         description: 'Generated BigInt will be a multiple of the given value.',
         examples: [7],

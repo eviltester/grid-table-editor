@@ -23,9 +23,9 @@ Returns a BigInt number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `bigint\|number\|string\|boolean` | no | Optional minimum bound for the generated BigInt value. |
-| `max` | `bigint\|number\|string\|boolean` | no | Optional maximum bound for the generated BigInt value. |
-| `multipleOf` | `bigint\|number\|string\|boolean` | no | Generated BigInt will be a multiple of the given value. |
+| `min` | `integer` | no | Optional minimum bound for the generated BigInt value. |
+| `max` | `integer` | no | Optional maximum bound for the generated BigInt value. |
+| `multipleOf` | `integer` | no | Generated BigInt will be a multiple of the given value. |
 
 Examples:
 

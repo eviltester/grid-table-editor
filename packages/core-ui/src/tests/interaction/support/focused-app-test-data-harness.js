@@ -1,4 +1,4 @@
-import { fireEvent, waitFor, within } from '@testing-library/dom';
+import { waitFor, within } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import RandExp from 'randexp';
 import { Exporter } from '@anywaydata/core/grid/exporter.js';
@@ -46,33 +46,51 @@ function createFocusedAppTestDataHarness() {
     return getPanelRoot()?.querySelector('[data-role="schema-definition-root"]') || null;
   }
 
+  async function waitForFocusToLeave(element) {
+    await waitFor(() => {
+      expect(element.ownerDocument.activeElement).not.toBe(element);
+    });
+  }
+
   async function setInputValue(element, value) {
     if (!element) {
       throw new Error('Target input element was not found in focused app test-data harness');
     }
+
+    const nextValue = value === null || value === undefined ? '' : String(value);
     await user.click(element);
+
+    if (element.type === 'number' && nextValue) {
+      await user.type(element, nextValue, {
+        initialSelectionStart: 0,
+        initialSelectionEnd: String(element.value || '').length,
+      });
+      await user.tab();
+      await waitForFocusToLeave(element);
+      return;
+    }
+
     await user.clear(element);
-    if (value) {
-      if (element.type === 'number' || /[\n\\[\]{}]/.test(value)) {
-        element.value = value;
-        fireEvent.input(element, { target: { value } });
-        fireEvent.change(element, { target: { value } });
+
+    if (nextValue) {
+      if (/[\n\\[\]{}]/.test(nextValue)) {
+        await user.paste(nextValue);
       } else {
-        await user.type(element, value);
+        await user.type(element, nextValue, { skipClick: true });
       }
     }
-    element.blur();
+
+    await user.tab();
+    await waitForFocusToLeave(element);
   }
 
   async function setSelectValue(element, value) {
     if (!element) {
       throw new Error('Target select element was not found in focused app test-data harness');
     }
-    element.focus();
-    element.value = value;
-    fireEvent.input(element, { target: { value } });
-    fireEvent.change(element, { target: { value } });
-    element.blur();
+    await user.selectOptions(element, value);
+    await user.tab();
+    await waitForFocusToLeave(element);
   }
 
   function reset() {

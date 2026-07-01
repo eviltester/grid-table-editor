@@ -5,7 +5,7 @@ function captureActiveFieldState(documentObj) {
   const fieldName = activeElement?.getAttribute?.('data-field');
   const actionName = activeElement?.getAttribute?.('data-action');
   const rowId = activeElement?.closest?.(SHARED_SCHEMA_ROW_SELECTOR)?.getAttribute?.('data-row-id');
-  if (!rowId || (!fieldName && actionName !== 'pick-command')) {
+  if (!rowId || (!fieldName && !actionName)) {
     return null;
   }
   return {

@@ -103,6 +103,53 @@ describe('createSharedSchemaEditorController', () => {
     expect(timerApi.clearTimeout).toHaveBeenCalledWith('timer-1');
   });
 
+  test('defers focusout validation until native tab focus can settle', () => {
+    const root = createRoot(dom.window.document);
+    const timerApi = {
+      setTimeout: jest.fn(() => 'focusout-timer'),
+      clearTimeout: jest.fn(),
+    };
+
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      timerApi,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: '',
+        sourceType: 'literal',
+        command: 'literal',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText: jest.fn(() => ''),
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const nameInput = root.querySelector('[data-field="name"]');
+    controller.handleFocusOut({ target: nameInput });
+
+    expect(timerApi.setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 0);
+
+    controller.destroy();
+
+    expect(timerApi.clearTimeout).toHaveBeenCalledWith('focusout-timer');
+  });
+
   test('opens the params editor dialog and applies validated params back to the row', async () => {
     const root = createRoot(dom.window.document);
     const controller = createSharedSchemaEditorController({

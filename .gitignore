@@ -25,6 +25,4 @@ testenv/
 experiments
 experiments/*
 .codex-logs/
-.codex-dev-web.log
-.codex-dev-web-*.stdout.log
-.codex-dev-web-*.stderr.log
+.codex-dev-web*.log

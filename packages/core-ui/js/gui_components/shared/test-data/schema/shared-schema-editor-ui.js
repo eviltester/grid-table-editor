@@ -88,13 +88,6 @@ function renderSharedSchemaRows({
     rowElem.setAttribute('data-row-id', row.id);
     rowElem.setAttribute('data-row-index', String(index));
     rowElem.innerHTML = `
-                <div class="${SHARED_SCHEMA_ROW_ACTIONS_CLASS}">
-                    <button class="icon-button ${SHARED_SCHEMA_DRAG_HANDLE_CLASS}" type="button" data-action="drag" data-row-id="${row.id}" title="Drag field to reorder" draggable="true" aria-label="Drag field to reorder">${renderIconHtml('grip-vertical')}</button>
-                    <button class="icon-button" type="button" data-action="add" data-row-id="${row.id}" title="Add field" aria-label="Insert field after this row">${renderIconHtml('plus')}</button>
-                    <button class="icon-button" type="button" data-action="remove" data-row-id="${row.id}" title="Remove field" aria-label="Remove field">${renderIconHtml('minus')}</button>
-                    <button class="icon-button" type="button" data-action="up" data-row-id="${row.id}" title="Move up" aria-label="Move up" ${index === 0 ? 'disabled' : ''}>${renderIconHtml('arrow-up')}</button>
-                    <button class="icon-button" type="button" data-action="down" data-row-id="${row.id}" title="Move down" aria-label="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>${renderIconHtml('arrow-down')}</button>
-                </div>
                 <input type="text" data-field="name" class="${hasNameValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" placeholder="Column Name" aria-label="Column Name" value="${escapeHtml(row.name)}">
                 <select data-field="sourceType" class="${hasCommandValidationError ? SHARED_SCHEMA_FIELD_INVALID_CLASS : ''}" aria-label="Field type">
                     <option value="${SOURCE_TYPE_ENUM}" ${normalisedSourceType === SOURCE_TYPE_ENUM ? 'selected' : ''}>enum</option>
@@ -153,6 +146,13 @@ function renderSharedSchemaRows({
                     ? `<div class="${SHARED_SCHEMA_ROW_VALIDATION_CLASS}" role="status">${escapeHtml(validationMessage)}</div>`
                     : ''
                 }
+                <div class="${SHARED_SCHEMA_ROW_ACTIONS_CLASS}">
+                    <button class="icon-button ${SHARED_SCHEMA_DRAG_HANDLE_CLASS}" type="button" data-action="drag" data-row-id="${row.id}" title="Drag field to reorder" draggable="true" aria-label="Drag field to reorder">${renderIconHtml('grip-vertical')}</button>
+                    <button class="icon-button" type="button" data-action="add" data-row-id="${row.id}" title="Add field" aria-label="Insert field after this row">${renderIconHtml('plus')}</button>
+                    <button class="icon-button" type="button" data-action="remove" data-row-id="${row.id}" title="Remove field" aria-label="Remove field">${renderIconHtml('minus')}</button>
+                    <button class="icon-button" type="button" data-action="up" data-row-id="${row.id}" title="Move up" aria-label="Move up" ${index === 0 ? 'disabled' : ''}>${renderIconHtml('arrow-up')}</button>
+                    <button class="icon-button" type="button" data-action="down" data-row-id="${row.id}" title="Move down" aria-label="Move down" ${index === schemaRows.length - 1 ? 'disabled' : ''}>${renderIconHtml('arrow-down')}</button>
+                </div>
             `;
 
     const schemaHelpElement = rowElem.querySelector('[data-field="faker-doc-link"]');

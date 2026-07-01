@@ -2095,8 +2095,45 @@ body.theme-dark .generator-status-text[data-severity='info'] {
 }
 
 .shared-schema-row-actions {
+  grid-column: 1;
+  grid-row: 1;
   display: flex;
   gap: 0.2rem;
+}
+
+.shared-schema-row > input[data-field='name'] {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.shared-schema-row > select[data-field='sourceType'] {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.shared-schema-row > .shared-schema-command-picker-control {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.shared-schema-row-command > .shared-schema-help-link {
+  grid-column: 5;
+  grid-row: 1;
+}
+
+.shared-schema-row-value > .shared-schema-help-link {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.shared-schema-row > .shared-schema-params-control {
+  grid-column: 6;
+  grid-row: 1;
+}
+
+.shared-schema-row > input[data-field='value'] {
+  grid-column: 5;
+  grid-row: 1;
 }
 
 .shared-schema-drag-handle {
@@ -2279,9 +2316,11 @@ body.theme-dark .shared-schema-row-validation {
   }
   .shared-schema-row-actions {
     grid-column: 1 / span 3;
+    grid-row: 1;
   }
   .shared-schema-row > input[data-field='name'] {
     grid-column: 1 / span 3;
+    grid-row: 2;
   }
   .shared-schema-row > select[data-field='sourceType'] {
     grid-column: 1;

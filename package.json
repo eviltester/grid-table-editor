@@ -155,6 +155,6 @@
   },
   "optionalDependencies": {
     "@rolldown/binding-linux-x64-gnu": "1.1.2",
-    "@rolldown/binding-linux-x64-musl": "1.1.0"
+    "@rolldown/binding-linux-x64-musl": "1.1.3"
   }
 }

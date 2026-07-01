@@ -30,6 +30,14 @@ function isRequiredParam(param) {
   return param?.required === true || param?.optional === false;
 }
 
+function isUsageExampleSupportedParam(entry, param) {
+  if (entry?.command === 'location.zipCode' && param?.name === 'state') {
+    return false;
+  }
+
+  return param?.usageExampleSupported !== false;
+}
+
 function splitTopLevelArguments(argsText = '') {
   const args = [];
   let current = '';
@@ -277,5 +285,6 @@ export {
   getOptionalCompanionNames,
   isForbiddenFakerCommand,
   isRequiredParam,
+  isUsageExampleSupportedParam,
   normalizeExampleValue,
 };

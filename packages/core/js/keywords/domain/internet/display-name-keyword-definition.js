@@ -5,6 +5,7 @@ const INTERNET_DISPLAY_NAME_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'internet.displayName',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: "Generates a display name using the given person's name as base.",
@@ -14,12 +15,42 @@ const INTERNET_DISPLAY_NAME_KEYWORD_DEFINITION = {
     returnType: 'string',
     usageExamples: [
       {
-        functionCall: 'internet.displayName',
+        functionCall: 'internet.displayName()',
         sampleReturnValue: 'Aaliyah.Bosco',
         description: 'Shows the default internet.displayName call.',
       },
+      {
+        functionCall: 'internet.displayName(firstName="Ada", lastName="Lovelace")',
+        sampleReturnValue: 'Ada72',
+        description: 'Shows internet.displayName using firstName and lastName options.',
+      },
+      {
+        functionCall: 'internet.displayName(firstName="Ada")',
+        sampleReturnValue: 'Ada14',
+        description: 'Shows internet.displayName using an explicit first name.',
+      },
+      {
+        functionCall: 'internet.displayName(lastName="Lovelace")',
+        sampleReturnValue: 'Aaliyah14',
+        description: 'Shows internet.displayName using an explicit last name.',
+      },
     ],
-    args: [],
+    args: [
+      {
+        name: 'firstName',
+        type: 'string',
+        required: false,
+        description: 'Optional first name to use as the basis for the display name.',
+        examples: ['Ada'],
+      },
+      {
+        name: 'lastName',
+        type: 'string',
+        required: false,
+        description: 'Optional last name to use as the basis for the display name.',
+        examples: ['Lovelace'],
+      },
+    ],
   },
 };
 

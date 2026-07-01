@@ -5,6 +5,7 @@ const SYSTEM_FILE_NAME_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'system.fileName',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: 'Returns a random file name with extension.',
@@ -14,12 +15,25 @@ const SYSTEM_FILE_NAME_KEYWORD_DEFINITION = {
     returnType: 'string',
     usageExamples: [
       {
-        functionCall: 'system.fileName',
+        functionCall: 'system.fileName()',
         sampleReturnValue: 'fog_aboard.otf',
         description: 'Shows the default system.fileName call.',
       },
+      {
+        functionCall: 'system.fileName(extensionCount=2)',
+        sampleReturnValue: 'fog_aboard.otf.7z',
+        description: 'Shows system.fileName using extensionCount.',
+      },
     ],
-    args: [],
+    args: [
+      {
+        name: 'extensionCount',
+        type: 'number',
+        required: false,
+        description: 'How many extensions the generated file name should have.',
+        examples: [2],
+      },
+    ],
   },
 };
 

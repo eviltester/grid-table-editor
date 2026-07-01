@@ -27,11 +27,6 @@ const WORD_CONJUNCTION_KEYWORD_DEFINITION = {
         description: 'Shows word.conjunction using length.',
       },
       {
-        functionCall: 'word.conjunction(max=5)',
-        sampleReturnValue: 'likewise',
-        description: 'Shows word.conjunction using max.',
-      },
-      {
         functionCall: 'word.conjunction(strategy="any-length")',
         sampleReturnValue: 'likewise',
         description: 'Shows word.conjunction using strategy.',
@@ -43,12 +38,6 @@ const WORD_CONJUNCTION_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

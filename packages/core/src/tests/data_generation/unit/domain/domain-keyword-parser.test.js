@@ -88,11 +88,11 @@ describe('domain keyword parser', () => {
     expect(parsedKeyword.errors).toEqual([]);
   });
 
-  test('parses lorem.word(min=2, max=67) as a valid domain invocation', () => {
+  test('rejects lorem.word params that Faker does not implement', () => {
     const parsedKeyword = parseKeywordInvocation('lorem.word(min=2, max=67)');
     expect(parsedKeyword.keyword).toBe('lorem.word');
-    expect(parsedKeyword.args).toEqual([2, 67]);
-    expect(parsedKeyword.errors).toEqual([]);
+    expect(parsedKeyword.args).toEqual([]);
+    expect(parsedKeyword.errors).toEqual(['Invalid keyword arguments: unknown named argument "min"']);
   });
 
   test('parses named args with broader spacing combinations', () => {

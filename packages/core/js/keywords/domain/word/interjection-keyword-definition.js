@@ -27,11 +27,6 @@ const WORD_INTERJECTION_KEYWORD_DEFINITION = {
         description: 'Shows word.interjection using length.',
       },
       {
-        functionCall: 'word.interjection(max=5)',
-        sampleReturnValue: 'woot',
-        description: 'Shows word.interjection using max.',
-      },
-      {
         functionCall: 'word.interjection(strategy="any-length")',
         sampleReturnValue: 'woot',
         description: 'Shows word.interjection using strategy.',
@@ -43,12 +38,6 @@ const WORD_INTERJECTION_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

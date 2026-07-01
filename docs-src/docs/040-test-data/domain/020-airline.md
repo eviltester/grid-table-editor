@@ -40,17 +40,44 @@ Returns a random flight number. Flight numbers are always 1 to 4 digits long and
 - Canonical: `awd.domain.airline.flightNumber`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `length` | `number` | no | Desired flight-number length. |
+| `addLeadingZeros` | `boolean` | no | Whether shorter flight numbers should be padded with leading zeros. |
 
 Examples:
 
 Shows the default airline.flightNumber call.
 
 ```txt
-airline.flightNumber
+airline.flightNumber()
 ```
 
 Returns: `70`
+
+Shows airline.flightNumber using length and leading-zero options.
+
+```txt
+airline.flightNumber(length=4, addLeadingZeros=true)
+```
+
+Returns: `4703`
+
+Shows airline.flightNumber using a fixed length.
+
+```txt
+airline.flightNumber(length=4)
+```
+
+Returns: `4703`
+
+Shows airline.flightNumber padding shorter values with leading zeros.
+
+```txt
+airline.flightNumber(addLeadingZeros=true)
+```
+
+Returns: `0070`
 
 ### `airline.iataCode`
 
@@ -97,17 +124,36 @@ Generates a random record locator. Record locators are 6-character alphanumeric 
 - Canonical: `awd.domain.airline.recordLocator`
 - Faker docs: [https://fakerjs.dev/api/airline](https://fakerjs.dev/api/airline)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `allowNumerics` | `boolean` | no | Whether numeric characters can be included. |
+| `allowVisuallySimilarCharacters` | `boolean` | no | Whether visually similar characters such as I, 1, O, and 0 can be included. |
 
 Examples:
 
 Shows the default airline.recordLocator call.
 
 ```txt
-airline.recordLocator
+airline.recordLocator()
 ```
 
 Returns: `KTAGDC`
+
+Shows airline.recordLocator allowing numeric characters.
+
+```txt
+airline.recordLocator(allowNumerics=true)
+```
+
+Returns: `ER2B64`
+
+Shows airline.recordLocator allowing visually similar characters.
+
+```txt
+airline.recordLocator(allowVisuallySimilarCharacters=true)
+```
+
+Returns: `KSAHDC`
 
 ### `airline.seat`
 

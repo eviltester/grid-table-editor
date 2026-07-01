@@ -450,8 +450,6 @@ Generates a word of a specified length.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | Minimum word length when generating a ranged length. |
-| `max` | `number` | no | Maximum word length when generating a ranged length. |
 | `length` | `number` | no | Exact word length to generate. |
 | `strategy` | `fail\|closest\|shortest\|longest\|any-length` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
@@ -461,22 +459,6 @@ Shows lorem.word when optional params are omitted.
 
 ```txt
 lorem.word()
-```
-
-Returns: `cur`
-
-Shows lorem.word using min.
-
-```txt
-lorem.word(max=10, min=1)
-```
-
-Returns: `cur`
-
-Shows lorem.word using max.
-
-```txt
-lorem.word(max=5)
 ```
 
 Returns: `cur`

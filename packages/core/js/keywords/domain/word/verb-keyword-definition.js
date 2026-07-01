@@ -27,11 +27,6 @@ const WORD_VERB_KEYWORD_DEFINITION = {
         description: 'Shows word.verb using length.',
       },
       {
-        functionCall: 'word.verb(max=5)',
-        sampleReturnValue: 'hunger',
-        description: 'Shows word.verb using max.',
-      },
-      {
         functionCall: 'word.verb(strategy="any-length")',
         sampleReturnValue: 'hunger',
         description: 'Shows word.verb using strategy.',
@@ -43,12 +38,6 @@ const WORD_VERB_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

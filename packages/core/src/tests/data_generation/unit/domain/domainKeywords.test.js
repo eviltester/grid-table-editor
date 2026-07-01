@@ -562,7 +562,7 @@ function sampleValueForType(type) {
   const stringLiterals = allowed
     .filter(
       (entry) =>
-        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
+        !['bigint', 'string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
         !/^[+-]?\d+(\.\d+)?$/.test(entry)
     )
     .map((entry) =>
@@ -576,6 +576,7 @@ function sampleValueForType(type) {
   }
   if (stringLiterals.length > 0) return stringLiterals[0];
 
+  if (allowed.includes('bigint')) return 7;
   if (allowed.includes('integer')) return 7;
   if (allowed.includes('number')) return 7;
   if (allowed.includes('regexp')) return '[A-Z]';

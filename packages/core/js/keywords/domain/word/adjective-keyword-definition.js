@@ -27,11 +27,6 @@ const WORD_ADJECTIVE_KEYWORD_DEFINITION = {
         description: 'Shows word.adjective using length.',
       },
       {
-        functionCall: 'word.adjective(max=5)',
-        sampleReturnValue: 'inferior',
-        description: 'Shows word.adjective using max.',
-      },
-      {
         functionCall: 'word.adjective(strategy="any-length")',
         sampleReturnValue: 'inferior',
         description: 'Shows word.adjective using strategy.',
@@ -43,12 +38,6 @@ const WORD_ADJECTIVE_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

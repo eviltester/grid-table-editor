@@ -27,11 +27,6 @@ const WORD_PREPOSITION_KEYWORD_DEFINITION = {
         description: 'Shows word.preposition using length.',
       },
       {
-        functionCall: 'word.preposition(max=5)',
-        sampleReturnValue: 'except',
-        description: 'Shows word.preposition using max.',
-      },
-      {
         functionCall: 'word.preposition(strategy="any-length")',
         sampleReturnValue: 'except',
         description: 'Shows word.preposition using strategy.',
@@ -43,12 +38,6 @@ const WORD_PREPOSITION_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

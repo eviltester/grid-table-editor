@@ -55,7 +55,7 @@ function sampleValueForType(type) {
   const stringLiterals = allowed
     .filter(
       (entry) =>
-        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
+        !['bigint', 'string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
         !/^[+-]?\d+(\.\d+)?$/.test(entry)
     )
     .map((entry) =>
@@ -69,6 +69,9 @@ function sampleValueForType(type) {
   }
   if (stringLiterals.length > 0) return stringLiterals[0];
 
+  if (allowed.includes('bigint')) {
+    return 7;
+  }
   if (allowed.includes('integer')) {
     return 7;
   }
@@ -102,6 +105,13 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (key === 'date.birthdate.max') return 65;
   if (key === 'date.birthdate.mode') return 'age';
   if (key === 'datatype.boolean.probability') return 0.5;
+  if (key === 'airline.flightNumber.length') return 4;
+  if (key === 'image.dataUri.type') return 'svg-base64';
+  if (key === 'internet.httpStatusCode.types') return ['success'];
+  if (key === 'location.zipCode.state') return 'CA';
+  if (key === 'location.zipCode.format') return '#####';
+  if (key === 'system.networkInterface.interfaceType') return 'en';
+  if (key === 'system.networkInterface.interfaceSchema') return 'mac';
 
   if (key === 'location.latitude.min' || key === 'location.longitude.min') return -10;
   if (key === 'location.latitude.max' || key === 'location.longitude.max') return 10;
@@ -201,8 +211,7 @@ function expectsRuntimeRejection(keywordName, argName) {
 }
 
 function shouldSkipRuntimeExecution(keywordName, argName) {
-  void keywordName;
-  void argName;
+  if (keywordName === 'location.zipCode' && argName === 'state') return true;
   return false;
 }
 

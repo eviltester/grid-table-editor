@@ -5,6 +5,7 @@ const INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'internet.httpStatusCode',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: 'Generates a random HTTP status code.',
@@ -14,12 +15,26 @@ const INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION = {
     returnType: 'number',
     usageExamples: [
       {
-        functionCall: 'internet.httpStatusCode',
+        functionCall: 'internet.httpStatusCode()',
         sampleReturnValue: 306,
         description: 'Shows the default internet.httpStatusCode call.',
       },
+      {
+        functionCall: 'internet.httpStatusCode(types=["success"])',
+        sampleReturnValue: 204,
+        description: 'Shows internet.httpStatusCode constrained to success status codes.',
+      },
     ],
-    args: [],
+    args: [
+      {
+        name: 'types',
+        type: 'array',
+        required: false,
+        description:
+          'HTTP status categories to choose from. Allowed categories are informational, success, redirection, clientError, and serverError.',
+        examples: [['success']],
+      },
+    ],
   },
 };
 

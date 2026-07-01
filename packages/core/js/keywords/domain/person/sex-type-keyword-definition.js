@@ -1,6 +1,6 @@
 import { createStringEnumValidator } from '../../../command-help/command-help-validators.js';
 
-const PERSON_SEX_TYPE = 'female|male';
+const PERSON_SEX_TYPE = 'female|generic|male';
 
 const validatePersonSexTypeValue = createStringEnumValidator(PERSON_SEX_TYPE.split('|'));
 
@@ -9,6 +9,7 @@ const PERSON_SEX_TYPE_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'person.sexType',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: 'Returns a random sex type. The `SexType` is intended to be used in parameters and conditions.',
@@ -18,12 +19,25 @@ const PERSON_SEX_TYPE_KEYWORD_DEFINITION = {
     returnType: PERSON_SEX_TYPE,
     usageExamples: [
       {
-        functionCall: 'person.sexType',
+        functionCall: 'person.sexType()',
         sampleReturnValue: 'female',
         description: 'Shows the default person.sexType call.',
       },
+      {
+        functionCall: 'person.sexType(includeGeneric=false)',
+        sampleReturnValue: 'female',
+        description: 'Shows person.sexType excluding the generic value.',
+      },
     ],
-    args: [],
+    args: [
+      {
+        name: 'includeGeneric',
+        type: 'boolean',
+        required: false,
+        description: 'Whether the generic sex type can be returned.',
+        examples: [false],
+      },
+    ],
   },
 };
 

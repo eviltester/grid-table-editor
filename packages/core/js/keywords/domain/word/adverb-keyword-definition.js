@@ -27,11 +27,6 @@ const WORD_ADVERB_KEYWORD_DEFINITION = {
         description: 'Shows word.adverb using length.',
       },
       {
-        functionCall: 'word.adverb(max=5)',
-        sampleReturnValue: 'knavishly',
-        description: 'Shows word.adverb using max.',
-      },
-      {
         functionCall: 'word.adverb(strategy="any-length")',
         sampleReturnValue: 'knavishly',
         description: 'Shows word.adverb using strategy.',
@@ -43,12 +38,6 @@ const WORD_ADVERB_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

@@ -28,11 +28,6 @@ const WORD_SAMPLE_KEYWORD_DEFINITION = {
         description: 'Shows word.sample using length.',
       },
       {
-        functionCall: 'word.sample(max=5)',
-        sampleReturnValue: 'boohoo',
-        description: 'Shows word.sample using max.',
-      },
-      {
         functionCall: 'word.sample(strategy="any-length")',
         sampleReturnValue: 'boohoo',
         description: 'Shows word.sample using strategy.',
@@ -44,12 +39,6 @@ const WORD_SAMPLE_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

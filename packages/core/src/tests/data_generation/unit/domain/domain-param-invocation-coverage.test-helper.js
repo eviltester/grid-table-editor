@@ -23,7 +23,7 @@ function sampleValueForType(typeName) {
   const stringLiterals = types
     .filter(
       (entry) =>
-        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
+        !['bigint', 'string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
         !/^[+-]?\d+(\.\d+)?$/.test(entry)
     )
     .map((entry) =>
@@ -32,7 +32,7 @@ function sampleValueForType(typeName) {
         : entry
     );
 
-  if (types.includes('number') || types.includes('integer')) {
+  if (types.includes('number') || types.includes('integer') || types.includes('bigint')) {
     return 7;
   }
   if (stringLiterals.length > 0) {
@@ -58,6 +58,13 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (argName === 'from') return 1577836800000;
   if (argName === 'to') return 1580428800000;
   if (argName === 'refDate') return 1716110400000;
+  if (key === 'airline.flightNumber.length') return 4;
+  if (key === 'image.dataUri.type') return 'svg-base64';
+  if (key === 'internet.httpStatusCode.types') return ['success'];
+  if (key === 'location.zipCode.state') return 'CA';
+  if (key === 'location.zipCode.format') return '#####';
+  if (key === 'system.networkInterface.interfaceType') return 'en';
+  if (key === 'system.networkInterface.interfaceSchema') return 'mac';
   if (argName === 'version') return 7;
   if (argName === 'count') return 3;
   if (argName === 'min') return 1;

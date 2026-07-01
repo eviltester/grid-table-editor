@@ -4,6 +4,7 @@ import {
   getHelperExampleArgCount,
   getOptionalCompanionNames,
   isRequiredParam,
+  isUsageExampleSupportedParam,
 } from './command-help-examples.test-support.js';
 
 describe('command help usage examples', () => {
@@ -20,8 +21,9 @@ describe('command help usage examples', () => {
   test('commands expose at least one usage example per optional param, plus a zero-arg example when all params are optional', () => {
     const missingCoverage = commandCases
       .map((entry) => {
-        const optionalCount = entry.params.filter((param) => !isRequiredParam(param)).length;
-        const allParamsOptional = entry.params.length > 0 && optionalCount === entry.params.length;
+        const exampleSupportedParams = entry.params.filter((param) => isUsageExampleSupportedParam(entry, param));
+        const optionalCount = exampleSupportedParams.filter((param) => !isRequiredParam(param)).length;
+        const allParamsOptional = exampleSupportedParams.length > 0 && optionalCount === exampleSupportedParams.length;
         const minimumExampleCount = Math.max(1, optionalCount + (allParamsOptional ? 1 : 0));
         return {
           ...entry,
@@ -102,6 +104,7 @@ describe('command help usage examples', () => {
       const usageExamples = Array.isArray(entry.help?.usageExamples) ? entry.help.usageExamples : [];
       const optionalParams = entry.params
         .map((param, index) => ({ ...param, index }))
+        .filter((param) => isUsageExampleSupportedParam(entry, param))
         .filter((param) => !isRequiredParam(param));
       const requiredParamNames = new Set(entry.params.filter(isRequiredParam).map((param) => param.name));
       const lastRequiredIndex = entry.params.reduce(

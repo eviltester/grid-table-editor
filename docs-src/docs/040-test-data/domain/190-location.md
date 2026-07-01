@@ -498,14 +498,25 @@ Generates data using faker location zip code.
 - Canonical: `awd.domain.location.zipCode`
 - Faker docs: [https://fakerjs.dev/api/location](https://fakerjs.dev/api/location)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `state` | `string` | no | State abbreviation used to constrain the generated zip code where supported by the locale. |
+| `format` | `string` | no | Format pattern used for the generated zip code. |
 
 Examples:
 
 Shows the default location.zipCode call.
 
 ```txt
-location.zipCode
+location.zipCode()
 ```
 
 Returns: `70310`
+
+Shows location.zipCode using a format option.
+
+```txt
+location.zipCode(format="#####")
+```
+
+Returns: `47031`

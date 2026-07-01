@@ -27,11 +27,6 @@ const WORD_NOUN_KEYWORD_DEFINITION = {
         description: 'Shows word.noun using length.',
       },
       {
-        functionCall: 'word.noun(max=5)',
-        sampleReturnValue: 'heating',
-        description: 'Shows word.noun using max.',
-      },
-      {
         functionCall: 'word.noun(strategy="any-length")',
         sampleReturnValue: 'heating',
         description: 'Shows word.noun using strategy.',
@@ -43,12 +38,6 @@ const WORD_NOUN_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

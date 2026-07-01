@@ -24,11 +24,6 @@ const WORD_WORDS_KEYWORD_DEFINITION = {
         sampleReturnValue: 'boohoo pish tenderly above pop',
         description: 'Shows word.words using count.',
       },
-      {
-        functionCall: 'word.words(max=5)',
-        sampleReturnValue: 'fog aboard',
-        description: 'Shows word.words using max.',
-      },
     ],
     args: [
       {
@@ -36,12 +31,6 @@ const WORD_WORDS_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Number of items to generate.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
     ],
   },

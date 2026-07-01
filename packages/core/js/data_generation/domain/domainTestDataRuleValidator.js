@@ -1,12 +1,14 @@
 import { parseKeywordInvocation } from '../../domain/domain-keyword-parser.js';
 import {
   DOMAIN_KEYWORD_ALIAS_INDEX,
+  executeDomainKeyword,
   getDomainKeywordByAlias,
   validateDomainKeywordArgs,
 } from '../../domain/domain-keywords.js';
 
 class DomainTestDataRuleValidator {
-  constructor() {
+  constructor(aFaker = null) {
+    this.faker = aFaker;
     this.validationError = '';
     this.lastParsed = null;
   }
@@ -52,6 +54,23 @@ class DomainTestDataRuleValidator {
       return false;
     }
 
+    if (
+      this.faker &&
+      keywordDefinition.delegate?.type === 'faker' &&
+      hasFakerDelegateTarget(this.faker, keywordDefinition.delegate?.target)
+    ) {
+      try {
+        executeDomainKeyword(recognizedKeyword, {
+          faker: this.faker,
+          args: parsed.args,
+          autoIncrementState: {},
+        });
+      } catch (error) {
+        this.validationError = error?.message || 'Domain keyword failed during validation';
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -62,6 +81,19 @@ class DomainTestDataRuleValidator {
   getValidationError() {
     return this.validationError;
   }
+}
+
+function hasFakerDelegateTarget(fakerInstance, target) {
+  const parts = String(target || '')
+    .split('.')
+    .filter((part) => part.length > 0);
+  let node = fakerInstance;
+
+  for (const part of parts) {
+    node = node?.[part];
+  }
+
+  return typeof node === 'function';
 }
 
 export { DomainTestDataRuleValidator };

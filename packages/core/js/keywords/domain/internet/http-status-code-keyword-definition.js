@@ -1,4 +1,8 @@
 import { validateNumberValue } from '../../../command-help/command-help-validators.js';
+import {
+  composeArgsValidators,
+  createNonEmptyArrayArgValidator,
+} from '../../../domain/domain-keyword-arg-validators.js';
 
 const HTTP_STATUS_CODE_TYPES = ['informational', 'success', 'redirection', 'clientError', 'serverError'];
 
@@ -24,6 +28,11 @@ function validateHttpStatusCodeTypes(_args = [], context = {}) {
   return { ok: true };
 }
 
+const validateHttpStatusCodeArgs = composeArgsValidators(
+  createNonEmptyArrayArgValidator({ argName: 'types' }),
+  validateHttpStatusCodeTypes
+);
+
 const INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION = {
   keyword: 'internet.httpStatusCode',
   delegate: {
@@ -36,7 +45,7 @@ const INTERNET_HTTP_STATUS_CODE_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/internet',
     fakerDocsUrl: 'https://fakerjs.dev/api/internet',
     validator: validateNumberValue,
-    argsValidator: validateHttpStatusCodeTypes,
+    argsValidator: validateHttpStatusCodeArgs,
     returnType: 'number',
     usageExamples: [
       {

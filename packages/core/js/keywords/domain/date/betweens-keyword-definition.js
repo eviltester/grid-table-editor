@@ -1,7 +1,11 @@
 import { validateArrayValue } from '../../../command-help/command-help-validators.js';
-import { createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+import { composeArgsValidators, createOrderedArgsValidator } from '../../../domain/domain-keyword-arg-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
-const validateDateBetweensBounds = createOrderedArgsValidator({ lowerName: 'from', upperName: 'to' });
+const validateDateBetweensBounds = composeArgsValidators(
+  createPositiveIntegerArgsValidator(['count']),
+  createOrderedArgsValidator({ lowerName: 'from', upperName: 'to' })
+);
 
 const DATE_BETWEENS_KEYWORD_DEFINITION = {
   keyword: 'date.betweens',

@@ -422,6 +422,46 @@ describe('domain keyword delegation', () => {
     });
     expect(result).toBe('should-run');
   });
+
+  test('passes lorem wordCount to faker using the positional count argument', () => {
+    const callArgs = [];
+    const fakeFaker = {
+      lorem: {
+        words: (...receivedArgs) => {
+          callArgs.push(receivedArgs);
+          return 'one two three four five';
+        },
+      },
+    };
+
+    const result = executeDomainKeyword('lorem.words', {
+      faker: fakeFaker,
+      args: [undefined, undefined, 5],
+    });
+
+    expect(result).toBe('one two three four five');
+    expect(callArgs).toEqual([[5]]);
+  });
+
+  test('passes lorem separator after transformed count argument', () => {
+    const callArgs = [];
+    const fakeFaker = {
+      lorem: {
+        sentences: (...receivedArgs) => {
+          callArgs.push(receivedArgs);
+          return 'One.-Two.';
+        },
+      },
+    };
+
+    const result = executeDomainKeyword('lorem.sentences', {
+      faker: fakeFaker,
+      args: [undefined, undefined, 2, '-', undefined, undefined],
+    });
+
+    expect(result).toBe('One.-Two.');
+    expect(callArgs).toEqual([[2, '-']]);
+  });
 });
 
 describe('domain keyword arg validation', () => {
@@ -457,6 +497,57 @@ describe('domain keyword arg validation', () => {
       ok: false,
       error:
         'Invalid keyword arguments: argument "types" contains unsupported value "redirect". Allowed values are informational, success, redirection, clientError, serverError',
+    });
+  });
+
+  test('rejects empty internet.httpStatusCode type arrays before generation', () => {
+    const keyword = getDomainKeywordByAlias('internet.httpStatusCode');
+    const result = validateDomainKeywordArgs(keyword, [[]]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "types" must not be empty',
+    });
+  });
+
+  test.each([
+    ['git.commitSha', [0], 'length'],
+    ['word.words', [0], 'count'],
+    ['lorem.word', [0], 'length'],
+    ['string.alpha', [0], 'length'],
+    ['finance.accountNumber', [0], 'length'],
+    ['date.betweens', [0, 1577836800000, 1609372800000], 'count'],
+  ])('rejects zero %s size/count parameters before generation', (keywordName, args, argName) => {
+    const keyword = getDomainKeywordByAlias(keywordName);
+    const result = validateDomainKeywordArgs(keyword, args);
+
+    expect(result).toEqual({
+      ok: false,
+      error: `Invalid keyword arguments: argument "${argName}" must be greater than 0`,
+    });
+  });
+
+  test.each([
+    ['image.dataUri', [10, -1], 'height'],
+    ['image.urlPicsumPhotos', [-1, 10], 'width'],
+    ['image.url', [-1, 10], 'height'],
+  ])('rejects negative image dimension parameters before generation', (keywordName, args, argName) => {
+    const keyword = getDomainKeywordByAlias(keywordName);
+    const result = validateDomainKeywordArgs(keyword, args);
+
+    expect(result).toEqual({
+      ok: false,
+      error: `Invalid keyword arguments: argument "${argName}" must be greater than 0`,
+    });
+  });
+
+  test('rejects reversed lorem count bounds before generation', () => {
+    const keyword = getDomainKeywordByAlias('lorem.words');
+    const result = validateDomainKeywordArgs(keyword, [undefined, undefined, undefined, 3, 5]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "wordCountMin" must be less than or equal to argument "wordCountMax"',
     });
   });
 

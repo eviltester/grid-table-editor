@@ -1,6 +1,8 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
 const WORD_SELECTION_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+const validateWordSelectionArgs = createPositiveIntegerArgsValidator(['length']);
 
 const WORD_ADVERB_KEYWORD_DEFINITION = {
   keyword: 'word.adverb',
@@ -14,6 +16,7 @@ const WORD_ADVERB_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/word',
     fakerDocsUrl: 'https://fakerjs.dev/api/word',
     validator: validateStringValue,
+    argsValidator: validateWordSelectionArgs,
     returnType: 'string',
     usageExamples: [
       {

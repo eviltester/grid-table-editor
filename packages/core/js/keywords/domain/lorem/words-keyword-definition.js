@@ -1,16 +1,25 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createLoremCountArgsValidator } from './lorem-arg-validators.js';
+
+const validateLoremWordsArgs = createLoremCountArgsValidator({
+  countName: 'wordCount',
+  minName: 'wordCountMin',
+  maxName: 'wordCountMax',
+});
 
 const LOREM_WORDS_KEYWORD_DEFINITION = {
   keyword: 'lorem.words',
   delegate: {
     type: 'faker',
     target: 'lorem.words',
+    argTransform: 'loremCountFromHelpArgs',
   },
   help: {
     summary: 'Generates a space separated list of words.',
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremWordsArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -20,27 +29,27 @@ const LOREM_WORDS_KEYWORD_DEFINITION = {
       },
       {
         functionCall: 'lorem.words(max=10, min=1)',
-        sampleReturnValue: 'cur',
+        sampleReturnValue: 'suppellex a cognatus arca aliquam',
         description: 'Shows lorem.words using min.',
       },
       {
         functionCall: 'lorem.words(max=5)',
-        sampleReturnValue: 'cur suppellex a',
+        sampleReturnValue: 'suppellex a cognatus',
         description: 'Shows lorem.words using max.',
       },
       {
         functionCall: 'lorem.words(wordCount=5)',
-        sampleReturnValue: 'cur suppellex a',
+        sampleReturnValue: 'cur suppellex a cognatus arca',
         description: 'Shows lorem.words using wordCount.',
       },
       {
         functionCall: 'lorem.words(wordCountMax=5)',
-        sampleReturnValue: 'cur suppellex a',
+        sampleReturnValue: 'suppellex a cognatus',
         description: 'Shows lorem.words using wordCountMax.',
       },
       {
         functionCall: 'lorem.words(wordCountMin=5)',
-        sampleReturnValue: 'cur suppellex a',
+        sampleReturnValue: 'cur suppellex a cognatus arca',
         description: 'Shows lorem.words using wordCountMin.',
       },
     ],

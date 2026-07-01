@@ -1,6 +1,8 @@
 import { validateHexadecimalStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
 const STRING_CASING_TYPE = 'upper|lower|mixed';
+const validateStringHexadecimalArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_HEXADECIMAL_KEYWORD_DEFINITION = {
   keyword: 'string.hexadecimal',
@@ -14,6 +16,7 @@ const STRING_HEXADECIMAL_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateHexadecimalStringValue,
+    argsValidator: validateStringHexadecimalArgs,
     returnType: 'string',
     usageExamples: [
       {

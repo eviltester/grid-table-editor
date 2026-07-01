@@ -1,4 +1,7 @@
 import { validateFlightNumberValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateAirlineFlightNumberArgs = createPositiveIntegerArgsValidator(['length']);
 
 const AIRLINE_FLIGHT_NUMBER_KEYWORD_DEFINITION = {
   keyword: 'airline.flightNumber',
@@ -13,6 +16,7 @@ const AIRLINE_FLIGHT_NUMBER_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/airline',
     fakerDocsUrl: 'https://fakerjs.dev/api/airline',
     validator: validateFlightNumberValue,
+    argsValidator: validateAirlineFlightNumberArgs,
     returnType: 'string',
     usageExamples: [
       {

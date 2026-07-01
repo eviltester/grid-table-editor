@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateGitCommitShaArgs = createPositiveIntegerArgsValidator(['length']);
 
 const GIT_COMMIT_SHA_KEYWORD_DEFINITION = {
   keyword: 'git.commitSha',
@@ -12,6 +15,7 @@ const GIT_COMMIT_SHA_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/git',
     fakerDocsUrl: 'https://fakerjs.dev/api/git',
     validator: validateStringValue,
+    argsValidator: validateGitCommitShaArgs,
     returnType: 'string',
     usageExamples: [
       {

@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateWordWordsArgs = createPositiveIntegerArgsValidator(['count']);
 
 const WORD_WORDS_KEYWORD_DEFINITION = {
   keyword: 'word.words',
@@ -12,6 +15,7 @@ const WORD_WORDS_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/word',
     fakerDocsUrl: 'https://fakerjs.dev/api/word',
     validator: validateStringValue,
+    argsValidator: validateWordWordsArgs,
     returnType: 'string',
     usageExamples: [
       {

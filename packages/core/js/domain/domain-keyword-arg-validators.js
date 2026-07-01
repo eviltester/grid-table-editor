@@ -79,4 +79,54 @@ function createNumericArgRangeValidator({
   };
 }
 
-export { composeArgsValidators, createNumericArgRangeValidator, createOrderedArgsValidator };
+function createIntegerArgValidator({ argName } = {}) {
+  return (_args = [], context = {}) => {
+    const argsByName = context?.argsByName || {};
+    const value = argsByName[argName];
+
+    if (typeof value === 'undefined') {
+      return { ok: true };
+    }
+
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      return { ok: true };
+    }
+
+    if (!Number.isInteger(value)) {
+      return {
+        ok: false,
+        error: `Invalid keyword arguments: argument "${argName}" must be an integer`,
+      };
+    }
+
+    return { ok: true };
+  };
+}
+
+function createNonEmptyArrayArgValidator({ argName } = {}) {
+  return (_args = [], context = {}) => {
+    const argsByName = context?.argsByName || {};
+    const value = argsByName[argName];
+
+    if (typeof value === 'undefined' || !Array.isArray(value)) {
+      return { ok: true };
+    }
+
+    if (value.length === 0) {
+      return {
+        ok: false,
+        error: `Invalid keyword arguments: argument "${argName}" must not be empty`,
+      };
+    }
+
+    return { ok: true };
+  };
+}
+
+export {
+  composeArgsValidators,
+  createIntegerArgValidator,
+  createNonEmptyArrayArgValidator,
+  createNumericArgRangeValidator,
+  createOrderedArgsValidator,
+};

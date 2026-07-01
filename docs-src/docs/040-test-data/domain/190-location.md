@@ -28,7 +28,7 @@ Examples:
 Shows the default location.language.alpha2 call.
 
 ```txt
-location.language.alpha2
+language.alpha2
 ```
 
 Returns: `pa`
@@ -47,7 +47,7 @@ Examples:
 Shows the default location.language.alpha3 call.
 
 ```txt
-location.language.alpha3
+language.alpha3
 ```
 
 Returns: `pan`
@@ -66,7 +66,7 @@ Examples:
 Shows the default location.language.name call.
 
 ```txt
-location.language.name
+language.name
 ```
 
 Returns: `Punjabi`

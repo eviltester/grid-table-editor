@@ -12,8 +12,45 @@ const validateBigIntBounds = composeArgsValidators(
     min: 0,
     inclusiveMin: false,
     description: 'Invalid keyword arguments: argument "multipleOf" must be greater than 0',
-  })
+  }),
+  validateBigIntMultipleOfCanMatchRange
 );
+
+function validateBigIntMultipleOfCanMatchRange(_args = [], context = {}) {
+  const argsByName = context?.argsByName || {};
+  const { min, max, multipleOf } = argsByName;
+
+  if (
+    typeof min === 'undefined' ||
+    typeof max === 'undefined' ||
+    typeof multipleOf === 'undefined' ||
+    typeof min !== 'number' ||
+    typeof max !== 'number' ||
+    typeof multipleOf !== 'number' ||
+    !Number.isInteger(min) ||
+    !Number.isInteger(max) ||
+    !Number.isInteger(multipleOf) ||
+    multipleOf <= 0
+  ) {
+    return { ok: true };
+  }
+
+  const minValue = BigInt(min);
+  const maxValue = BigInt(max);
+  const step = BigInt(multipleOf);
+  const remainder = ((minValue % step) + step) % step;
+  const firstMultiple = remainder === 0n ? minValue : minValue + (step - remainder);
+
+  if (firstMultiple > maxValue) {
+    return {
+      ok: false,
+      error:
+        'Invalid keyword arguments: arguments "min", "max", and "multipleOf" do not allow any generated BigInt value',
+    };
+  }
+
+  return { ok: true };
+}
 
 const NUMBER_BIG_INT_KEYWORD_DEFINITION = {
   keyword: 'number.bigInt',

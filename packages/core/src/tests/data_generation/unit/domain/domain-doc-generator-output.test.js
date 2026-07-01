@@ -164,6 +164,10 @@ describe('domain docs generator output', () => {
       expect(airlineDoc).not.toContain('### `airline.airplane`');
       expect(airlineDoc).toContain('### `airplane.name`');
       expect(airlineDoc).toContain('### `airplane.iataTypeCode`');
+      expect(airlineDoc).toContain('### `airline.iataCode`');
+      expect(airlineDoc).toContain('```txt\nairline.iataCode\n```');
+      expect(airlineDoc).not.toContain('```txt\nairline.airline.iataCode\n```');
+      expect(airlineDoc).not.toContain('```txt\nawd.domain.airline.airline.iataCode\n```');
 
       expect(financeDoc).not.toContain('### `finance.currency`');
       expect(financeDoc).toContain('### `finance.currencyCode`');

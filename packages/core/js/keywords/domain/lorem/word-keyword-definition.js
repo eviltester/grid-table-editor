@@ -1,6 +1,8 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
 const LOREM_WORD_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+const validateLoremWordArgs = createPositiveIntegerArgsValidator(['length']);
 
 const LOREM_WORD_KEYWORD_DEFINITION = {
   keyword: 'lorem.word',
@@ -14,6 +16,7 @@ const LOREM_WORD_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremWordArgs,
     returnType: 'string',
     usageExamples: [
       {

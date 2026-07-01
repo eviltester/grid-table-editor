@@ -1,16 +1,25 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createLoremCountArgsValidator } from './lorem-arg-validators.js';
+
+const validateLoremLinesArgs = createLoremCountArgsValidator({
+  countName: 'lineCount',
+  minName: 'lineCountMin',
+  maxName: 'lineCountMax',
+});
 
 const LOREM_LINES_KEYWORD_DEFINITION = {
   keyword: 'lorem.lines',
   delegate: {
     type: 'faker',
     target: 'lorem.lines',
+    argTransform: 'loremCountFromHelpArgs',
   },
   help: {
     summary: "Generates the given number lines of lorem separated by `'\\n'`.",
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremLinesArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -23,7 +32,12 @@ const LOREM_LINES_KEYWORD_DEFINITION = {
       },
       {
         functionCall: 'lorem.lines(max=10, min=1)',
-        sampleReturnValue: 'Suppellex a cognatus arca aliquam audentia.',
+        sampleReturnValue:
+          'A cognatus arca aliquam audentia coniuratio crux fugit.\n' +
+          'Stillicidium bardus utrimque acsi spargo cur.\n' +
+          'Aqua avaritia thesaurus volo combibo stultus utor.\n' +
+          'Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.\n' +
+          'Trucido accusamus tandem voveo tamisium cicuta testimonium amet.',
         description: 'Shows lorem.lines using min.',
       },
       {
@@ -37,9 +51,11 @@ const LOREM_LINES_KEYWORD_DEFINITION = {
       {
         functionCall: 'lorem.lines(lineCount=5)',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit.\n' +
-          'Stillicidium bardus utrimque acsi spargo cur.\n' +
-          'Aqua avaritia thesaurus volo combibo stultus utor.',
+          'Suppellex a cognatus arca aliquam audentia.\n' +
+          'Crux fugit curatio stillicidium bardus.\n' +
+          'Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\n' +
+          'Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus.\n' +
+          'Stipes trucido accusamus tandem voveo.',
         description: 'Shows lorem.lines using lineCount.',
       },
       {
@@ -53,9 +69,11 @@ const LOREM_LINES_KEYWORD_DEFINITION = {
       {
         functionCall: 'lorem.lines(lineCountMin=5)',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit.\n' +
-          'Stillicidium bardus utrimque acsi spargo cur.\n' +
-          'Aqua avaritia thesaurus volo combibo stultus utor.',
+          'Suppellex a cognatus arca aliquam audentia.\n' +
+          'Crux fugit curatio stillicidium bardus.\n' +
+          'Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\n' +
+          'Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus.\n' +
+          'Stipes trucido accusamus tandem voveo.',
         description: 'Shows lorem.lines using lineCountMin.',
       },
     ],

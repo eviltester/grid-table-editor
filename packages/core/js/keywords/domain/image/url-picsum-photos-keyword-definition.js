@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateImageUrlPicsumPhotosArgs = createPositiveIntegerArgsValidator(['width', 'height']);
 
 const IMAGE_URL_PICSUM_PHOTOS_KEYWORD_DEFINITION = {
   keyword: 'image.urlPicsumPhotos',
@@ -12,6 +15,7 @@ const IMAGE_URL_PICSUM_PHOTOS_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/image',
     fakerDocsUrl: 'https://fakerjs.dev/api/image',
     validator: validateStringValue,
+    argsValidator: validateImageUrlPicsumPhotosArgs,
     returnType: 'string',
     usageExamples: [
       {

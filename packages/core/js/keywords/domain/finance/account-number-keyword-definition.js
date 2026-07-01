@@ -1,4 +1,7 @@
 import { validateAccountNumberValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateFinanceAccountNumberArgs = createPositiveIntegerArgsValidator(['length']);
 
 const FINANCE_ACCOUNT_NUMBER_KEYWORD_DEFINITION = {
   keyword: 'finance.accountNumber',
@@ -11,6 +14,7 @@ const FINANCE_ACCOUNT_NUMBER_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
     fakerDocsUrl: 'https://fakerjs.dev/api/finance',
     validator: validateAccountNumberValue,
+    argsValidator: validateFinanceAccountNumberArgs,
     returnType: 'string',
     usageExamples: [
       {

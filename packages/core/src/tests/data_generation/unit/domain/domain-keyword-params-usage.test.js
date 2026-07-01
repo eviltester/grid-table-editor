@@ -83,6 +83,19 @@ function applyKeywordExecutionDefaults(keyword, args) {
   return args;
 }
 
+function expectedLoremCountArgs(argName, sample) {
+  if (argName === 'separator') {
+    return [undefined, sample];
+  }
+  if (argName === 'max' || /CountMax$/.test(argName)) {
+    return [{ min: 1, max: sample }];
+  }
+  if (argName === 'min' || /CountMin$/.test(argName) || /Count$/.test(argName)) {
+    return [sample];
+  }
+  return [];
+}
+
 function expectsRuntimeRejection(keywordName, argName) {
   void keywordName;
   void argName;
@@ -125,6 +138,8 @@ describe('domain keyword parameter usage', () => {
           expect(receivedArgs[0]).toEqual(
             expect.objectContaining({ [argSpec.name]: expectedDelegatedArgValue(argSpec, sample) })
           );
+        } else if (keyword.delegate.argTransform === 'loremCountFromHelpArgs') {
+          expect(receivedArgs).toEqual(expectedLoremCountArgs(argSpec.name, sample));
         } else {
           expect(receivedArgs[argIndex]).toEqual(sample);
         }

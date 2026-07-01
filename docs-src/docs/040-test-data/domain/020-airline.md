@@ -93,7 +93,7 @@ Examples:
 Shows the default airline.airline.iataCode call.
 
 ```txt
-airline.airline.iataCode
+airline.iataCode
 ```
 
 Returns: `FZ`
@@ -112,7 +112,7 @@ Examples:
 Shows the default airline.airline.name call.
 
 ```txt
-airline.airline.name
+airline.name
 ```
 
 Returns: `Flydubai`
@@ -206,7 +206,7 @@ Examples:
 Shows the default airline.airplane.iataTypeCode call.
 
 ```txt
-airline.airplane.iataTypeCode
+airplane.iataTypeCode
 ```
 
 Returns: `74J`
@@ -225,7 +225,7 @@ Examples:
 Shows the default airline.airplane.name call.
 
 ```txt
-airline.airplane.name
+airplane.name
 ```
 
 Returns: `Boeing 747-400D`
@@ -244,7 +244,7 @@ Examples:
 Shows the default airline.airport.iataCode call.
 
 ```txt
-airline.airport.iataCode
+airport.iataCode
 ```
 
 Returns: `HRG`
@@ -263,7 +263,7 @@ Examples:
 Shows the default airline.airport.name call.
 
 ```txt
-airline.airport.name
+airport.name
 ```
 
 Returns: `Hurgada International Airport`

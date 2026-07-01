@@ -1,4 +1,7 @@
 import { validateFromCharactersStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateStringFromCharactersArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_FROM_CHARACTERS_KEYWORD_DEFINITION = {
   keyword: 'string.fromCharacters',
@@ -11,6 +14,7 @@ const STRING_FROM_CHARACTERS_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateFromCharactersStringValue,
+    argsValidator: validateStringFromCharactersArgs,
     returnType: 'string',
     usageExamples: [
       {

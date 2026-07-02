@@ -1,0 +1,5 @@
+{
+  "jest.jestCommandLine": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs",
+  "jestrunner.enableESM": true,
+  "jestrunner.jestCommand": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config ./jest.config.cjs"
+}

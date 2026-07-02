@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateInternetPasswordArgs = createPositiveIntegerArgsValidator(['length']);
 
 const INTERNET_PASSWORD_KEYWORD_DEFINITION = {
   keyword: 'internet.password',
@@ -13,6 +16,7 @@ const INTERNET_PASSWORD_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/internet',
     fakerDocsUrl: 'https://fakerjs.dev/api/internet',
     validator: validateStringValue,
+    argsValidator: validateInternetPasswordArgs,
     returnType: 'string',
     usageExamples: [
       {

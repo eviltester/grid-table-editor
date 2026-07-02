@@ -1,6 +1,8 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
 const LOREM_WORD_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+const validateLoremWordArgs = createPositiveIntegerArgsValidator(['length']);
 
 const LOREM_WORD_KEYWORD_DEFINITION = {
   keyword: 'lorem.word',
@@ -14,22 +16,13 @@ const LOREM_WORD_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremWordArgs,
     returnType: 'string',
     usageExamples: [
       {
         functionCall: 'lorem.word()',
         sampleReturnValue: 'cur',
         description: 'Shows lorem.word when optional params are omitted.',
-      },
-      {
-        functionCall: 'lorem.word(max=10, min=1)',
-        sampleReturnValue: 'cur',
-        description: 'Shows lorem.word using min.',
-      },
-      {
-        functionCall: 'lorem.word(max=5)',
-        sampleReturnValue: 'cur',
-        description: 'Shows lorem.word using max.',
       },
       {
         functionCall: 'lorem.word(length=5)',
@@ -43,18 +36,6 @@ const LOREM_WORD_KEYWORD_DEFINITION = {
       },
     ],
     args: [
-      {
-        name: 'min',
-        type: 'number',
-        required: false,
-        description: 'Minimum word length when generating a ranged length.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum word length when generating a ranged length.',
-      },
       {
         name: 'length',
         type: 'number',

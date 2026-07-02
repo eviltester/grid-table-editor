@@ -1,6 +1,8 @@
 import { validateAlphaStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
 const STRING_CASING_TYPE = 'upper|lower|mixed';
+const validateStringAlphaArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_ALPHA_KEYWORD_DEFINITION = {
   keyword: 'string.alpha',
@@ -14,6 +16,7 @@ const STRING_ALPHA_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateAlphaStringValue,
+    argsValidator: validateStringAlphaArgs,
     returnType: 'string',
     usageExamples: [
       {

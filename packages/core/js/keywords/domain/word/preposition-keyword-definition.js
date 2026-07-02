@@ -1,6 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createWordSelectionArgsValidator, WORD_SELECTION_STRATEGY_TYPE } from '../shared/common-arg-validators.js';
 
-const WORD_SELECTION_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+const validateWordSelectionArgs = createWordSelectionArgsValidator();
 
 const WORD_PREPOSITION_KEYWORD_DEFINITION = {
   keyword: 'word.preposition',
@@ -14,6 +15,7 @@ const WORD_PREPOSITION_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/word',
     fakerDocsUrl: 'https://fakerjs.dev/api/word',
     validator: validateStringValue,
+    argsValidator: validateWordSelectionArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -27,11 +29,6 @@ const WORD_PREPOSITION_KEYWORD_DEFINITION = {
         description: 'Shows word.preposition using length.',
       },
       {
-        functionCall: 'word.preposition(max=5)',
-        sampleReturnValue: 'except',
-        description: 'Shows word.preposition using max.',
-      },
-      {
         functionCall: 'word.preposition(strategy="any-length")',
         sampleReturnValue: 'except',
         description: 'Shows word.preposition using strategy.',
@@ -43,12 +40,6 @@ const WORD_PREPOSITION_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

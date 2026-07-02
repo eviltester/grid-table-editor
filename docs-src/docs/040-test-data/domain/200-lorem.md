@@ -45,7 +45,7 @@ Shows lorem.lines using min.
 lorem.lines(max=10, min=1)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.\nAgo adflicto assentator utrimque altus curiositas vita expedita stultus comedo.\nTrucido accusamus tandem voveo tamisium cicuta testimonium amet.`
 
 Shows lorem.lines using max.
 
@@ -61,7 +61,7 @@ Shows lorem.lines using lineCount.
 lorem.lines(lineCount=5)
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+Returns: `Suppellex a cognatus arca aliquam audentia.\nCrux fugit curatio stillicidium bardus.\nAcsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus.\nStipes trucido accusamus tandem voveo.`
 
 Shows lorem.lines using lineCountMax.
 
@@ -77,7 +77,7 @@ Shows lorem.lines using lineCountMin.
 lorem.lines(lineCountMin=5)
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.\nStillicidium bardus utrimque acsi spargo cur.\nAqua avaritia thesaurus volo combibo stultus utor.`
+Returns: `Suppellex a cognatus arca aliquam audentia.\nCrux fugit curatio stillicidium bardus.\nAcsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus.\nStipes trucido accusamus tandem voveo.`
 
 ### `lorem.paragraph`
 
@@ -110,7 +110,7 @@ Shows lorem.paragraph using min.
 lorem.paragraph(max=10, min=1)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo. Trucido accusamus tandem voveo tamisium cicuta testimonium amet.`
 
 Shows lorem.paragraph using max.
 
@@ -118,7 +118,7 @@ Shows lorem.paragraph using max.
 lorem.paragraph(max=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
 
 Shows lorem.paragraph using sentenceCount.
 
@@ -126,7 +126,7 @@ Shows lorem.paragraph using sentenceCount.
 lorem.paragraph(sentenceCount=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus. Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo.`
 
 Shows lorem.paragraph using sentenceCountMax.
 
@@ -134,7 +134,7 @@ Shows lorem.paragraph using sentenceCountMax.
 lorem.paragraph(sentenceCountMax=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
 
 Shows lorem.paragraph using sentenceCountMin.
 
@@ -142,7 +142,7 @@ Shows lorem.paragraph using sentenceCountMin.
 lorem.paragraph(sentenceCountMin=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus. Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo.`
 
 ### `lorem.paragraphs`
 
@@ -176,7 +176,7 @@ Shows lorem.paragraphs using min.
 lorem.paragraphs(max=10, min=1)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.\nAgo adflicto assentator utrimque altus curiositas vita expedita stultus comedo. Trucido accusamus tandem voveo tamisium cicuta testimonium amet. Ver claudeo civis aperio accusantium spoliatio.\nCena deprimo adnuo natus. Odit subseco ambulo cupio. Cupio admiratio facilis sonitus dolorum vinco occaecati venio.\nApud timor cubicularis asperiores. Conqueror tantillus sursum vacuus quia tantillus conscendo centum vehemens cursus. Somnus quasi amplus vir defaeco nesciunt cumque capillus venio natus.\nProvident compello et. Consuasor ver qui accendo vetus studio vulpes at approbo vicissitudo. Aedificium temeritas tego vesica sum ante accusantium acquiro.`
 
 Shows lorem.paragraphs using max.
 
@@ -184,7 +184,7 @@ Shows lorem.paragraphs using max.
 lorem.paragraphs(max=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.5Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.5Spoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.\nAgo adflicto assentator utrimque altus curiositas vita expedita stultus comedo. Trucido accusamus tandem voveo tamisium cicuta testimonium amet. Ver claudeo civis aperio accusantium spoliatio.\nCena deprimo adnuo natus. Odit subseco ambulo cupio. Cupio admiratio facilis sonitus dolorum vinco occaecati venio.`
 
 Shows lorem.paragraphs using paragraphCount.
 
@@ -192,7 +192,7 @@ Shows lorem.paragraphs using paragraphCount.
 lorem.paragraphs(paragraphCount=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.\nOccaecati venio apto apud timor cubicularis asperiores vestigium conqueror tantillus. Vacuus quia tantillus conscendo centum vehemens cursus vobis. Quasi amplus vir defaeco nesciunt cumque capillus venio.\nAbbas provident compello et valde consuasor ver. Accendo vetus studio vulpes at approbo vicissitudo. Aedificium temeritas tego vesica sum ante accusantium acquiro.`
 
 Shows lorem.paragraphs using separator.
 
@@ -200,7 +200,7 @@ Shows lorem.paragraphs using separator.
 lorem.paragraphs(separator="-")
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.-Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.-Spoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
 
 Shows lorem.paragraphs using paragraphCountMax.
 
@@ -208,7 +208,7 @@ Shows lorem.paragraphs using paragraphCountMax.
 lorem.paragraphs(paragraphCountMax=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.\nAgo adflicto assentator utrimque altus curiositas vita expedita stultus comedo. Trucido accusamus tandem voveo tamisium cicuta testimonium amet. Ver claudeo civis aperio accusantium spoliatio.\nCena deprimo adnuo natus. Odit subseco ambulo cupio. Cupio admiratio facilis sonitus dolorum vinco occaecati venio.`
 
 Shows lorem.paragraphs using paragraphCountMin.
 
@@ -216,7 +216,7 @@ Shows lorem.paragraphs using paragraphCountMin.
 lorem.paragraphs(paragraphCountMin=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus.\nVarius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo. Cicuta testimonium amet dedico ver claudeo civis aperio.\nSpoliatio beneficium cena. Adnuo natus arca odit subseco ambulo. Suasoria cupio admiratio facilis sonitus dolorum.\nOccaecati venio apto apud timor cubicularis asperiores vestigium conqueror tantillus. Vacuus quia tantillus conscendo centum vehemens cursus vobis. Quasi amplus vir defaeco nesciunt cumque capillus venio.\nAbbas provident compello et valde consuasor ver. Accendo vetus studio vulpes at approbo vicissitudo. Aedificium temeritas tego vesica sum ante accusantium acquiro.`
 
 ### `lorem.sentence`
 
@@ -249,7 +249,7 @@ Shows lorem.sentence using min.
 lorem.sentence(max=10, min=1)
 ```
 
-Returns: `Cur.`
+Returns: `Suppellex a cognatus arca aliquam.`
 
 Shows lorem.sentence using max.
 
@@ -257,7 +257,7 @@ Shows lorem.sentence using max.
 lorem.sentence(max=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `Suppellex a cognatus.`
 
 Shows lorem.sentence using wordCount.
 
@@ -265,7 +265,7 @@ Shows lorem.sentence using wordCount.
 lorem.sentence(wordCount=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `Cur suppellex a cognatus arca.`
 
 Shows lorem.sentence using wordCountMax.
 
@@ -273,7 +273,7 @@ Shows lorem.sentence using wordCountMax.
 lorem.sentence(wordCountMax=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `Suppellex a cognatus.`
 
 Shows lorem.sentence using wordCountMin.
 
@@ -281,7 +281,7 @@ Shows lorem.sentence using wordCountMin.
 lorem.sentence(wordCountMin=5)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `Cur suppellex a cognatus arca.`
 
 ### `lorem.sentences`
 
@@ -315,7 +315,7 @@ Shows lorem.sentences using min.
 lorem.sentences(max=10, min=1)
 ```
 
-Returns: `Suppellex a cognatus arca aliquam audentia.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo. Trucido accusamus tandem voveo tamisium cicuta testimonium amet.`
 
 Shows lorem.sentences using max.
 
@@ -323,7 +323,7 @@ Shows lorem.sentences using max.
 lorem.sentences(max=5)
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.5Stillicidium bardus utrimque acsi spargo cur.5Aqua avaritia thesaurus volo combibo stultus utor.5Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
 
 Shows lorem.sentences using sentenceCount.
 
@@ -331,7 +331,7 @@ Shows lorem.sentences using sentenceCount.
 lorem.sentences(sentenceCount=5)
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus. Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo.`
 
 Shows lorem.sentences using separator.
 
@@ -339,7 +339,7 @@ Shows lorem.sentences using separator.
 lorem.sentences(separator="-")
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit.-Stillicidium bardus utrimque acsi spargo cur.-Aqua avaritia thesaurus volo combibo stultus utor.-Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
 
 Shows lorem.sentences using sentenceCountMax.
 
@@ -347,7 +347,7 @@ Shows lorem.sentences using sentenceCountMax.
 lorem.sentences(sentenceCountMax=5)
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.`
 
 Shows lorem.sentences using sentenceCountMin.
 
@@ -355,7 +355,7 @@ Shows lorem.sentences using sentenceCountMin.
 lorem.sentences(sentenceCountMin=5)
 ```
 
-Returns: `A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.`
+Returns: `Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus. Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo.`
 
 ### `lorem.slug`
 
@@ -388,7 +388,7 @@ Shows lorem.slug using min.
 lorem.slug(max=10, min=1)
 ```
 
-Returns: `cur`
+Returns: `suppellex-a-cognatus-arca-aliquam`
 
 Shows lorem.slug using max.
 
@@ -396,7 +396,7 @@ Shows lorem.slug using max.
 lorem.slug(max=5)
 ```
 
-Returns: `cur-suppellex-a`
+Returns: `suppellex-a-cognatus`
 
 Shows lorem.slug using wordCount.
 
@@ -404,7 +404,7 @@ Shows lorem.slug using wordCount.
 lorem.slug(wordCount=5)
 ```
 
-Returns: `cur-suppellex-a`
+Returns: `cur-suppellex-a-cognatus-arca`
 
 Shows lorem.slug using wordCountMax.
 
@@ -412,7 +412,7 @@ Shows lorem.slug using wordCountMax.
 lorem.slug(wordCountMax=5)
 ```
 
-Returns: `cur-suppellex-a`
+Returns: `suppellex-a-cognatus`
 
 Shows lorem.slug using wordCountMin.
 
@@ -420,7 +420,7 @@ Shows lorem.slug using wordCountMin.
 lorem.slug(wordCountMin=5)
 ```
 
-Returns: `cur-suppellex-a`
+Returns: `cur-suppellex-a-cognatus-arca`
 
 ### `lorem.text`
 
@@ -450,8 +450,6 @@ Generates a word of a specified length.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `min` | `number` | no | Minimum word length when generating a ranged length. |
-| `max` | `number` | no | Maximum word length when generating a ranged length. |
 | `length` | `number` | no | Exact word length to generate. |
 | `strategy` | `fail\|closest\|shortest\|longest\|any-length` | no | The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length. |
 
@@ -461,22 +459,6 @@ Shows lorem.word when optional params are omitted.
 
 ```txt
 lorem.word()
-```
-
-Returns: `cur`
-
-Shows lorem.word using min.
-
-```txt
-lorem.word(max=10, min=1)
-```
-
-Returns: `cur`
-
-Shows lorem.word using max.
-
-```txt
-lorem.word(max=5)
 ```
 
 Returns: `cur`
@@ -528,7 +510,7 @@ Shows lorem.words using min.
 lorem.words(max=10, min=1)
 ```
 
-Returns: `cur`
+Returns: `suppellex a cognatus arca aliquam`
 
 Shows lorem.words using max.
 
@@ -536,7 +518,7 @@ Shows lorem.words using max.
 lorem.words(max=5)
 ```
 
-Returns: `cur suppellex a`
+Returns: `suppellex a cognatus`
 
 Shows lorem.words using wordCount.
 
@@ -544,7 +526,7 @@ Shows lorem.words using wordCount.
 lorem.words(wordCount=5)
 ```
 
-Returns: `cur suppellex a`
+Returns: `cur suppellex a cognatus arca`
 
 Shows lorem.words using wordCountMax.
 
@@ -552,7 +534,7 @@ Shows lorem.words using wordCountMax.
 lorem.words(wordCountMax=5)
 ```
 
-Returns: `cur suppellex a`
+Returns: `suppellex a cognatus`
 
 Shows lorem.words using wordCountMin.
 
@@ -560,4 +542,4 @@ Shows lorem.words using wordCountMin.
 lorem.words(wordCountMin=5)
 ```
 
-Returns: `cur suppellex a`
+Returns: `cur suppellex a cognatus arca`

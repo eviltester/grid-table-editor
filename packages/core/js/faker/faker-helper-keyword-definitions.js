@@ -107,6 +107,9 @@ function mapDomainKeywordHelpToFakerCommandHelp(commandHelp) {
         type: arg.type,
         description: arg.description || '',
         examples: Array.isArray(arg.examples) ? arg.examples : [],
+        ...(Object.prototype.hasOwnProperty.call(arg || {}, 'usageExampleSupported')
+          ? { usageExampleSupported: arg.usageExampleSupported !== false }
+          : {}),
       }))
     : [];
   const returnType = commandHelp.returnType || '';

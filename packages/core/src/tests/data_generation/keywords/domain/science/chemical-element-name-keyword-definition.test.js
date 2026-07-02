@@ -1,3 +1,18 @@
-import { defineDomainKeywordDefinitionTests } from '../define-domain-keyword-definition-tests.js';
+import { faker } from '@faker-js/faker';
+import { defineDomainKeywordHelpContractTests } from '../define-domain-keyword-help-contract-tests.js';
+import { executeDomainKeyword } from '../../../../../../js/domain/domain-keywords.js';
+import { parseKeywordInvocation } from '../../../../../../js/domain/domain-keyword-parser.js';
 
-defineDomainKeywordDefinitionTests('science.chemicalElement.name');
+defineDomainKeywordHelpContractTests('science.chemicalElement.name');
+
+describe('science.chemicalElement.name parameter validation', () => {
+  test('executes science.chemicalElement.name() successfully', () => {
+    const parsed = parseKeywordInvocation('science.chemicalElement.name()');
+
+    expect(parsed.errors).toEqual([]);
+
+    const result = executeDomainKeyword(parsed.keyword, { faker, args: parsed.args });
+
+    expect(result).toBeDefined();
+  });
+});

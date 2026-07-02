@@ -1,5 +1,6 @@
 import { DOMAIN_KEYWORDS, executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
 import { parseKeywordInvocation } from '../../../../../js/domain/domain-keyword-parser.js';
+import { sampleValueForKeywordArg, valueToInvocationLiteral } from './domain-keyword-sample-values.test-helper.js';
 
 function setDeepMethod(root, target, fn) {
   const parts = String(target || '')
@@ -14,90 +15,6 @@ function setDeepMethod(root, target, fn) {
   }
 
   node[parts[parts.length - 1]] = fn;
-}
-
-function sampleValueForType(typeName) {
-  const types = String(typeName || '')
-    .split('|')
-    .map((entry) => entry.trim());
-  const stringLiterals = types
-    .filter(
-      (entry) =>
-        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
-        !/^[+-]?\d+(\.\d+)?$/.test(entry)
-    )
-    .map((entry) =>
-      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
-        ? entry.slice(1, -1)
-        : entry
-    );
-
-  if (types.includes('number') || types.includes('integer')) {
-    return 7;
-  }
-  if (stringLiterals.length > 0) {
-    return stringLiterals[0];
-  }
-  if (types.includes('regexp')) {
-    return '[A-Z]';
-  }
-  if (types.includes('boolean')) {
-    return true;
-  }
-  if (types.includes('array')) {
-    return ['x', 'y'];
-  }
-  if (types.includes('object')) {
-    return { key: 'value' };
-  }
-  return 'sample';
-}
-
-function sampleValueForKeywordArg(keywordName, argName, typeName) {
-  const key = `${keywordName}.${argName}`;
-  if (argName === 'from') return 1577836800000;
-  if (argName === 'to') return 1580428800000;
-  if (argName === 'refDate') return 1716110400000;
-  if (argName === 'version') return 7;
-  if (argName === 'count') return 3;
-  if (argName === 'min') return 1;
-  if (argName === 'max') return 10;
-  if (argName === 'length') return 8;
-  if (argName === 'precision') return 2;
-  if (argName === 'multipleOf') return 1;
-  if (argName === 'separator') return '-';
-  if (argName === 'protocol') return 'https';
-  if (argName === 'countryCode') return 'GB';
-  if (argName === 'mimeType') return 'image/png';
-  if (key === 'internet.ipv4.network') return 'private-a';
-  if (key === 'finance.bitcoinAddress.network') return 'testnet';
-  if (argName === 'cidrBlock') return '192.168.0.0/24';
-  if (argName === 'types') return ['smiley'];
-  if (argName === 'header') return { alg: 'HS256', typ: 'JWT' };
-  if (argName === 'payload') return { iss: 'Acme' };
-  if (argName === 'pattern') return '[A-Z]';
-  if (argName === 'mode') return 'age';
-  if (argName === 'strategy') return 'any-length';
-  if (argName === 'sex') return 'female';
-  if (argName === 'style') return 'human';
-
-  return sampleValueForType(typeName);
-}
-
-function valueToInvocationLiteral(value) {
-  if (typeof value === 'string') {
-    return JSON.stringify(value);
-  }
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-  if (Array.isArray(value)) {
-    return JSON.stringify(value);
-  }
-  if (value && typeof value === 'object') {
-    return JSON.stringify(value);
-  }
-  throw new Error(`Unsupported literal type for invocation: ${typeof value}`);
 }
 
 function addDomainParamInvocationCoverageTests(domainName) {

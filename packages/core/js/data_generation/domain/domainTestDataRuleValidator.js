@@ -1,12 +1,15 @@
+import { Faker } from '@faker-js/faker';
 import { parseKeywordInvocation } from '../../domain/domain-keyword-parser.js';
 import {
   DOMAIN_KEYWORD_ALIAS_INDEX,
+  executeDomainKeyword,
   getDomainKeywordByAlias,
   validateDomainKeywordArgs,
 } from '../../domain/domain-keywords.js';
 
 class DomainTestDataRuleValidator {
-  constructor() {
+  constructor(aFaker = null) {
+    this.faker = aFaker;
     this.validationError = '';
     this.lastParsed = null;
   }
@@ -52,6 +55,24 @@ class DomainTestDataRuleValidator {
       return false;
     }
 
+    if (
+      this.faker &&
+      keywordDefinition.delegate?.type === 'faker' &&
+      hasFakerDelegateTarget(this.faker, keywordDefinition.delegate?.target)
+    ) {
+      const validationFaker = createIsolatedFaker(this.faker);
+      try {
+        executeDomainKeyword(recognizedKeyword, {
+          faker: validationFaker,
+          args: parsed.args,
+          autoIncrementState: {},
+        });
+      } catch (error) {
+        this.validationError = error?.message || 'Domain keyword failed during validation';
+        return false;
+      }
+    }
+
     return true;
   }
 
@@ -62,6 +83,26 @@ class DomainTestDataRuleValidator {
   getValidationError() {
     return this.validationError;
   }
+}
+
+function createIsolatedFaker(fakerInstance) {
+  const rawDefinitions = fakerInstance?.rawDefinitions;
+  const isolatedFaker = new Faker({ locale: rawDefinitions });
+  isolatedFaker.seed(1);
+  return isolatedFaker;
+}
+
+function hasFakerDelegateTarget(fakerInstance, target) {
+  const parts = String(target || '')
+    .split('.')
+    .filter((part) => part.length > 0);
+  let node = fakerInstance;
+
+  for (const part of parts) {
+    node = node?.[part];
+  }
+
+  return typeof node === 'function';
 }
 
 export { DomainTestDataRuleValidator };

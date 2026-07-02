@@ -28,7 +28,7 @@ Examples:
 Shows the default science.chemicalElement.atomicNumber call.
 
 ```txt
-science.chemicalElement.atomicNumber
+chemicalElement.atomicNumber
 ```
 
 Returns: `50`
@@ -47,7 +47,7 @@ Examples:
 Shows the default science.chemicalElement.name call.
 
 ```txt
-science.chemicalElement.name
+chemicalElement.name
 ```
 
 Returns: `Tin`
@@ -66,7 +66,7 @@ Examples:
 Shows the default science.chemicalElement.symbol call.
 
 ```txt
-science.chemicalElement.symbol
+chemicalElement.symbol
 ```
 
 Returns: `Sn`
@@ -85,7 +85,7 @@ Examples:
 Shows the default science.unit.name call.
 
 ```txt
-science.unit.name
+unit.name
 ```
 
 Returns: `watt`
@@ -104,7 +104,7 @@ Examples:
 Shows the default science.unit.symbol call.
 
 ```txt
-science.unit.symbol
+unit.symbol
 ```
 
 Returns: `W`

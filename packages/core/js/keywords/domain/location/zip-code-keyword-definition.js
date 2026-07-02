@@ -5,6 +5,7 @@ const LOCATION_ZIP_CODE_KEYWORD_DEFINITION = {
   delegate: {
     type: 'faker',
     target: 'location.zipCode',
+    argTransform: 'optionsFromHelpArgs',
   },
   help: {
     summary: 'Generates data using faker location zip code.',
@@ -14,12 +15,33 @@ const LOCATION_ZIP_CODE_KEYWORD_DEFINITION = {
     returnType: 'string',
     usageExamples: [
       {
-        functionCall: 'location.zipCode',
+        functionCall: 'location.zipCode()',
         sampleReturnValue: '70310',
         description: 'Shows the default location.zipCode call.',
       },
+      {
+        functionCall: 'location.zipCode(format="#####")',
+        sampleReturnValue: '47031',
+        description: 'Shows location.zipCode using a format option.',
+      },
     ],
-    args: [],
+    args: [
+      {
+        name: 'state',
+        type: 'string',
+        required: false,
+        usageExampleSupported: false,
+        description: 'State abbreviation used to constrain the generated zip code where supported by the locale.',
+        examples: ['CA'],
+      },
+      {
+        name: 'format',
+        type: 'string',
+        required: false,
+        description: 'Format pattern used for the generated zip code.',
+        examples: ['#####'],
+      },
+    ],
   },
 };
 

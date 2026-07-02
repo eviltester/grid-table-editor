@@ -298,7 +298,7 @@ export class TestDataRulesCompiler {
     const fakerValidator = new FakerTestDataRuleValidator(this.faker, this.options);
     const regexValidator = new RegexTestDataRuleValidator(this.RandExp);
     const enumValidator = new EnumTestDataRuleValidator();
-    const domainValidator = new DomainTestDataRuleValidator();
+    const domainValidator = new DomainTestDataRuleValidator(this.faker);
 
     this.rules.forEach((rule) => {
       switch (rule.type) {

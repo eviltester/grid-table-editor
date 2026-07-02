@@ -1,6 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createWordSelectionArgsValidator, WORD_SELECTION_STRATEGY_TYPE } from '../shared/common-arg-validators.js';
 
-const WORD_SELECTION_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+const validateWordSelectionArgs = createWordSelectionArgsValidator();
 
 const WORD_ADVERB_KEYWORD_DEFINITION = {
   keyword: 'word.adverb',
@@ -14,6 +15,7 @@ const WORD_ADVERB_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/word',
     fakerDocsUrl: 'https://fakerjs.dev/api/word',
     validator: validateStringValue,
+    argsValidator: validateWordSelectionArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -27,11 +29,6 @@ const WORD_ADVERB_KEYWORD_DEFINITION = {
         description: 'Shows word.adverb using length.',
       },
       {
-        functionCall: 'word.adverb(max=5)',
-        sampleReturnValue: 'knavishly',
-        description: 'Shows word.adverb using max.',
-      },
-      {
         functionCall: 'word.adverb(strategy="any-length")',
         sampleReturnValue: 'knavishly',
         description: 'Shows word.adverb using strategy.',
@@ -43,12 +40,6 @@ const WORD_ADVERB_KEYWORD_DEFINITION = {
         type: 'number',
         required: false,
         description: 'Desired length of the generated value.',
-      },
-      {
-        name: 'max',
-        type: 'number',
-        required: false,
-        description: 'Maximum bound used when generating a value.',
       },
       {
         name: 'strategy',

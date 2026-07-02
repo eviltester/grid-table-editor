@@ -17,6 +17,7 @@ import {
   getFakerCommandHelp,
 } from '../../../../../js/faker/faker-helper-keyword-definitions.js';
 import { FAKER_HELPER_KEYWORD_DEFINITIONS } from '../../../../../js/faker/faker-helper-keyword-definitions.js';
+import { sampleValueForKeywordArg, valueToInvocationLiteral } from './domain-keyword-sample-values.test-helper.js';
 
 describe('domain keyword catalog', () => {
   test('registers canonical awd.domain keywords for faker commands', () => {
@@ -421,6 +422,46 @@ describe('domain keyword delegation', () => {
     });
     expect(result).toBe('should-run');
   });
+
+  test('passes lorem wordCount to faker using the positional count argument', () => {
+    const callArgs = [];
+    const fakeFaker = {
+      lorem: {
+        words: (...receivedArgs) => {
+          callArgs.push(receivedArgs);
+          return 'one two three four five';
+        },
+      },
+    };
+
+    const result = executeDomainKeyword('lorem.words', {
+      faker: fakeFaker,
+      args: [undefined, undefined, 5],
+    });
+
+    expect(result).toBe('one two three four five');
+    expect(callArgs).toEqual([[5]]);
+  });
+
+  test('passes lorem separator after transformed count argument', () => {
+    const callArgs = [];
+    const fakeFaker = {
+      lorem: {
+        sentences: (...receivedArgs) => {
+          callArgs.push(receivedArgs);
+          return 'One.-Two.';
+        },
+      },
+    };
+
+    const result = executeDomainKeyword('lorem.sentences', {
+      faker: fakeFaker,
+      args: [undefined, undefined, 2, '-', undefined, undefined],
+    });
+
+    expect(result).toBe('One.-Two.');
+    expect(callArgs).toEqual([[2, '-']]);
+  });
 });
 
 describe('domain keyword arg validation', () => {
@@ -445,6 +486,68 @@ describe('domain keyword arg validation', () => {
     expect(result).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "commonOnly" must be boolean, not string',
+    });
+  });
+
+  test('rejects unsupported internet.httpStatusCode types before generation', () => {
+    const keyword = getDomainKeywordByAlias('internet.httpStatusCode');
+    const result = validateDomainKeywordArgs(keyword, [['success', 'redirect']]);
+
+    expect(result).toEqual({
+      ok: false,
+      error:
+        'Invalid keyword arguments: argument "types" contains unsupported value "redirect". Allowed values are informational, success, redirection, clientError, serverError',
+    });
+  });
+
+  test('rejects empty internet.httpStatusCode type arrays before generation', () => {
+    const keyword = getDomainKeywordByAlias('internet.httpStatusCode');
+    const result = validateDomainKeywordArgs(keyword, [[]]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "types" must not be empty',
+    });
+  });
+
+  test.each([
+    ['git.commitSha', [0], 'length'],
+    ['word.words', [0], 'count'],
+    ['lorem.word', [0], 'length'],
+    ['string.alpha', [0], 'length'],
+    ['finance.accountNumber', [0], 'length'],
+    ['date.betweens', [0, 1577836800000, 1609372800000], 'count'],
+  ])('rejects zero %s size/count parameters before generation', (keywordName, args, argName) => {
+    const keyword = getDomainKeywordByAlias(keywordName);
+    const result = validateDomainKeywordArgs(keyword, args);
+
+    expect(result).toEqual({
+      ok: false,
+      error: `Invalid keyword arguments: argument "${argName}" must be greater than 0`,
+    });
+  });
+
+  test.each([
+    ['image.dataUri', [10, -1], 'height'],
+    ['image.urlPicsumPhotos', [-1, 10], 'width'],
+    ['image.url', [-1, 10], 'height'],
+  ])('rejects negative image dimension parameters before generation', (keywordName, args, argName) => {
+    const keyword = getDomainKeywordByAlias(keywordName);
+    const result = validateDomainKeywordArgs(keyword, args);
+
+    expect(result).toEqual({
+      ok: false,
+      error: `Invalid keyword arguments: argument "${argName}" must be greater than 0`,
+    });
+  });
+
+  test('rejects reversed lorem count bounds before generation', () => {
+    const keyword = getDomainKeywordByAlias('lorem.words');
+    const result = validateDomainKeywordArgs(keyword, [undefined, undefined, undefined, 3, 5]);
+
+    expect(result).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "wordCountMin" must be less than or equal to argument "wordCountMax"',
     });
   });
 
@@ -554,37 +657,6 @@ function setDeepMethod(root, target, fn) {
   node[parts[parts.length - 1]] = fn;
 }
 
-function sampleValueForType(type) {
-  const allowed = String(type || '')
-    .split('|')
-    .map((entry) => entry.trim());
-  const numericLiterals = allowed.filter((entry) => /^[+-]?\d+(\.\d+)?$/.test(entry)).map((entry) => Number(entry));
-  const stringLiterals = allowed
-    .filter(
-      (entry) =>
-        !['string', 'integer', 'number', 'date', 'regexp', 'boolean', 'array', 'object'].includes(entry) &&
-        !/^[+-]?\d+(\.\d+)?$/.test(entry)
-    )
-    .map((entry) =>
-      (entry.startsWith('"') && entry.endsWith('"')) || (entry.startsWith("'") && entry.endsWith("'"))
-        ? entry.slice(1, -1)
-        : entry
-    );
-
-  if (numericLiterals.length === allowed.length && numericLiterals.length > 0) {
-    return numericLiterals[0];
-  }
-  if (stringLiterals.length > 0) return stringLiterals[0];
-
-  if (allowed.includes('integer')) return 7;
-  if (allowed.includes('number')) return 7;
-  if (allowed.includes('regexp')) return '[A-Z]';
-  if (allowed.includes('boolean')) return true;
-  if (allowed.includes('array')) return ['x', 'y'];
-  if (allowed.includes('object')) return { key: 'value' };
-  return 'sample';
-}
-
 function normalizeExampleValue(value) {
   if (typeof value === 'bigint') {
     return {
@@ -610,22 +682,6 @@ function normalizeExampleValue(value) {
 
 function serializeExampleValue(value) {
   return JSON.stringify(normalizeExampleValue(value));
-}
-
-function valueToInvocationLiteral(value) {
-  if (typeof value === 'string') {
-    return JSON.stringify(value);
-  }
-  if (typeof value === 'number' || typeof value === 'boolean') {
-    return String(value);
-  }
-  if (Array.isArray(value)) {
-    return JSON.stringify(value);
-  }
-  if (value && typeof value === 'object') {
-    return JSON.stringify(value);
-  }
-  throw new Error(`Unsupported invocation literal value: ${String(value)}`);
 }
 
 function inferTypeFromExampleLiteral(example) {
@@ -677,7 +733,10 @@ describe('faker keyword invocation styles', () => {
 
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
-      const sampleArgs = keyword.help.args.map((arg) => sampleValueForType(arg.type));
+      const argsForInvocation = keyword.keyword.startsWith('lorem.')
+        ? keyword.help.args.filter((arg) => ['min', 'max'].includes(arg.name))
+        : keyword.help.args;
+      const sampleArgs = argsForInvocation.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg.name, arg.type));
       if (keyword.keyword === 'datatype.boolean') {
         sampleArgs[0] = 0.5;
       }
@@ -686,7 +745,7 @@ describe('faker keyword invocation styles', () => {
       }
 
       const positionalInvocation = `${keyword.keyword}(${sampleArgs.map(valueToInvocationLiteral).join(', ')})`;
-      const namedInvocation = `${keyword.keyword}(${keyword.help.args
+      const namedInvocation = `${keyword.keyword}(${argsForInvocation
         .map((arg, index) => `${arg.name}=${valueToInvocationLiteral(sampleArgs[index])}`)
         .join(', ')})`;
 

@@ -23,7 +23,6 @@ function checkKeywordIsRegisteredWithHelpMetadata(keyword, definition) {
         help: expect.objectContaining({
           summary: expect.any(String),
           docsUrl: expect.any(String),
-          fakerDocsUrl: expect.any(String),
           validator: expect.any(Function),
           returnType: expect.any(String),
           usageExamples: expect.any(Array),
@@ -32,6 +31,10 @@ function checkKeywordIsRegisteredWithHelpMetadata(keyword, definition) {
       })
     );
     expect(definition.help.usageExamples.length).toBeGreaterThan(0);
+    if (definition.delegate.type === 'faker') {
+      expect(definition.help.fakerDocsUrl).toEqual(expect.any(String));
+      expect(definition.help.fakerDocsUrl.length).toBeGreaterThan(0);
+    }
   });
 }
 

@@ -1,4 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateSystemFileNameArgs = createPositiveIntegerArgsValidator(['extensionCount']);
 
 const SYSTEM_FILE_NAME_KEYWORD_DEFINITION = {
   keyword: 'system.fileName',
@@ -12,6 +15,7 @@ const SYSTEM_FILE_NAME_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/system',
     fakerDocsUrl: 'https://fakerjs.dev/api/system',
     validator: validateStringValue,
+    argsValidator: validateSystemFileNameArgs,
     returnType: 'string',
     usageExamples: [
       {

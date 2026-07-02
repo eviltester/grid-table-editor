@@ -1,3 +1,3 @@
-import { defineDomainKeywordDefinitionTests } from '../define-domain-keyword-definition-tests.js';
+import { defineDomainKeywordHelpContractTests } from '../define-domain-keyword-help-contract-tests.js';
 
-defineDomainKeywordDefinitionTests('internet.ipv4');
+defineDomainKeywordHelpContractTests('internet.ipv4');

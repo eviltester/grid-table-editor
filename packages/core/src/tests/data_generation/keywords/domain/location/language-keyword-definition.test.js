@@ -1,3 +1,3 @@
-import { defineDomainKeywordDefinitionTests } from '../define-domain-keyword-definition-tests.js';
+import { defineDomainKeywordHelpContractTests } from '../define-domain-keyword-help-contract-tests.js';
 
-defineDomainKeywordDefinitionTests('location.language');
+defineDomainKeywordHelpContractTests('location.language');

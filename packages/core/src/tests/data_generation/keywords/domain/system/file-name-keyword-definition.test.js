@@ -54,6 +54,10 @@ describe('system.fileName parameter validation', () => {
       'system.fileName(extensionCount=0)',
       'Invalid keyword arguments: argument "extensionCount" must be greater than 0',
     ],
+    [
+      'system.fileName(extensionCount="-1")',
+      'Invalid keyword arguments: argument "extensionCount" must be number, not string',
+    ],
     ['system.fileName(extensionCount=1.5)', 'Invalid keyword arguments: argument "extensionCount" must be an integer'],
   ])('throws validation error for invalid named invocation %s', (functionCall, expectedError) => {
     const parsed = parseKeywordInvocation(functionCall);

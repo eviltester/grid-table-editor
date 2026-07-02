@@ -1,16 +1,25 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createLoremCountArgsValidator } from './lorem-arg-validators.js';
+
+const validateLoremSlugArgs = createLoremCountArgsValidator({
+  countName: 'wordCount',
+  minName: 'wordCountMin',
+  maxName: 'wordCountMax',
+});
 
 const LOREM_SLUG_KEYWORD_DEFINITION = {
   keyword: 'lorem.slug',
   delegate: {
     type: 'faker',
     target: 'lorem.slug',
+    argTransform: 'loremCountFromHelpArgs',
   },
   help: {
     summary: 'Generates a slugified text consisting of the given number of hyphen separated words.',
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremSlugArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -20,27 +29,27 @@ const LOREM_SLUG_KEYWORD_DEFINITION = {
       },
       {
         functionCall: 'lorem.slug(max=10, min=1)',
-        sampleReturnValue: 'cur',
+        sampleReturnValue: 'suppellex-a-cognatus-arca-aliquam',
         description: 'Shows lorem.slug using min.',
       },
       {
         functionCall: 'lorem.slug(max=5)',
-        sampleReturnValue: 'cur-suppellex-a',
+        sampleReturnValue: 'suppellex-a-cognatus',
         description: 'Shows lorem.slug using max.',
       },
       {
         functionCall: 'lorem.slug(wordCount=5)',
-        sampleReturnValue: 'cur-suppellex-a',
+        sampleReturnValue: 'cur-suppellex-a-cognatus-arca',
         description: 'Shows lorem.slug using wordCount.',
       },
       {
         functionCall: 'lorem.slug(wordCountMax=5)',
-        sampleReturnValue: 'cur-suppellex-a',
+        sampleReturnValue: 'suppellex-a-cognatus',
         description: 'Shows lorem.slug using wordCountMax.',
       },
       {
         functionCall: 'lorem.slug(wordCountMin=5)',
-        sampleReturnValue: 'cur-suppellex-a',
+        sampleReturnValue: 'cur-suppellex-a-cognatus-arca',
         description: 'Shows lorem.slug using wordCountMin.',
       },
     ],

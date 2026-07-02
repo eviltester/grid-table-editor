@@ -1,4 +1,7 @@
 import { validatePinValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateFinancePinArgs = createPositiveIntegerArgsValidator(['length']);
 
 const FINANCE_PIN_KEYWORD_DEFINITION = {
   keyword: 'finance.pin',
@@ -11,6 +14,7 @@ const FINANCE_PIN_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/finance',
     fakerDocsUrl: 'https://fakerjs.dev/api/finance',
     validator: validatePinValue,
+    argsValidator: validateFinancePinArgs,
     returnType: 'string',
     usageExamples: [
       {

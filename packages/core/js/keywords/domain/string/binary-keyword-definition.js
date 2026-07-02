@@ -1,4 +1,7 @@
 import { validateBinaryStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateStringBinaryArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_BINARY_KEYWORD_DEFINITION = {
   keyword: 'string.binary',
@@ -12,6 +15,7 @@ const STRING_BINARY_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateBinaryStringValue,
+    argsValidator: validateStringBinaryArgs,
     returnType: 'string',
     usageExamples: [
       {

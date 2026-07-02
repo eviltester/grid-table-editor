@@ -1,4 +1,7 @@
 import { validateOctalStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateStringOctalArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_OCTAL_KEYWORD_DEFINITION = {
   keyword: 'string.octal',
@@ -12,6 +15,7 @@ const STRING_OCTAL_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateOctalStringValue,
+    argsValidator: validateStringOctalArgs,
     returnType: 'string',
     usageExamples: [
       {

@@ -113,6 +113,9 @@ function mapDomainKeywordHelpToFakerCommandHelp(commandHelp) {
         allowedValues: Array.isArray(arg.allowedValues) ? arg.allowedValues : [],
         choices: Array.isArray(arg.choices) ? arg.choices : [],
         enumValues: Array.isArray(arg.enumValues) ? arg.enumValues : [],
+        ...(Object.prototype.hasOwnProperty.call(arg || {}, 'usageExampleSupported')
+          ? { usageExampleSupported: arg.usageExampleSupported !== false }
+          : {}),
       }))
     : [];
   const returnType = commandHelp.returnType || '';

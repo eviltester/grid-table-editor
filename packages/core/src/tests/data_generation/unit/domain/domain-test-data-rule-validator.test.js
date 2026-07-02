@@ -1,3 +1,4 @@
+import { Faker, faker } from '@faker-js/faker';
 import { DomainTestDataRuleValidator } from '../../../../../js/data_generation/domain/domainTestDataRuleValidator.js';
 
 describe('DomainTestDataRuleValidator', () => {
@@ -72,6 +73,47 @@ describe('DomainTestDataRuleValidator', () => {
         args: [],
         errors: ['Invalid keyword invocation: missing closing parenthesis'],
       })
+    );
+  });
+
+  test('accepts syntactically valid domain commands without dry-run execution when no faker is supplied', () => {
+    const validator = new DomainTestDataRuleValidator();
+
+    const isValid = validator.validate({ ruleSpec: 'word.adjective(length=999, strategy="fail")' });
+
+    expect(isValid).toBe(true);
+  });
+
+  test('rejects domain commands that would throw during generation when faker is supplied', () => {
+    const validator = new DomainTestDataRuleValidator(faker);
+
+    const isValid = validator.validate({ ruleSpec: 'word.adjective(length=999, strategy="fail")' });
+
+    expect(isValid).toBe(false);
+    expect(validator.getValidationError()).toContain('No words found that match the given length.');
+  });
+
+  test('does not advance supplied faker while validating faker-backed domain commands', () => {
+    const seed = 12345;
+    const controlFaker = new Faker({ locale: faker.rawDefinitions });
+    controlFaker.seed(seed);
+    faker.seed(seed);
+    const validator = new DomainTestDataRuleValidator(faker);
+
+    const isValid = validator.validate({ ruleSpec: 'person.firstName()' });
+
+    expect(isValid).toBe(true);
+    expect(faker.person.firstName()).toBe(controlFaker.person.firstName());
+  });
+
+  test('rejects unsatisfiable BigInt params before generation', () => {
+    const validator = new DomainTestDataRuleValidator(faker);
+
+    const isValid = validator.validate({ ruleSpec: 'number.bigInt(min=1, max=5, multipleOf=10)' });
+
+    expect(isValid).toBe(false);
+    expect(validator.getValidationError()).toBe(
+      'Invalid keyword arguments: arguments "min", "max", and "multipleOf" do not allow any generated BigInt value'
     );
   });
 });

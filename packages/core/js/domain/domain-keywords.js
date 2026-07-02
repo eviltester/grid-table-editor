@@ -121,6 +121,9 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
           required: arg?.required === true,
           optional: arg?.optional === true || arg?.required === false,
           variadic: arg?.variadic === true,
+          ...(Object.prototype.hasOwnProperty.call(arg || {}, 'usageExampleSupported')
+            ? { usageExampleSupported: arg.usageExampleSupported !== false }
+            : {}),
           description: String(arg?.description || '').trim(),
           example: String(arg?.example || '').trim(),
           allowedValues: Array.isArray(arg?.allowedValues) ? arg.allowedValues : [],
@@ -296,6 +299,7 @@ function isTypeMatch(value, specOrType) {
   for (const item of allowed) {
     if (/^[+-]?\d+(\.\d+)?$/.test(item) && typeof value === 'number' && Object.is(value, Number(item))) return true;
     if (item === 'string' && typeof value === 'string') return true;
+    if (item === 'bigint' && typeof value === 'bigint') return true;
     if (item === 'comma-separated list' && typeof value === 'string') return true;
     if (item === 'integer' && typeof value === 'number' && Number.isInteger(value)) return true;
     if (item === 'number' && typeof value === 'number' && Number.isFinite(value)) return true;
@@ -334,12 +338,20 @@ function normalizeLiteralTypeToken(typeToken) {
   if (isQuotedLiteralTypeToken(typeToken)) {
     return JSON.stringify(unquoteLiteralTypeToken(typeToken));
   }
+  if (typeToken === '' || /^[^\w\s]+$/.test(typeToken)) {
+    return JSON.stringify(typeToken);
+  }
   return typeToken;
 }
 
 function formatExpectedType(specOrType) {
+  const isExplicitEnumSpec =
+    specOrType &&
+    typeof specOrType === 'object' &&
+    String(specOrType?.type || '').trim() === 'enum' &&
+    Array.isArray(specOrType?.enumValues);
   const allowed = getExpectedTypeTokens(specOrType)
-    .filter(Boolean)
+    .filter((entry) => isExplicitEnumSpec || Boolean(entry))
     .map((entry) => normalizeLiteralTypeToken(entry));
 
   if (allowed.length === 0) {
@@ -386,6 +398,67 @@ function normaliseStringUuidOptions(options) {
   return options;
 }
 
+function buildHelpArgsByName(keyword, args = []) {
+  const argSchema = Array.isArray(keyword?.help?.args) ? keyword.help.args : [];
+  const argsByName = {};
+
+  for (let index = 0; index < argSchema.length; index += 1) {
+    const key = String(argSchema[index]?.name || '').trim();
+    if (!key || typeof args[index] === 'undefined') {
+      continue;
+    }
+    argsByName[key] = coerceHelpArgValue(argSchema[index], args[index]);
+  }
+
+  return argsByName;
+}
+
+function createLoremCountArg(min, max) {
+  if (typeof min !== 'undefined' && typeof max !== 'undefined') {
+    return { min, max };
+  }
+  if (typeof max !== 'undefined') {
+    return { min: 1, max };
+  }
+  if (typeof min !== 'undefined') {
+    return min;
+  }
+  return undefined;
+}
+
+function getLoremCountArg(keyword, argsByName = {}) {
+  const argNames = (Array.isArray(keyword?.help?.args) ? keyword.help.args : [])
+    .map((arg) => String(arg?.name || '').trim())
+    .filter(Boolean);
+  const countName = argNames.find((argName) => /Count$/.test(argName));
+
+  if (countName && typeof argsByName[countName] !== 'undefined') {
+    return argsByName[countName];
+  }
+
+  const specificMinName = countName ? `${countName}Min` : '';
+  const specificMaxName = countName ? `${countName}Max` : '';
+  if (
+    specificMinName &&
+    (typeof argsByName[specificMinName] !== 'undefined' || typeof argsByName[specificMaxName] !== 'undefined')
+  ) {
+    return createLoremCountArg(argsByName[specificMinName], argsByName[specificMaxName]);
+  }
+
+  return createLoremCountArg(argsByName.min, argsByName.max);
+}
+
+function applyLoremCountArgTransform(keyword, args = []) {
+  const argsByName = buildHelpArgsByName(keyword, args);
+  const countArg = getLoremCountArg(keyword, argsByName);
+
+  if (Object.prototype.hasOwnProperty.call(argsByName, 'separator')) {
+    return [countArg, argsByName.separator];
+  }
+
+  return typeof countArg === 'undefined' ? [] : [countArg];
+}
+
 function applyFakerArgTransform(keyword, args = []) {
   const transformName = String(keyword?.delegate?.argTransform || '').trim();
   if (!transformName) {
@@ -412,6 +485,12 @@ function applyFakerArgTransform(keyword, args = []) {
       return Object.keys(options).length > 0 ? [normaliseStringUuidOptions(options)] : [];
     }
     return Object.keys(options).length > 0 ? [options] : [];
+  }
+  if (transformName === 'loremCountFromHelpArgs') {
+    if (!Array.isArray(args)) {
+      return args;
+    }
+    return applyLoremCountArgTransform(keyword, args);
   }
   return args;
 }

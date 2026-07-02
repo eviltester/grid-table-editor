@@ -174,17 +174,27 @@ Returns a random file name with extension.
 - Canonical: `awd.domain.system.fileName`
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `extensionCount` | `number` | no | How many extensions the generated file name should have. |
 
 Examples:
 
 Shows the default system.fileName call.
 
 ```txt
-system.fileName
+system.fileName()
 ```
 
 Returns: `fog_aboard.otf`
+
+Shows system.fileName using extensionCount.
+
+```txt
+system.fileName(extensionCount=2)
+```
+
+Returns: `fog_aboard.otf.7z`
 
 ### `system.filePath`
 
@@ -250,17 +260,44 @@ Returns a random network interface.
 - Canonical: `awd.domain.system.networkInterface`
 - Faker docs: [https://fakerjs.dev/api/system](https://fakerjs.dev/api/system)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `interfaceType` | `en\|wl\|ww` | no | Network interface type prefix. |
+| `interfaceSchema` | `index\|slot\|mac\|pci` | no | Network interface naming schema. |
 
 Examples:
 
 Shows the default system.networkInterface call.
 
 ```txt
-system.networkInterface
+system.networkInterface()
 ```
 
 Returns: `wlx042125686a3e`
+
+Shows system.networkInterface using interface type and schema options.
+
+```txt
+system.networkInterface(interfaceType="en", interfaceSchema="mac")
+```
+
+Returns: `enx6b042125686a`
+
+Shows system.networkInterface using an explicit interface type.
+
+```txt
+system.networkInterface(interfaceType="en")
+```
+
+Returns: `ens7f3d0`
+
+Shows system.networkInterface using an explicit interface schema.
+
+```txt
+system.networkInterface(interfaceSchema="mac")
+```
+
+Returns: `wlxb042125686a3`
 
 ### `system.semver`
 

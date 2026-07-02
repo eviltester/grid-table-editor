@@ -23,7 +23,9 @@ Returns a BigInt number.
 
 | Arg | Type | Required | Description |
 | --- | --- | --- | --- |
-| `value` | `bigint\|number\|string\|boolean` | no | Base value used for generation. Supports bigint, number, string, or boolean inputs. For range constraints use min, max, and multipleOf. |
+| `min` | `integer` | no | Optional minimum bound for the generated BigInt value. |
+| `max` | `integer` | no | Optional maximum bound for the generated BigInt value. |
+| `multipleOf` | `integer` | no | Generated BigInt will be a multiple of the given value. |
 
 Examples:
 
@@ -35,13 +37,29 @@ number.bigInt()
 
 Returns: `703101335462806n`
 
-Shows number.bigInt using a boolean base value.
+Shows number.bigInt using min and max bounds.
 
 ```txt
-number.bigInt(value=true)
+number.bigInt(min=100, max=1000)
 ```
 
-Returns: `703101335462806n`
+Returns: `570n`
+
+Shows number.bigInt constrained to a multiple.
+
+```txt
+number.bigInt(multipleOf=7)
+```
+
+Returns: `292170934823957n`
+
+Shows number.bigInt using an upper bound.
+
+```txt
+number.bigInt(max=1000)
+```
+
+Returns: `699n`
 
 ### `number.binary`
 

@@ -138,10 +138,27 @@ function escapeMarkdownTableCell(value) {
   return escapeMdxText(normalized.replaceAll('\n', '<br/>')).replaceAll('|', '\\|');
 }
 
+function toDisplayFunctionCall(functionCall, entry) {
+  const call = String(functionCall || '').trim();
+  const keyword = String(entry?.keyword || '').trim();
+  const displayCommand = String(entry?.displayCommand || keyword).trim();
+  if (!call || !keyword || !displayCommand || displayCommand === keyword) {
+    return call;
+  }
+
+  const prefixes = [`awd.domain.${keyword}`, `domain.${keyword}`, keyword];
+  const matchedPrefix = prefixes.find((prefix) => call === prefix || call.startsWith(`${prefix}(`));
+  if (!matchedPrefix) {
+    return call;
+  }
+
+  return `${displayCommand}${call.slice(matchedPrefix.length)}`;
+}
+
 function getDefinitionUsageExamples(entry) {
   return (Array.isArray(entry?.help?.usageExamples) ? entry.help.usageExamples : [])
     .map((usageExample) => {
-      const functionCall = String(usageExample?.functionCall || '').trim();
+      const functionCall = toDisplayFunctionCall(usageExample?.functionCall, entry);
       if (!functionCall) {
         return null;
       }

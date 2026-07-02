@@ -1,4 +1,7 @@
 import { validateSymbolStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateStringSymbolArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_SYMBOL_KEYWORD_DEFINITION = {
   keyword: 'string.symbol',
@@ -12,6 +15,7 @@ const STRING_SYMBOL_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateSymbolStringValue,
+    argsValidator: validateStringSymbolArgs,
     returnType: 'string',
     usageExamples: [
       {

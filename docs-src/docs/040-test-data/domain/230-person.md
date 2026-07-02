@@ -69,17 +69,53 @@ Generates a random full name.
 - Canonical: `awd.domain.person.fullName`
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `firstName` | `string` | no | Optional first name to use as the basis for the full name. |
+| `lastName` | `string` | no | Optional last name to use as the basis for the full name. |
+| `sex` | `female\|generic\|male` | no | Sex category used for the generated full name. |
 
 Examples:
 
 Shows the default person.fullName call.
 
 ```txt
-person.fullName
+person.fullName()
 ```
 
 Returns: `Aaliyah Corkery`
+
+Shows person.fullName using name and sex options.
+
+```txt
+person.fullName(firstName="Ada", lastName="Lovelace", sex="female")
+```
+
+Returns: `Ada Lovelace`
+
+Shows person.fullName using an explicit first name.
+
+```txt
+person.fullName(firstName="Ada")
+```
+
+Returns: `Ada Abbott`
+
+Shows person.fullName using an explicit last name.
+
+```txt
+person.fullName(lastName="Lovelace")
+```
+
+Returns: `Aaliyah Lovelace`
+
+Shows person.fullName using a sex category.
+
+```txt
+person.fullName(sex="female")
+```
+
+Returns: `Monique Gutmann`
 
 ### `person.gender`
 
@@ -289,14 +325,24 @@ Returns a random sex type. The `SexType` is intended to be used in parameters an
 - Canonical: `awd.domain.person.sexType`
 - Faker docs: [https://fakerjs.dev/api/person](https://fakerjs.dev/api/person)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `includeGeneric` | `boolean` | no | Whether the generic sex type can be returned. |
 
 Examples:
 
 Shows the default person.sexType call.
 
 ```txt
-person.sexType
+person.sexType()
+```
+
+Returns: `female`
+
+Shows person.sexType excluding the generic value.
+
+```txt
+person.sexType(includeGeneric=false)
 ```
 
 Returns: `female`

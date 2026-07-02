@@ -1,4 +1,7 @@
 import { validateSampleStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateStringSampleArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_SAMPLE_KEYWORD_DEFINITION = {
   keyword: 'string.sample',
@@ -11,6 +14,7 @@ const STRING_SAMPLE_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateSampleStringValue,
+    argsValidator: validateStringSampleArgs,
     returnType: 'string',
     usageExamples: [
       {

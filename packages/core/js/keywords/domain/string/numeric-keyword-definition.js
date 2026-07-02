@@ -1,4 +1,7 @@
 import { validateNumericStringValue } from '../../../command-help/command-help-validators.js';
+import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+
+const validateStringNumericArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_NUMERIC_KEYWORD_DEFINITION = {
   keyword: 'string.numeric',
@@ -12,6 +15,7 @@ const STRING_NUMERIC_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/string',
     fakerDocsUrl: 'https://fakerjs.dev/api/string',
     validator: validateNumericStringValue,
+    argsValidator: validateStringNumericArgs,
     returnType: 'string',
     usageExamples: [
       {

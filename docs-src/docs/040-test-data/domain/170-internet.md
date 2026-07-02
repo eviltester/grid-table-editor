@@ -21,17 +21,44 @@ Generates a display name using the given person's name as base.
 - Canonical: `awd.domain.internet.displayName`
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `firstName` | `string` | no | Optional first name to use as the basis for the display name. |
+| `lastName` | `string` | no | Optional last name to use as the basis for the display name. |
 
 Examples:
 
 Shows the default internet.displayName call.
 
 ```txt
-internet.displayName
+internet.displayName()
 ```
 
 Returns: `Aaliyah.Bosco`
+
+Shows internet.displayName using firstName and lastName options.
+
+```txt
+internet.displayName(firstName="Ada", lastName="Lovelace")
+```
+
+Returns: `Ada72`
+
+Shows internet.displayName using an explicit first name.
+
+```txt
+internet.displayName(firstName="Ada")
+```
+
+Returns: `Ada14`
+
+Shows internet.displayName using an explicit last name.
+
+```txt
+internet.displayName(lastName="Lovelace")
+```
+
+Returns: `Aaliyah14`
 
 ### `internet.domainName`
 
@@ -182,17 +209,53 @@ Generates data using faker internet example email.
 - Canonical: `awd.domain.internet.exampleEmail`
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `firstName` | `string` | no | Optional first name to use as the basis for the email address. |
+| `lastName` | `string` | no | Optional last name to use as the basis for the email address. |
+| `allowSpecialCharacters` | `boolean` | no | Whether special characters are allowed in the generated email address. |
 
 Examples:
 
 Shows the default internet.exampleEmail call.
 
 ```txt
-internet.exampleEmail
+internet.exampleEmail()
 ```
 
 Returns: `Edwin.Dibbert@example.net`
+
+Shows internet.exampleEmail using firstName and lastName options.
+
+```txt
+internet.exampleEmail(firstName="Ada", lastName="Lovelace")
+```
+
+Returns: `Ada_Lovelace0@example.net`
+
+Shows internet.exampleEmail allowing special characters.
+
+```txt
+internet.exampleEmail(allowSpecialCharacters=true)
+```
+
+Returns: `Edwin.Dibbert@example.net`
+
+Shows internet.exampleEmail using an explicit first name.
+
+```txt
+internet.exampleEmail(firstName="Ada")
+```
+
+Returns: `Ada.Gutmann9@example.net`
+
+Shows internet.exampleEmail using an explicit last name.
+
+```txt
+internet.exampleEmail(lastName="Lovelace")
+```
+
+Returns: `Edwin.Lovelace9@example.net`
 
 ### `internet.httpMethod`
 
@@ -238,17 +301,27 @@ Generates a random HTTP status code.
 - Canonical: `awd.domain.internet.httpStatusCode`
 - Faker docs: [https://fakerjs.dev/api/internet](https://fakerjs.dev/api/internet)
 
-No parameters.
+| Arg | Type | Required | Description |
+| --- | --- | --- | --- |
+| `types` | `array` | no | HTTP status categories to choose from. Allowed categories are informational, success, redirection, clientError, and serverError. |
 
 Examples:
 
 Shows the default internet.httpStatusCode call.
 
 ```txt
-internet.httpStatusCode
+internet.httpStatusCode()
 ```
 
 Returns: `306`
+
+Shows internet.httpStatusCode constrained to success status codes.
+
+```txt
+internet.httpStatusCode(types=["success"])
+```
+
+Returns: `204`
 
 ### `internet.ip`
 

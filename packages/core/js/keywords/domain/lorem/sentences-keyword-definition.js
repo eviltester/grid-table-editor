@@ -1,16 +1,25 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createLoremCountArgsValidator } from './lorem-arg-validators.js';
+
+const validateLoremSentencesArgs = createLoremCountArgsValidator({
+  countName: 'sentenceCount',
+  minName: 'sentenceCountMin',
+  maxName: 'sentenceCountMax',
+});
 
 const LOREM_SENTENCES_KEYWORD_DEFINITION = {
   keyword: 'lorem.sentences',
   delegate: {
     type: 'faker',
     target: 'lorem.sentences',
+    argTransform: 'loremCountFromHelpArgs',
   },
   help: {
     summary: 'Generates the given number of sentences.',
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremSentencesArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -21,37 +30,38 @@ const LOREM_SENTENCES_KEYWORD_DEFINITION = {
       },
       {
         functionCall: 'lorem.sentences(max=10, min=1)',
-        sampleReturnValue: 'Suppellex a cognatus arca aliquam audentia.',
+        sampleReturnValue:
+          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo. Trucido accusamus tandem voveo tamisium cicuta testimonium amet.',
         description: 'Shows lorem.sentences using min.',
       },
       {
         functionCall: 'lorem.sentences(max=5)',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit.5Stillicidium bardus utrimque acsi spargo cur.5Aqua avaritia thesaurus volo combibo stultus utor.5Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.',
+          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.',
         description: 'Shows lorem.sentences using max.',
       },
       {
         functionCall: 'lorem.sentences(sentenceCount=5)',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.',
+          'Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus. Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo.',
         description: 'Shows lorem.sentences using sentenceCount.',
       },
       {
         functionCall: 'lorem.sentences(separator="-")',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.',
+          'A cognatus arca aliquam audentia coniuratio crux fugit.-Stillicidium bardus utrimque acsi spargo cur.-Aqua avaritia thesaurus volo combibo stultus utor.-Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.',
         description: 'Shows lorem.sentences using separator.',
       },
       {
         functionCall: 'lorem.sentences(sentenceCountMax=5)',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.',
+          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor.',
         description: 'Shows lorem.sentences using sentenceCountMax.',
       },
       {
         functionCall: 'lorem.sentences(sentenceCountMin=5)',
         sampleReturnValue:
-          'A cognatus arca aliquam audentia coniuratio crux fugit. Stillicidium bardus utrimque acsi spargo cur. Aqua avaritia thesaurus volo combibo stultus utor. Ago adflicto assentator utrimque altus curiositas vita expedita stultus comedo.',
+          'Suppellex a cognatus arca aliquam audentia. Crux fugit curatio stillicidium bardus. Acsi spargo cur laboriosam aqua avaritia thesaurus volo combibo stultus. Varius ago adflicto assentator utrimque altus curiositas vita expedita stultus. Stipes trucido accusamus tandem voveo.',
         description: 'Shows lorem.sentences using sentenceCountMin.',
       },
     ],

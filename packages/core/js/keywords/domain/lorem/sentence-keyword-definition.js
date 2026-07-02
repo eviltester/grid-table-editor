@@ -1,16 +1,25 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { createLoremCountArgsValidator } from './lorem-arg-validators.js';
+
+const validateLoremSentenceArgs = createLoremCountArgsValidator({
+  countName: 'wordCount',
+  minName: 'wordCountMin',
+  maxName: 'wordCountMax',
+});
 
 const LOREM_SENTENCE_KEYWORD_DEFINITION = {
   keyword: 'lorem.sentence',
   delegate: {
     type: 'faker',
     target: 'lorem.sentence',
+    argTransform: 'loremCountFromHelpArgs',
   },
   help: {
     summary: 'Generates a space separated list of words beginning with a capital letter and ending with a period.',
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/lorem',
     fakerDocsUrl: 'https://fakerjs.dev/api/lorem',
     validator: validateStringValue,
+    argsValidator: validateLoremSentenceArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -20,27 +29,27 @@ const LOREM_SENTENCE_KEYWORD_DEFINITION = {
       },
       {
         functionCall: 'lorem.sentence(max=10, min=1)',
-        sampleReturnValue: 'Cur.',
+        sampleReturnValue: 'Suppellex a cognatus arca aliquam.',
         description: 'Shows lorem.sentence using min.',
       },
       {
         functionCall: 'lorem.sentence(max=5)',
-        sampleReturnValue: 'Suppellex a cognatus arca aliquam audentia.',
+        sampleReturnValue: 'Suppellex a cognatus.',
         description: 'Shows lorem.sentence using max.',
       },
       {
         functionCall: 'lorem.sentence(wordCount=5)',
-        sampleReturnValue: 'Suppellex a cognatus arca aliquam audentia.',
+        sampleReturnValue: 'Cur suppellex a cognatus arca.',
         description: 'Shows lorem.sentence using wordCount.',
       },
       {
         functionCall: 'lorem.sentence(wordCountMax=5)',
-        sampleReturnValue: 'Suppellex a cognatus arca aliquam audentia.',
+        sampleReturnValue: 'Suppellex a cognatus.',
         description: 'Shows lorem.sentence using wordCountMax.',
       },
       {
         functionCall: 'lorem.sentence(wordCountMin=5)',
-        sampleReturnValue: 'Suppellex a cognatus arca aliquam audentia.',
+        sampleReturnValue: 'Cur suppellex a cognatus arca.',
         description: 'Shows lorem.sentence using wordCountMin.',
       },
     ],

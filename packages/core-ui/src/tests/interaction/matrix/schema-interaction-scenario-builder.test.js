@@ -16,6 +16,10 @@ import {
   getScenarioExecutionStatus,
 } from './support/schema-interaction-scenario-builder.js';
 
+function isScenarioArgCoverageRequired(arg) {
+  return arg?.usageExampleSupported !== false;
+}
+
 describe('schema interaction scenario builder', () => {
   test('exposes datatype.enum in domain command list with help metadata', () => {
     const visibleCommands = getVisibleDomainCommands({
@@ -82,9 +86,11 @@ describe('schema interaction scenario builder', () => {
 
       const bucket = byCommand.get(`domain:${command}`);
       expect(bucket.scenarios.length).toBeGreaterThan(0);
-      (metadata.args || []).forEach((arg) => {
-        expect(bucket.coveredArgs.has(arg.name)).toBe(true);
-      });
+      (metadata.args || [])
+        .filter((arg) => isScenarioArgCoverageRequired(arg))
+        .forEach((arg) => {
+          expect(bucket.coveredArgs.has(arg.name)).toBe(true);
+        });
 
       const exampleScenarioCount = bucket.scenarios.filter((scenario) => scenario.origins.includes('example')).length;
       const expectedExamples = Array.isArray(getDomainKeywordByCommand(command)?.help?.usageExamples)

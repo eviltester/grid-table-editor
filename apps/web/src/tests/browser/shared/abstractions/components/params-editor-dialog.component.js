@@ -31,7 +31,8 @@ class ParamsEditorDialogComponent {
 
   async selectEnumValue(name, value) {
     await this.expectOpen();
-    await this.enumSelect(name).selectOption(String(value));
+    const option = String(value).length === 0 ? { label: '""' } : String(value);
+    await this.enumSelect(name).selectOption(option);
   }
 
   async apply() {

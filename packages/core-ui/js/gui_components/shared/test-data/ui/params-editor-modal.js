@@ -675,9 +675,10 @@ function readRenderedEntryState(rootElement, entry, index) {
     const checkedBooleanOption = rootElement.querySelector(
       `[data-role="params-editor-boolean"][data-index="${index}"]:checked`
     );
+    const value = checkedBooleanOption?.value ?? '';
     return {
-      value: checkedBooleanOption?.value ?? '',
-      isSet: Boolean(checkedBooleanOption),
+      value,
+      isSet: String(value).trim().length > 0,
     };
   }
 
@@ -896,6 +897,12 @@ function openParamsEditorModal({
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
   const booleanInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-boolean"]'));
   const enumInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-enum"]'));
+  const editorInputs = () =>
+    Array.from(
+      overlay.querySelectorAll(
+        '[data-role="params-editor-value"], [data-role="params-editor-enum"], [data-role="params-editor-boolean"]'
+      )
+    );
   const helpTooltipService = createHelpTooltipService({
     documentObj,
     windowObj,
@@ -1018,7 +1025,7 @@ function openParamsEditorModal({
     documentObj.body.appendChild(overlay);
     helpTooltipService.update();
     syncPreview();
-    const firstInput = valueInputs()[0] || enumInputs()[0] || booleanInputs()[0];
+    const firstInput = editorInputs()[0];
     const focusFn = windowObj?.requestAnimationFrame?.bind(windowObj) || windowObj?.setTimeout?.bind(windowObj);
     focusFn?.(() => (firstInput || getFocusableElements(dialogElement)[0] || dialogElement)?.focus?.());
   });

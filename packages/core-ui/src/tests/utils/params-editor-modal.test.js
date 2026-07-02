@@ -469,6 +469,32 @@ describe('params editor modal', () => {
     await expect(promise).resolves.toBeNull();
   });
 
+  test('focuses the first editor control in rendered order when enum precedes text params', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'location.countryCode',
+      helpModel: {
+        summary: 'Country code helper',
+        params: [
+          { name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: true },
+          { name: 'locale', type: 'string', optional: true },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for location\.countrycode/i });
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+
+    expect(document.activeElement).toBe(variantSelect);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
   test('keeps apply enabled when semantic validation returns a warning', async () => {
     const promise = openParamsEditorModal({
       documentObj: document,
@@ -778,6 +804,46 @@ describe('params editor modal', () => {
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
     await expect(promise).resolves.toBe('(abbreviated=false)');
+  });
+
+  test('leaves optional boolean unset without shifting later required params', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'internet.email',
+      helpModel: {
+        summary: 'Returns an email address.',
+        params: [
+          { name: 'commonOnly', type: 'boolean', optional: true },
+          { name: 'provider', type: 'string', optional: false },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for internet\.email/i });
+    const unsetRadio = within(dialog).getByRole('radio', { name: /unset/i });
+    const providerInput = within(dialog).getByRole('textbox', { name: /provider value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    expect(unsetRadio.checked).toBe(true);
+    expect(
+      within(dialog).getByText('()', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+    expect(applyButton.disabled).toBe(true);
+
+    fireEvent.input(providerInput, { target: { value: 'example.com' } });
+
+    expect(
+      within(dialog).getByText('(provider="example.com")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(provider="example.com")');
   });
 
   test('prefills required boolean params from existing values', async () => {

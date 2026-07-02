@@ -48,7 +48,7 @@ describe('autoIncrement.timestamp domain keyword execution', () => {
         rowIndex: 0,
       })
     ).toThrow(
-      'Invalid keyword arguments: argument "type" must be milliseconds, seconds, minutes, hours, days, weeks, months or years, not string'
+      'Invalid keyword arguments: argument "type" must be milliseconds, seconds, minutes, hours, days, weeks, months or years, not "fortnights"'
     );
   });
 });

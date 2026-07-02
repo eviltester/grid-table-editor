@@ -550,10 +550,21 @@ function createRequiredArgError(spec) {
   };
 }
 
+function describeMismatchedArgValue(spec, value) {
+  const isExplicitEnumSpec =
+    spec && typeof spec === 'object' && String(spec?.type || '').trim() === 'enum' && Array.isArray(spec?.enumValues);
+
+  if (isExplicitEnumSpec && (value === null || ['string', 'number', 'boolean'].includes(typeof value))) {
+    return JSON.stringify(value);
+  }
+
+  return describeValueType(value);
+}
+
 function createTypeMismatchArgError(spec, value) {
   return {
     ok: false,
-    error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec)}, not ${describeValueType(value)}`,
+    error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec)}, not ${describeMismatchedArgValue(spec, value)}`,
   };
 }
 

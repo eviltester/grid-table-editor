@@ -1,3 +1,4 @@
+import { Faker } from '@faker-js/faker';
 import { parseKeywordInvocation } from '../../domain/domain-keyword-parser.js';
 import {
   DOMAIN_KEYWORD_ALIAS_INDEX,
@@ -59,9 +60,10 @@ class DomainTestDataRuleValidator {
       keywordDefinition.delegate?.type === 'faker' &&
       hasFakerDelegateTarget(this.faker, keywordDefinition.delegate?.target)
     ) {
+      const validationFaker = createIsolatedFaker(this.faker);
       try {
         executeDomainKeyword(recognizedKeyword, {
-          faker: this.faker,
+          faker: validationFaker,
           args: parsed.args,
           autoIncrementState: {},
         });
@@ -81,6 +83,13 @@ class DomainTestDataRuleValidator {
   getValidationError() {
     return this.validationError;
   }
+}
+
+function createIsolatedFaker(fakerInstance) {
+  const rawDefinitions = fakerInstance?.rawDefinitions;
+  const isolatedFaker = new Faker({ locale: rawDefinitions });
+  isolatedFaker.seed(1);
+  return isolatedFaker;
 }
 
 function hasFakerDelegateTarget(fakerInstance, target) {

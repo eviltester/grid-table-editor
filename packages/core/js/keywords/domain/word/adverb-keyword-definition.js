@@ -1,8 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
-import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
+import { createWordSelectionArgsValidator, WORD_SELECTION_STRATEGY_TYPE } from '../shared/common-arg-validators.js';
 
-const WORD_SELECTION_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
-const validateWordSelectionArgs = createPositiveIntegerArgsValidator(['length']);
+const validateWordSelectionArgs = createWordSelectionArgsValidator();
 
 const WORD_ADVERB_KEYWORD_DEFINITION = {
   keyword: 'word.adverb',

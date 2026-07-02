@@ -44,28 +44,28 @@ describe('lorem.paragraphs parameter validation', () => {
   });
 
   test('rejects invalid paragraphCount type before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCount={"bad":true}')).toEqual({
+    expect(validateArgs('paragraphCount={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "paragraphCount" must be number, not object',
     });
   });
 
   test('rejects zero paragraphCount before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCount=0')).toEqual({
+    expect(validateArgs('paragraphCount=0')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "paragraphCount" must be greater than 0',
     });
   });
 
   test('rejects negative paragraphCount before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCount=-1')).toEqual({
+    expect(validateArgs('paragraphCount=-1')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "paragraphCount" must be greater than 0',
     });
   });
 
   test('rejects fractional paragraphCount before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCount=1.5')).toEqual({
+    expect(validateArgs('paragraphCount=1.5')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "paragraphCount" must be an integer',
     });
@@ -79,14 +79,14 @@ describe('lorem.paragraphs parameter validation', () => {
   });
 
   test('rejects invalid paragraphCountMax type before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCountMax={"bad":true}')).toEqual({
+    expect(validateArgs('paragraphCountMax={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "paragraphCountMax" must be number, not object',
     });
   });
 
   test('rejects invalid paragraphCountMin type before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCountMin={"bad":true}')).toEqual({
+    expect(validateArgs('paragraphCountMin={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "paragraphCountMin" must be number, not object',
     });
@@ -100,7 +100,7 @@ describe('lorem.paragraphs parameter validation', () => {
   });
 
   test('rejects paragraphCountMin greater than paragraphCountMax before generation', () => {
-    expect(validateArgs('min=1, max=10, paragraphCountMax=1, paragraphCountMin=10')).toEqual({
+    expect(validateArgs('paragraphCountMax=1, paragraphCountMin=10')).toEqual({
       ok: false,
       error:
         'Invalid keyword arguments: argument "paragraphCountMin" must be less than or equal to argument "paragraphCountMax"',

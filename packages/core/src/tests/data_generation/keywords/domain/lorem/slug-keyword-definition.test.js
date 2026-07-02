@@ -44,42 +44,42 @@ describe('lorem.slug parameter validation', () => {
   });
 
   test('rejects invalid wordCount type before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCount={"bad":true}')).toEqual({
+    expect(validateArgs('wordCount={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCount" must be number, not object',
     });
   });
 
   test('rejects zero wordCount before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCount=0')).toEqual({
+    expect(validateArgs('wordCount=0')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCount" must be greater than 0',
     });
   });
 
   test('rejects negative wordCount before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCount=-1')).toEqual({
+    expect(validateArgs('wordCount=-1')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCount" must be greater than 0',
     });
   });
 
   test('rejects fractional wordCount before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCount=1.5')).toEqual({
+    expect(validateArgs('wordCount=1.5')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCount" must be an integer',
     });
   });
 
   test('rejects invalid wordCountMax type before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCountMax={"bad":true}')).toEqual({
+    expect(validateArgs('wordCountMax={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCountMax" must be number, not object',
     });
   });
 
   test('rejects invalid wordCountMin type before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCountMin={"bad":true}')).toEqual({
+    expect(validateArgs('wordCountMin={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCountMin" must be number, not object',
     });
@@ -93,7 +93,7 @@ describe('lorem.slug parameter validation', () => {
   });
 
   test('rejects wordCountMin greater than wordCountMax before generation', () => {
-    expect(validateArgs('min=1, max=10, wordCountMax=1, wordCountMin=10')).toEqual({
+    expect(validateArgs('wordCountMax=1, wordCountMin=10')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "wordCountMin" must be less than or equal to argument "wordCountMax"',
     });

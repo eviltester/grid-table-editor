@@ -13,4 +13,10 @@ function createPositiveIntegerArgsValidator(argNames = []) {
   );
 }
 
-export { createPositiveIntegerArgsValidator };
+const WORD_SELECTION_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+
+function createWordSelectionArgsValidator() {
+  return createPositiveIntegerArgsValidator(['length']);
+}
+
+export { createPositiveIntegerArgsValidator, createWordSelectionArgsValidator, WORD_SELECTION_STRATEGY_TYPE };

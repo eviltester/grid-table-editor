@@ -44,42 +44,42 @@ describe('lorem.lines parameter validation', () => {
   });
 
   test('rejects invalid lineCount type before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCount={"bad":true}')).toEqual({
+    expect(validateArgs('lineCount={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCount" must be number, not object',
     });
   });
 
   test('rejects zero lineCount before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCount=0')).toEqual({
+    expect(validateArgs('lineCount=0')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCount" must be greater than 0',
     });
   });
 
   test('rejects negative lineCount before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCount=-1')).toEqual({
+    expect(validateArgs('lineCount=-1')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCount" must be greater than 0',
     });
   });
 
   test('rejects fractional lineCount before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCount=1.5')).toEqual({
+    expect(validateArgs('lineCount=1.5')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCount" must be an integer',
     });
   });
 
   test('rejects invalid lineCountMax type before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCountMax={"bad":true}')).toEqual({
+    expect(validateArgs('lineCountMax={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCountMax" must be number, not object',
     });
   });
 
   test('rejects invalid lineCountMin type before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCountMin={"bad":true}')).toEqual({
+    expect(validateArgs('lineCountMin={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCountMin" must be number, not object',
     });
@@ -93,7 +93,7 @@ describe('lorem.lines parameter validation', () => {
   });
 
   test('rejects lineCountMin greater than lineCountMax before generation', () => {
-    expect(validateArgs('min=1, max=10, lineCountMax=1, lineCountMin=10')).toEqual({
+    expect(validateArgs('lineCountMax=1, lineCountMin=10')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "lineCountMin" must be less than or equal to argument "lineCountMax"',
     });

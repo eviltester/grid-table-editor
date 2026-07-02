@@ -44,28 +44,28 @@ describe('lorem.sentences parameter validation', () => {
   });
 
   test('rejects invalid sentenceCount type before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCount={"bad":true}')).toEqual({
+    expect(validateArgs('sentenceCount={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "sentenceCount" must be number, not object',
     });
   });
 
   test('rejects zero sentenceCount before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCount=0')).toEqual({
+    expect(validateArgs('sentenceCount=0')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "sentenceCount" must be greater than 0',
     });
   });
 
   test('rejects negative sentenceCount before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCount=-1')).toEqual({
+    expect(validateArgs('sentenceCount=-1')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "sentenceCount" must be greater than 0',
     });
   });
 
   test('rejects fractional sentenceCount before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCount=1.5')).toEqual({
+    expect(validateArgs('sentenceCount=1.5')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "sentenceCount" must be an integer',
     });
@@ -79,14 +79,14 @@ describe('lorem.sentences parameter validation', () => {
   });
 
   test('rejects invalid sentenceCountMax type before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCountMax={"bad":true}')).toEqual({
+    expect(validateArgs('sentenceCountMax={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "sentenceCountMax" must be number, not object',
     });
   });
 
   test('rejects invalid sentenceCountMin type before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCountMin={"bad":true}')).toEqual({
+    expect(validateArgs('sentenceCountMin={"bad":true}')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: argument "sentenceCountMin" must be number, not object',
     });
@@ -100,7 +100,7 @@ describe('lorem.sentences parameter validation', () => {
   });
 
   test('rejects sentenceCountMin greater than sentenceCountMax before generation', () => {
-    expect(validateArgs('min=1, max=10, sentenceCountMax=1, sentenceCountMin=10')).toEqual({
+    expect(validateArgs('sentenceCountMax=1, sentenceCountMin=10')).toEqual({
       ok: false,
       error:
         'Invalid keyword arguments: argument "sentenceCountMin" must be less than or equal to argument "sentenceCountMax"',

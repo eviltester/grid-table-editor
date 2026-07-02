@@ -733,7 +733,10 @@ describe('faker keyword invocation styles', () => {
 
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
-      const sampleArgs = keyword.help.args.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg.name, arg.type));
+      const argsForInvocation = keyword.keyword.startsWith('lorem.')
+        ? keyword.help.args.filter((arg) => ['min', 'max'].includes(arg.name))
+        : keyword.help.args;
+      const sampleArgs = argsForInvocation.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg.name, arg.type));
       if (keyword.keyword === 'datatype.boolean') {
         sampleArgs[0] = 0.5;
       }
@@ -742,7 +745,7 @@ describe('faker keyword invocation styles', () => {
       }
 
       const positionalInvocation = `${keyword.keyword}(${sampleArgs.map(valueToInvocationLiteral).join(', ')})`;
-      const namedInvocation = `${keyword.keyword}(${keyword.help.args
+      const namedInvocation = `${keyword.keyword}(${argsForInvocation
         .map((arg, index) => `${arg.name}=${valueToInvocationLiteral(sampleArgs[index])}`)
         .join(', ')})`;
 

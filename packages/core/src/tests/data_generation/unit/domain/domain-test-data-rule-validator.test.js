@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker';
+import { Faker, faker } from '@faker-js/faker';
 import { DomainTestDataRuleValidator } from '../../../../../js/data_generation/domain/domainTestDataRuleValidator.js';
 
 describe('DomainTestDataRuleValidator', () => {
@@ -91,6 +91,19 @@ describe('DomainTestDataRuleValidator', () => {
 
     expect(isValid).toBe(false);
     expect(validator.getValidationError()).toContain('No words found that match the given length.');
+  });
+
+  test('does not advance supplied faker while validating faker-backed domain commands', () => {
+    const seed = 12345;
+    const controlFaker = new Faker({ locale: faker.rawDefinitions });
+    controlFaker.seed(seed);
+    faker.seed(seed);
+    const validator = new DomainTestDataRuleValidator(faker);
+
+    const isValid = validator.validate({ ruleSpec: 'person.firstName()' });
+
+    expect(isValid).toBe(true);
+    expect(faker.person.firstName()).toBe(controlFaker.person.firstName());
   });
 
   test('rejects unsatisfiable BigInt params before generation', () => {

@@ -123,6 +123,9 @@ function buildDomainKeywordCatalog(definitions = DOMAIN_KEYWORD_DEFINITIONS) {
           variadic: arg?.variadic === true,
           description: String(arg?.description || '').trim(),
           example: String(arg?.example || '').trim(),
+          allowedValues: Array.isArray(arg?.allowedValues) ? arg.allowedValues : [],
+          choices: Array.isArray(arg?.choices) ? arg.choices : [],
+          enumValues: Array.isArray(arg?.enumValues) ? arg.enumValues : [],
           ...(Object.prototype.hasOwnProperty.call(arg || {}, 'defaultValue')
             ? { defaultValue: arg.defaultValue }
             : Object.prototype.hasOwnProperty.call(arg || {}, 'default')
@@ -270,12 +273,26 @@ function runFakerDelegate(target, fakerInstance, args = [], resultPath = '') {
   return resolved;
 }
 
-function isTypeMatch(value, typeName) {
-  const raw = String(typeName || '').trim();
-  if (!raw) {
+function getExpectedTypeTokens(specOrType) {
+  const rawType =
+    specOrType && typeof specOrType === 'object' ? String(specOrType?.type || '').trim() : String(specOrType || '');
+  if (specOrType && typeof specOrType === 'object' && rawType === 'enum' && Array.isArray(specOrType?.enumValues)) {
+    return specOrType.enumValues.map((entry) => String(entry).trim());
+  }
+  return rawType.split('|').map((entry) => entry.trim());
+}
+
+function isTypeMatch(value, specOrType) {
+  const allowed = getExpectedTypeTokens(specOrType);
+  const isExplicitEnumSpec =
+    specOrType &&
+    typeof specOrType === 'object' &&
+    String(specOrType?.type || '').trim() === 'enum' &&
+    Array.isArray(specOrType?.enumValues);
+  const raw = allowed.join('|').trim();
+  if ((!isExplicitEnumSpec && !raw) || (isExplicitEnumSpec && allowed.length === 0)) {
     return false;
   }
-  const allowed = raw.split('|').map((entry) => entry.trim());
   for (const item of allowed) {
     if (/^[+-]?\d+(\.\d+)?$/.test(item) && typeof value === 'number' && Object.is(value, Number(item))) return true;
     if (item === 'string' && typeof value === 'string') return true;
@@ -320,10 +337,8 @@ function normalizeLiteralTypeToken(typeToken) {
   return typeToken;
 }
 
-function formatExpectedType(typeName) {
-  const allowed = String(typeName || '')
-    .split('|')
-    .map((entry) => entry.trim())
+function formatExpectedType(specOrType) {
+  const allowed = getExpectedTypeTokens(specOrType)
     .filter(Boolean)
     .map((entry) => normalizeLiteralTypeToken(entry));
 
@@ -459,7 +474,7 @@ function createRequiredArgError(spec) {
 function createTypeMismatchArgError(spec, value) {
   return {
     ok: false,
-    error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec.type)}, not ${describeValueType(value)}`,
+    error: `Invalid keyword arguments: argument "${spec.name}" must be ${formatExpectedType(spec)}, not ${describeValueType(value)}`,
   };
 }
 
@@ -475,7 +490,7 @@ function validateSingleKeywordArg(spec, value, argsByName) {
   if (spec.required && typeof value === 'undefined') {
     return createRequiredArgError(spec);
   }
-  if (typeof value !== 'undefined' && !isTypeMatch(value, spec.type)) {
+  if (typeof value !== 'undefined' && !isTypeMatch(value, spec)) {
     return createTypeMismatchArgError(spec, value);
   }
 
@@ -503,7 +518,7 @@ function validateVariadicKeywordArgs(schema, argumentList, argsByName, variadicI
   }
 
   for (const value of variadicValues) {
-    if (typeof value !== 'undefined' && !isTypeMatch(value, variadicSpec.type)) {
+    if (typeof value !== 'undefined' && !isTypeMatch(value, variadicSpec)) {
       return createTypeMismatchArgError(variadicSpec, value);
     }
   }

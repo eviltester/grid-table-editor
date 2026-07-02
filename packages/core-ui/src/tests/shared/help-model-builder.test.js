@@ -133,9 +133,16 @@ describe('help-model-builder', () => {
 
   test('builds domain help for auto-increment timestamps with step metadata', () => {
     const model = buildSchemaHelpModel('domain', 'autoIncrement.timestamp');
+    const typeParam = model.params.find((param) => param.name === 'type');
 
     expect(model.show).toBe(true);
     expect(model.heading).toContain('autoIncrement.timestamp');
+    expect(typeParam).toEqual(
+      expect.objectContaining({
+        type: 'enum',
+        enumValues: ['milliseconds', 'seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'],
+      })
+    );
     expect(renderSchemaHelpHtml(model)).toContain('run start time');
     expect(renderSchemaHelpHtml(model)).toContain('outputFormat');
   });

@@ -4,6 +4,8 @@ import { jest } from '@jest/globals';
 import {
   splitTopLevelCommaSeparated,
   parseInitialParamEntries,
+  inferEnumChoicesFromType,
+  resolveEnumChoices,
   buildParamsTextFromEditorEntries,
   openParamsEditorModal,
 } from '../../../js/gui_components/shared/test-data/ui/params-editor-modal.js';
@@ -72,6 +74,47 @@ describe('params editor modal', () => {
     ]);
   });
 
+  test('derives enum choices from explicit enum value arrays before pipe-delimited types', () => {
+    expect(
+      resolveEnumChoices({
+        type: 'alpha-2|alpha-3|numeric',
+        allowedValues: ['svg-uri', 'svg-base64'],
+        choices: ['ignored'],
+        enumValues: ['also-ignored'],
+      })
+    ).toEqual(['svg-uri', 'svg-base64']);
+    expect(resolveEnumChoices({ type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'] })).toEqual([
+      'alpha-2',
+      'alpha-3',
+      'numeric',
+    ]);
+    expect(resolveEnumChoices({ type: 'alpha-2|alpha-3|numeric' })).toEqual(['alpha-2', 'alpha-3', 'numeric']);
+    expect(resolveEnumChoices({ type: 'female|generic|male' })).toEqual(['female', 'generic', 'male']);
+  });
+
+  test('does not derive enum choices from broad type unions', () => {
+    expect(inferEnumChoicesFromType('string|number|date')).toEqual([]);
+    expect(inferEnumChoicesFromType('comma-separated list|array')).toEqual([]);
+    expect(inferEnumChoicesFromType('number | { min: number; max: number; }')).toEqual([]);
+    expect(inferEnumChoicesFromType('array | () => unknown')).toEqual([]);
+  });
+
+  test('parses explicit enum metadata into enum editor entries', () => {
+    const parsed = parseInitialParamEntries({
+      params: [
+        { name: 'sex', type: 'enum', enumValues: ['female', 'male'], optional: true },
+        { name: 'refDate', type: 'string|number|date', optional: true },
+      ],
+      initialParams: '',
+    });
+
+    expect(parsed.error).toBe('');
+    expect(parsed.entries).toEqual([
+      expect.objectContaining({ name: 'sex', enumChoices: ['female', 'male'], mode: 'enum' }),
+      expect.objectContaining({ name: 'refDate', enumChoices: [], mode: 'auto' }),
+    ]);
+  });
+
   test('parses variadic documented params as a single editable list value', () => {
     const parsed = parseInitialParamEntries({
       params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
@@ -136,6 +179,20 @@ describe('params editor modal', () => {
 
     expect(result).toEqual({
       paramsText: '(locale="en-GB",items=["Ada","Bob"])',
+      errors: [],
+    });
+  });
+
+  test('builds enum params with string choices quoted and numeric choices raw', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'variant', type: 'enum', value: 'alpha-3', mode: 'enum', optional: true },
+          { name: 'version', type: 'enum', value: '7', mode: 'enum', optional: true },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(variant="alpha-3",version=7)',
       errors: [],
     });
   });
@@ -278,6 +335,138 @@ describe('params editor modal', () => {
 
     fireEvent.click(applyButton);
     await expect(promise).resolves.toBe('(active,inactive,pending)');
+  });
+
+  test('renders required enum params as a select and requires a choice', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'location.countryCode',
+      helpModel: {
+        summary: 'Country code helper',
+        params: [{ name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: false }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for location\.countrycode/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+
+    expect(within(dialog).queryByRole('textbox', { name: /variant value/i })).toBeNull();
+    expect(variantSelect.options[0].selected).toBe(true);
+    expect(variantSelect.options[0].textContent).toBe('Select...');
+    expect(applyButton.disabled).toBe(true);
+    expect(dialog.querySelector('[data-role="params-editor-error"]').textContent).toContain('required');
+
+    variantSelect.value = 'alpha-3';
+    fireEvent.change(variantSelect);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(
+      within(dialog).getByText('(variant="alpha-3")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(variant="alpha-3")');
+  });
+
+  test('renders optional explicit enum choices with an unset option', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'image.dataUri',
+      helpModel: {
+        summary: 'Image data URI helper',
+        params: [{ name: 'type', type: 'string', optional: true, allowedValues: ['svg-uri', 'svg-base64'] }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for image\.datauri/i });
+    const typeSelect = within(dialog).getByRole('combobox', { name: /type value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    expect(typeSelect.options[0].selected).toBe(true);
+    expect(typeSelect.options[0].textContent).toBe('Unset');
+    expect(applyButton.disabled).toBe(false);
+
+    typeSelect.value = 'svg-base64';
+    fireEvent.change(typeSelect);
+
+    expect(
+      within(dialog).getByText('(type="svg-base64")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(type="svg-base64")');
+  });
+
+  test('serializes explicit empty string enum choices separately from optional unset', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'internet.mac',
+      helpModel: {
+        summary: 'MAC helper',
+        params: [{ name: 'separator', type: 'enum', optional: true, enumValues: [':', '-', ''] }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for internet\.mac/i });
+    const separatorSelect = within(dialog).getByRole('combobox', { name: /separator value/i });
+    const emptyStringOption = Array.from(separatorSelect.options).find((option) => option.textContent === '""');
+
+    expect(separatorSelect.options[0].textContent).toBe('Unset');
+    expect(emptyStringOption).toBeDefined();
+
+    separatorSelect.value = emptyStringOption.value;
+    fireEvent.change(separatorSelect);
+
+    expect(
+      within(dialog).getByText('(separator="")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+    await expect(promise).resolves.toBe('(separator="")');
+  });
+
+  test('prefills enum selects from existing params and numeric defaults', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'string.uuid',
+      helpModel: {
+        summary: 'UUID helper',
+        params: [
+          { name: 'version', type: 'enum', enumValues: ['4', '7'], optional: true, defaultValue: '7' },
+          { name: 'refDate', type: 'string|number|date', optional: true },
+        ],
+      },
+      initialParams: '(version=4)',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for string\.uuid/i });
+    const versionSelect = within(dialog).getByRole('combobox', { name: /version value/i });
+
+    expect(versionSelect.value).toBe('4');
+    expect(within(dialog).queryByRole('combobox', { name: /refdate value/i })).toBeNull();
+    expect(within(dialog).getByRole('textbox', { name: /refdate value/i })).toBeTruthy();
+    expect(
+      within(dialog).getByText('(version=4)', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
   });
 
   test('keeps apply enabled when semantic validation returns a warning', async () => {

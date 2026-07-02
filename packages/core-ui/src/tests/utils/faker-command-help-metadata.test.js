@@ -62,7 +62,9 @@ describe('faker command help metadata', () => {
     const uuid = getFakerCommandHelp('string.uuid');
 
     expect(firstName.params).toEqual(
-      expect.arrayContaining([expect.objectContaining({ name: 'sex', optional: true, type: 'female|male' })])
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'sex', optional: true, type: 'enum', enumValues: ['female', 'male'] }),
+      ])
     );
     expect(firstName.usageExamples).toEqual(
       expect.arrayContaining([
@@ -82,7 +84,7 @@ describe('faker command help metadata', () => {
     expect(uuid.summary).toContain('Returns a UUID');
     expect(uuid.params).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ name: 'version', optional: true, type: '4|7' }),
+        expect.objectContaining({ name: 'version', optional: true, type: 'enum', enumValues: ['4', '7'] }),
         expect.objectContaining({ name: 'refDate', optional: true, type: 'string|number|date' }),
       ])
     );

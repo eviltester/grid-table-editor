@@ -74,7 +74,8 @@ const DATE_BIRTHDATE_KEYWORD_DEFINITION = {
       },
       {
         name: 'mode',
-        type: 'age|year',
+        type: 'enum',
+        enumValues: ['age', 'year'],
         required: false,
         description: "Either 'age' or 'year' to generate a birthdate based on the age or year range.",
         examples: ['age'],

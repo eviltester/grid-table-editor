@@ -58,6 +58,9 @@ function normalizeFakerHelperKeywordHelp(definition) {
         type: String(param.type || '').trim(),
         description: String(param.description || '').trim(),
         examples: Array.isArray(param.examples) ? param.examples : [],
+        allowedValues: Array.isArray(param.allowedValues) ? param.allowedValues : [],
+        choices: Array.isArray(param.choices) ? param.choices : [],
+        enumValues: Array.isArray(param.enumValues) ? param.enumValues : [],
       }))
     : [];
   const returnType = String(definition.returnType || '').trim();
@@ -107,6 +110,9 @@ function mapDomainKeywordHelpToFakerCommandHelp(commandHelp) {
         type: arg.type,
         description: arg.description || '',
         examples: Array.isArray(arg.examples) ? arg.examples : [],
+        allowedValues: Array.isArray(arg.allowedValues) ? arg.allowedValues : [],
+        choices: Array.isArray(arg.choices) ? arg.choices : [],
+        enumValues: Array.isArray(arg.enumValues) ? arg.enumValues : [],
       }))
     : [];
   const returnType = commandHelp.returnType || '';

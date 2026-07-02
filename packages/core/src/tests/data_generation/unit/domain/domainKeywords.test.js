@@ -554,6 +554,15 @@ function setDeepMethod(root, target, fn) {
   node[parts[parts.length - 1]] = fn;
 }
 
+function sampleValueForArg(arg) {
+  if (arg?.type === 'enum' && Array.isArray(arg.enumValues) && arg.enumValues.length > 0) {
+    const nonEmptyValue = arg.enumValues.find((entry) => String(entry).length > 0);
+    return nonEmptyValue ?? arg.enumValues[0];
+  }
+
+  return sampleValueForType(arg?.type);
+}
+
 function sampleValueForType(type) {
   const allowed = String(type || '')
     .split('|')
@@ -677,7 +686,7 @@ describe('faker keyword invocation styles', () => {
 
   for (const keyword of fakerKeywordsWithArgs) {
     test(`${keyword.keyword} supports equivalent positional and named argument invocation`, () => {
-      const sampleArgs = keyword.help.args.map((arg) => sampleValueForType(arg.type));
+      const sampleArgs = keyword.help.args.map((arg) => sampleValueForArg(arg));
       if (keyword.keyword === 'datatype.boolean') {
         sampleArgs[0] = 0.5;
       }

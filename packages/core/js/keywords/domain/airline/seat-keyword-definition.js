@@ -2,7 +2,7 @@ import { validateAirlineSeatValue } from '../../../command-help/command-help-val
 
 const AIRCRAFT_TYPES = ['narrowbody', 'regional', 'widebody'];
 
-const AIRCRAFT_TYPE_RETURN_TYPE = AIRCRAFT_TYPES.join('|');
+const AIRCRAFT_TYPE_RETURN_TYPE = AIRCRAFT_TYPES;
 
 const AIRLINE_SEAT_KEYWORD_DEFINITION = {
   keyword: 'airline.seat',
@@ -37,7 +37,8 @@ const AIRLINE_SEAT_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'aircraftType',
-        type: AIRCRAFT_TYPE_RETURN_TYPE,
+        type: 'enum',
+        enumValues: AIRCRAFT_TYPE_RETURN_TYPE,
         required: false,
         description: 'The aircraft type. Can be one of narrowbody, regional, widebody.',
         examples: ['widebody'],

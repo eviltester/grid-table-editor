@@ -1,5 +1,16 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
 
+const AUTO_INCREMENT_TIMESTAMP_STEP_TYPES = [
+  'milliseconds',
+  'seconds',
+  'minutes',
+  'hours',
+  'days',
+  'weeks',
+  'months',
+  'years',
+];
+
 const AUTO_INCREMENT_TIMESTAMP_KEYWORD_DEFINITION = {
   keyword: 'autoIncrement.timestamp',
   delegate: {
@@ -84,7 +95,8 @@ const AUTO_INCREMENT_TIMESTAMP_KEYWORD_DEFINITION = {
       },
       {
         name: 'type',
-        type: 'string',
+        type: 'enum',
+        enumValues: AUTO_INCREMENT_TIMESTAMP_STEP_TYPES,
         required: false,
         description:
           'Unit applied to step for each row. Supports milliseconds, seconds, minutes, hours, days, weeks, months, or years. Defaults to seconds.',

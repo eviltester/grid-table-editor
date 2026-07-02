@@ -1,8 +1,8 @@
 import { validateArrayOrStringValue } from '../../../command-help/command-help-validators.js';
 
-const COLOR_FORMAT_TYPE = 'decimal|css|binary';
+const COLOR_FORMAT_TYPE = ['decimal', 'css', 'binary'];
 
-const CSS_SUPPORTED_SPACE_RETURN_TYPE = 'sRGB|display-p3|rec2020|a98-rgb|prophoto-rgb';
+const CSS_SUPPORTED_SPACE_RETURN_TYPE = ['sRGB', 'display-p3', 'rec2020', 'a98-rgb', 'prophoto-rgb'];
 
 const COLOR_COLOR_BY_CSSCOLOR_SPACE_KEYWORD_DEFINITION = {
   keyword: 'color.colorByCSSColorSpace',
@@ -37,13 +37,15 @@ const COLOR_COLOR_BY_CSSCOLOR_SPACE_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'format',
-        type: COLOR_FORMAT_TYPE,
+        type: 'enum',
+        enumValues: COLOR_FORMAT_TYPE,
         required: false,
         description: 'Format of generated RGB color.',
       },
       {
         name: 'space',
-        type: CSS_SUPPORTED_SPACE_RETURN_TYPE,
+        type: 'enum',
+        enumValues: CSS_SUPPORTED_SPACE_RETURN_TYPE,
         required: false,
         description: 'Color space to generate the color for.',
       },

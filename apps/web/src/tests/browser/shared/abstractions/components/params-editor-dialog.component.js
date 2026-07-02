@@ -20,9 +20,18 @@ class ParamsEditorDialogComponent {
     return this.dialog.getByRole('textbox', { name: new RegExp(`^${escapeRegExp(name)} value$`, 'i') });
   }
 
+  enumSelect(name) {
+    return this.dialog.getByRole('combobox', { name: new RegExp(`^${escapeRegExp(name)} value$`, 'i') });
+  }
+
   async setValue(name, value) {
     await this.expectOpen();
     await this.valueInput(name).fill(String(value));
+  }
+
+  async selectEnumValue(name, value) {
+    await this.expectOpen();
+    await this.enumSelect(name).selectOption(String(value));
   }
 
   async apply() {

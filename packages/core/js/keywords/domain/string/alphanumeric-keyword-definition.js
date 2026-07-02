@@ -1,6 +1,6 @@
 import { validateAlphanumericStringValue } from '../../../command-help/command-help-validators.js';
 
-const STRING_CASING_TYPE = 'upper|lower|mixed';
+const STRING_CASING_TYPE = ['upper', 'lower', 'mixed'];
 
 const STRING_ALPHANUMERIC_KEYWORD_DEFINITION = {
   keyword: 'string.alphanumeric',
@@ -46,7 +46,8 @@ const STRING_ALPHANUMERIC_KEYWORD_DEFINITION = {
       },
       {
         name: 'casing',
-        type: STRING_CASING_TYPE,
+        type: 'enum',
+        enumValues: STRING_CASING_TYPE,
         required: false,
         description: 'The casing of the characters.',
       },

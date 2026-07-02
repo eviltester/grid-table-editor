@@ -1,8 +1,8 @@
 import { validateBitcoinAddressValue } from '../../../command-help/command-help-validators.js';
 
-const BITCOIN_ADDRESS_TYPE = 'legacy|segwit|bech32|taproot';
+const BITCOIN_ADDRESS_TYPE = ['legacy', 'segwit', 'bech32', 'taproot'];
 
-const BITCOIN_NETWORK_TYPE = 'mainnet|testnet';
+const BITCOIN_NETWORK_TYPE = ['mainnet', 'testnet'];
 
 const FINANCE_BITCOIN_ADDRESS_KEYWORD_DEFINITION = {
   keyword: 'finance.bitcoinAddress',
@@ -37,14 +37,16 @@ const FINANCE_BITCOIN_ADDRESS_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'type',
-        type: BITCOIN_ADDRESS_TYPE,
+        type: 'enum',
+        enumValues: BITCOIN_ADDRESS_TYPE,
         required: false,
         description: "The bitcoin address type ('legacy', 'segwit', 'bech32' or 'taproot').",
         examples: ['bech32'],
       },
       {
         name: 'network',
-        type: BITCOIN_NETWORK_TYPE,
+        type: 'enum',
+        enumValues: BITCOIN_NETWORK_TYPE,
         required: false,
         description: "The bitcoin network ('mainnet' or 'testnet').",
         examples: ['testnet'],

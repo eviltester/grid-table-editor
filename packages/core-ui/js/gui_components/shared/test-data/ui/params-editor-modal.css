@@ -88,7 +88,8 @@ body.theme-dark {
 
 .params-editor-close,
 .params-editor-footer button,
-[data-role='params-editor-value'] {
+[data-role='params-editor-value'],
+[data-role='params-editor-enum'] {
   border: 1px solid var(--pe-border, #ddd);
   border-radius: 8px;
   background: var(--pe-bg, #fff);
@@ -176,13 +177,18 @@ body.theme-dark {
   flex: 0 0 auto;
 }
 
-[data-role='params-editor-value'] {
+[data-role='params-editor-value'],
+[data-role='params-editor-enum'] {
   display: block;
   width: 100%;
   max-width: 100%;
   min-width: 0;
   padding: 8px 10px;
   box-sizing: border-box;
+}
+
+[data-role='params-editor-enum'] {
+  min-height: 38px;
 }
 
 .sr-only {
@@ -269,7 +275,8 @@ body.theme-dark {
 }
 
 .params-editor-modal button:focus-visible,
-.params-editor-modal input:focus-visible {
+.params-editor-modal input:focus-visible,
+.params-editor-modal select:focus-visible {
   outline: 2px solid var(--pe-focus, #4a80ff);
   outline-offset: 2px;
 }

@@ -1,6 +1,6 @@
 import { validateHexadecimalStringValue } from '../../../command-help/command-help-validators.js';
 
-const STRING_CASING_TYPE = 'upper|lower|mixed';
+const STRING_CASING_TYPE = ['upper', 'lower', 'mixed'];
 
 const STRING_HEXADECIMAL_KEYWORD_DEFINITION = {
   keyword: 'string.hexadecimal',
@@ -40,7 +40,8 @@ const STRING_HEXADECIMAL_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'casing',
-        type: STRING_CASING_TYPE,
+        type: 'enum',
+        enumValues: STRING_CASING_TYPE,
         required: false,
         description: 'Casing of the generated number.',
       },

@@ -90,9 +90,19 @@ function sampleValueForType(type) {
   return 'sample';
 }
 
-function sampleValueForKeywordArg(keywordName, argName, typeName) {
+function sampleValueForArgSpec(argSpec) {
+  if (argSpec?.type === 'enum' && Array.isArray(argSpec.enumValues) && argSpec.enumValues.length > 0) {
+    const nonEmptyValue = argSpec.enumValues.find((entry) => String(entry).length > 0);
+    return nonEmptyValue ?? argSpec.enumValues[0];
+  }
+
+  return sampleValueForType(argSpec?.type);
+}
+
+function sampleValueForKeywordArg(keywordName, argSpec) {
+  const argName = argSpec?.name;
   const key = `${keywordName}.${argName}`;
-  const type = String(typeName || '');
+  const type = String(argSpec?.type || '');
 
   if (key === 'date.between.from' || key === 'date.betweens.from')
     return new Date('2020-01-01T00:00:00.000Z').getTime();
@@ -156,7 +166,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (type.includes('regexp')) return '[A-Z]';
   if (type.includes('boolean')) return true;
   if (type.includes('array')) return ['a', 'b'];
-  return sampleValueForType(type);
+  return sampleValueForArgSpec(argSpec);
 }
 
 function buildValidArgs(keyword) {
@@ -164,7 +174,7 @@ function buildValidArgs(keyword) {
   for (let index = 0; index < keyword.help.args.length; index += 1) {
     const argSpec = keyword.help.args[index];
     if (argSpec.required) {
-      args[index] = sampleValueForType(argSpec.type);
+      args[index] = sampleValueForArgSpec(argSpec);
     }
   }
   return args;
@@ -225,7 +235,7 @@ describe('domain keyword parameter usage', () => {
         });
 
         const args = applyKeywordExecutionDefaults(keyword, buildValidArgs(keyword));
-        const sample = sampleValueForKeywordArg(keyword.keyword, argSpec.name, argSpec.type);
+        const sample = sampleValueForKeywordArg(keyword.keyword, argSpec);
         args[argIndex] = sample;
 
         executeDomainKeyword(keyword.keyword, { faker, args });
@@ -245,7 +255,7 @@ describe('domain keyword parameter usage', () => {
 
       test(`${keyword.keyword} executes with parameter "${argSpec.name}" against faker`, () => {
         const args = applyKeywordExecutionDefaults(keyword, buildValidArgs(keyword));
-        args[argIndex] = sampleValueForKeywordArg(keyword.keyword, argSpec.name, argSpec.type);
+        args[argIndex] = sampleValueForKeywordArg(keyword.keyword, argSpec);
 
         if (shouldSkipRuntimeExecution(keyword.keyword, argSpec.name)) {
           return;

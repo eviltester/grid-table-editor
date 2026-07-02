@@ -476,6 +476,27 @@ test.describe('Generator Schema Editing', () => {
     expectNoPageErrors(pageErrors);
   });
 
+  test('enum command params can be selected through the guided params dialog', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Country Code');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'location.countryCode');
+    await generatorPage.schema.editor.editRowEnumParamsWithDialog(0, {
+      variant: 'alpha-3',
+    });
+
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText(
+      'location.countryCode'
+    );
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(variant="alpha-3")');
+    await expect
+      .poll(async () => generatorPage.schema.getSchemaText())
+      .toContain('location.countryCode(variant="alpha-3")');
+
+    expectNoPageErrors(pageErrors);
+  });
+
   test('schema edit buttons states are correct across top middle and bottom rows', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 

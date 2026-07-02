@@ -1,6 +1,6 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
 
-const PHONE_NUMBER_STYLE_TYPE = 'human|national|international';
+const PHONE_NUMBER_STYLE_TYPE = ['human', 'national', 'international'];
 
 const PHONE_NUMBER_KEYWORD_DEFINITION = {
   keyword: 'phone.number',
@@ -30,7 +30,8 @@ const PHONE_NUMBER_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'style',
-        type: PHONE_NUMBER_STYLE_TYPE,
+        type: 'enum',
+        enumValues: PHONE_NUMBER_STYLE_TYPE,
         required: false,
         description:
           "Style of the generated phone number: 'human': (default) A human-input phone number, e.g. 555-770-7727 or 555.770.7727 x1234 'national': A phone number in a standardized national format, e.g. (555) 123-4567. 'international': A phone number in the E.123 international format, e.g. +15551234567",

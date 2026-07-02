@@ -1,6 +1,6 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
 
-const PERSON_SEX_TYPE = 'female|male';
+const PERSON_SEX_TYPE = ['female', 'male'];
 
 const PERSON_FIRST_NAME_KEYWORD_DEFINITION = {
   keyword: 'person.firstName',
@@ -29,7 +29,8 @@ const PERSON_FIRST_NAME_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'sex',
-        type: PERSON_SEX_TYPE,
+        type: 'enum',
+        enumValues: PERSON_SEX_TYPE,
         required: false,
         description: 'Optional sex for first-name selection. Valid values: female or male.',
       },

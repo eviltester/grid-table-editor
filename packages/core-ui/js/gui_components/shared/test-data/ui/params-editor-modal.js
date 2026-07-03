@@ -763,7 +763,7 @@ function renderEntryRows(entries = []) {
       const requiredStateAccessibleLabel = `${requiredStateLabel} ${entry.name}`;
       return `
         <tr>
-          <td>
+          <td data-label="Name">
             <div class="params-editor-name-cell">
               ${nameLabel}
               <span
@@ -775,8 +775,8 @@ function renderEntryRows(entries = []) {
               ></span>
             </div>
           </td>
-          <td><code>${escapeHtml(entry.type || 'unknown')}</code></td>
-          <td>
+          <td data-label="Type"><code>${escapeHtml(entry.type || 'unknown')}</code></td>
+          <td data-label="Req">
             <label
               class="params-editor-required-checkbox-label"
               title="${escapeHtml(requiredStateAccessibleLabel)}"
@@ -791,7 +791,7 @@ function renderEntryRows(entries = []) {
               />
             </label>
           </td>
-          <td>
+          <td data-label="Value">
             ${renderValueEditor(entry, index)}
             ${
               entry.defaultValue

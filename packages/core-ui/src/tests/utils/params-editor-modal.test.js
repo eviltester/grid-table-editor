@@ -1,4 +1,5 @@
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'node:fs';
 import { fireEvent, within } from '@testing-library/dom';
 import { jest } from '@jest/globals';
 import {
@@ -444,6 +445,31 @@ describe('params editor modal', () => {
     await expect(promise).resolves.toBe('(variant="alpha-3")');
   });
 
+  test('renders param row cell labels used by the stacked mobile layout', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'location.countryCode',
+      helpModel: {
+        summary: 'Country code helper',
+        params: [{ name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: false }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for location\.countrycode/i });
+    const cells = Array.from(dialog.querySelectorAll('.params-editor-table tbody tr:first-child td')).map((cell) =>
+      cell.getAttribute('data-label')
+    );
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+
+    expect(cells).toEqual(['Name', 'Type', 'Req', 'Value']);
+    expect(variantSelect.closest('td')?.getAttribute('data-label')).toBe('Value');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
   test('renders optional explicit enum choices with an unset option', async () => {
     const promise = openParamsEditorModal({
       documentObj: document,
@@ -745,6 +771,17 @@ describe('params editor modal', () => {
     fireEvent.keyDown(dialog, { key: 'Escape' });
     await expect(promise).resolves.toBeNull();
     expect(document.activeElement).toBe(trigger);
+  });
+
+  test('params editor stylesheet stacks table rows on narrow screens instead of forcing horizontal scroll', () => {
+    const css = readFileSync(
+      new URL('../../../js/gui_components/shared/test-data/ui/params-editor-modal.css', import.meta.url),
+      'utf8'
+    );
+
+    expect(css).toContain('@media (max-width: 560px)');
+    expect(css).toContain('content: attr(data-label)');
+    expect(css).not.toContain('min-width: 720px');
   });
 
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {

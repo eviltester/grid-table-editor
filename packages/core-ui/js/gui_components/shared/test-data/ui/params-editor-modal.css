@@ -282,11 +282,84 @@ body.theme-dark {
 }
 
 @media (max-width: 860px) {
+  .params-editor-overlay {
+    padding: 12px;
+  }
+
   .params-editor-modal {
     width: 100%;
   }
 
+  .params-editor-table-wrap {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 560px) {
+  .params-editor-header,
+  .params-editor-footer {
+    padding: 10px 12px;
+  }
+
+  .params-editor-body {
+    padding: 12px;
+  }
+
+  .params-editor-table,
+  .params-editor-table thead,
+  .params-editor-table tbody,
+  .params-editor-table tr,
+  .params-editor-table th,
+  .params-editor-table td {
+    display: block;
+  }
+
   .params-editor-table {
-    min-width: 720px;
+    border: 0;
+  }
+
+  .params-editor-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+
+  .params-editor-table tr {
+    margin-bottom: 12px;
+    border: 1px solid var(--pe-border, #ddd);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .params-editor-table tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .params-editor-table td {
+    display: grid;
+    grid-template-columns: minmax(64px, 26%) minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+    border-bottom: 1px solid var(--pe-border, #ddd);
+  }
+
+  .params-editor-table td::before {
+    content: attr(data-label);
+    color: var(--pe-muted, #555);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .params-editor-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .params-editor-name-cell,
+  .params-editor-boolean-group,
+  [data-role='params-editor-value'],
+  [data-role='params-editor-enum'] {
+    min-width: 0;
   }
 }

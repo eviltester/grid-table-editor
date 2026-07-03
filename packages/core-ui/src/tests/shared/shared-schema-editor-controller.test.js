@@ -270,6 +270,7 @@ describe('createSharedSchemaEditorController', () => {
     await dialogPromise;
 
     expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(variant="alpha-3")');
+    expect(dom.window.document.activeElement).toBe(dom.window.document.querySelector('[data-action="edit-params"]'));
     expect(dataRulesToSchemaText).toHaveBeenLastCalledWith(
       expect.objectContaining({
         dataRules: [

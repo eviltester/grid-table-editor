@@ -183,6 +183,66 @@ describe('params editor modal', () => {
     });
   });
 
+  test('auto quotes non-numeric values for string-capable union params', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'refDate', type: 'string|number|date', value: '2026-06-18T00:00:00.000Z', mode: 'auto' },
+          { name: 'start', type: 'string|number', value: '2026-06-12T12:39:23Z', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(refDate="2026-06-18T00:00:00.000Z",start="2026-06-12T12:39:23Z")',
+      errors: [],
+    });
+  });
+
+  test('keeps parser-valid numeric values raw for string-capable union params', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'integer', type: 'string|number', value: '123', mode: 'auto' },
+          { name: 'decimal', type: 'string|number', value: '12.5', mode: 'auto' },
+          { name: 'negative', type: 'string|number', value: '-12', mode: 'auto' },
+          { name: 'leadingZeros', type: 'string|number', value: '001', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(integer=123,decimal=12.5,negative=-12,leadingZeros=001)',
+      errors: [],
+    });
+  });
+
+  test('quotes number-like text that the domain parser does not treat as numeric', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'plus', type: 'string|number', value: '+12', mode: 'auto' },
+          { name: 'exponent', type: 'string|number', value: '1e3', mode: 'auto' },
+          { name: 'infinity', type: 'string|number', value: 'Infinity', mode: 'auto' },
+          { name: 'notNumber', type: 'string|number', value: 'NaN', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(plus="+12",exponent="1e3",infinity="Infinity",notNumber="NaN")',
+      errors: [],
+    });
+  });
+
+  test('preserves raw structured values when string-capable union params allow them', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'arrayValue', type: 'string|array', value: '["Ada","Bob"]', mode: 'auto' },
+          { name: 'objectValue', type: 'string|object', value: '{ name: "Ada" }', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(arrayValue=["Ada","Bob"],objectValue={ name: "Ada" })',
+      errors: [],
+    });
+  });
+
   test('builds enum params with string choices quoted and numeric choices raw', () => {
     expect(
       buildParamsTextFromEditorEntries({
@@ -269,6 +329,17 @@ describe('params editor modal', () => {
 
     expect(result).toEqual({
       paramsText: '(prefix="filename")',
+      errors: [],
+    });
+  });
+
+  test('auto quotes string-capable union params without double quoting existing quoted input', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [{ name: 'refDate', type: 'string|number|date', value: '"2026-06-18T00:00:00.000Z"', mode: 'auto' }],
+    });
+
+    expect(result).toEqual({
+      paramsText: '(refDate="2026-06-18T00:00:00.000Z")',
       errors: [],
     });
   });
@@ -467,6 +538,82 @@ describe('params editor modal', () => {
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
     await expect(promise).resolves.toBeNull();
+  });
+
+  test('auto quotes string.uuid refDate values entered without raw schema quotes', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'string.uuid',
+      helpModel: {
+        summary: 'UUID helper',
+        params: [
+          { name: 'version', type: 'enum', enumValues: ['4', '7'], optional: true },
+          { name: 'refDate', type: 'string|number|date', optional: true },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for string\.uuid/i });
+    const versionSelect = within(dialog).getByRole('combobox', { name: /version value/i });
+    const refDateInput = within(dialog).getByRole('textbox', { name: /refdate value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    versionSelect.value = '7';
+    fireEvent.change(versionSelect);
+    refDateInput.value = '2026-06-18T00:00:00.000Z';
+    fireEvent.input(refDateInput);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(
+      within(dialog).getByText('(version=7,refDate="2026-06-18T00:00:00.000Z")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(version=7,refDate="2026-06-18T00:00:00.000Z")');
+  });
+
+  test('auto quotes autoIncrement timestamp start and enum type while keeping numeric step raw', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'autoIncrement.timestamp',
+      helpModel: {
+        summary: 'Timestamp helper',
+        params: [
+          { name: 'start', type: 'string|number', optional: true },
+          { name: 'step', type: 'number', optional: true, defaultValue: '1' },
+          { name: 'type', type: 'enum', enumValues: ['seconds', 'minutes', 'hours', 'days'], optional: true },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for autoincrement\.timestamp/i });
+    const startInput = within(dialog).getByRole('textbox', { name: /start value/i });
+    const stepInput = within(dialog).getByRole('textbox', { name: /step value/i });
+    const typeSelect = within(dialog).getByRole('combobox', { name: /type value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    startInput.value = '2026-06-12T12:39:23Z';
+    fireEvent.input(startInput);
+    stepInput.value = '15';
+    fireEvent.input(stepInput);
+    typeSelect.value = 'minutes';
+    fireEvent.change(typeSelect);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(
+      within(dialog).getByText('(start="2026-06-12T12:39:23Z",step=15,type="minutes")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(start="2026-06-12T12:39:23Z",step=15,type="minutes")');
   });
 
   test('focuses the first editor control in rendered order when enum precedes text params', async () => {

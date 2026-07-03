@@ -373,12 +373,55 @@ function isRawPreferredType(paramType = '') {
   );
 }
 
+function isPlainStringType(paramType = '') {
+  return (
+    String(paramType || '')
+      .trim()
+      .toLowerCase() === 'string'
+  );
+}
+
+function isStringCapableUnionType(paramType = '') {
+  const normalizedType = String(paramType || '');
+  return !isPlainStringType(normalizedType) && /\bstring\b/iu.test(normalizedType);
+}
+
+function isParserNumericLiteral(value = '') {
+  return /^-?\d+(?:\.\d+)?$/u.test(String(value ?? '').trim());
+}
+
+function isBooleanCapableType(paramType = '') {
+  return /\b(?:bool|boolean)\b/iu.test(String(paramType || ''));
+}
+
+function isStructuredRawCapableType(paramType = '') {
+  return /\b(?:array|list|object|json|record|map|tuple)\b/iu.test(String(paramType || ''));
+}
+
 function isNumericEnumToken(value = '') {
   return /^[+-]?\d+(?:\.\d+)?$/u.test(String(value ?? '').trim());
 }
 
 function validateBalancedRawValue(value) {
   return splitTopLevelCommaSeparated(`[${String(value ?? '').trim()}]`).error.replace(/^Current params/u, 'Raw value');
+}
+
+function shouldKeepStringUnionValueRaw(rawValue = '', paramType = '') {
+  const trimmedValue = String(rawValue ?? '').trim();
+  if (isParserNumericLiteral(trimmedValue)) {
+    return true;
+  }
+  if (isBooleanCapableType(paramType) && /^(?:true|false)$/u.test(trimmedValue)) {
+    return true;
+  }
+  if (
+    isStructuredRawCapableType(paramType) &&
+    (trimmedValue.startsWith('[') || trimmedValue.startsWith('{')) &&
+    !validateBalancedRawValue(trimmedValue)
+  ) {
+    return true;
+  }
+  return false;
 }
 
 function formatEditorValue(value, mode, paramType = '') {
@@ -394,9 +437,13 @@ function formatEditorValue(value, mode, paramType = '') {
     mode === 'enum' && isNumericEnumToken(rawValue)
       ? 'raw'
       : mode === 'auto'
-        ? isRawPreferredType(paramType)
-          ? 'raw'
-          : 'text'
+        ? isStringCapableUnionType(paramType)
+          ? shouldKeepStringUnionValueRaw(rawValue, paramType)
+            ? 'raw'
+            : 'text'
+          : isRawPreferredType(paramType)
+            ? 'raw'
+            : 'text'
         : mode;
   if (mode === 'enum' && !isNumericEnumToken(rawValue)) {
     return JSON.stringify(unquoteValue(rawValue));

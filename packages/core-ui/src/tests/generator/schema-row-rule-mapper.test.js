@@ -77,6 +77,13 @@ describe('schema-row-rule-mapper', () => {
         params: 'active,inactive,pending',
       })
     ).toBe('enum("active","inactive","pending")');
+    expect(
+      buildRuleSpecFromSchemaRow({
+        sourceType: 'domain',
+        command: 'datatype.enum',
+        params: 'csv="active,,pending"',
+      })
+    ).toBe('datatype.enum(csv="active,,pending")');
   });
 
   test('buildRuleSpecFromSchemaRow handles literal rows including blank default', () => {
@@ -100,6 +107,8 @@ describe('schema-row-rule-mapper', () => {
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'enum a,b,c' })).toBe('enum("a","b","c")');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '(a,b,c)' })).toBe('enum("a","b","c")');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '"a","b","c"' })).toBe('enum("a","b","c")');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '"",active' })).toBe('enum("","active")');
+    expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: 'active,,pending' })).toBe('active,,pending');
     expect(buildRuleSpecFromSchemaRow({ sourceType: 'enum', value: '   ' })).toBe('');
   });
 

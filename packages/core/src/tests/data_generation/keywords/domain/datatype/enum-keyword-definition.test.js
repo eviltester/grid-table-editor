@@ -35,10 +35,9 @@ describe('datatype.enum parameter validation', () => {
     });
   });
 
-  test('rejects empty csv enum values before generation', () => {
+  test('accepts explicit empty string enum values before generation', () => {
     expect(validateArgs('values=""')).toEqual({
-      ok: false,
-      error: 'Invalid keyword arguments: argument "values" is required',
+      ok: true,
     });
   });
 
@@ -49,8 +48,14 @@ describe('datatype.enum parameter validation', () => {
     });
   });
 
-  test('rejects blank enum entries before generation', () => {
+  test('accepts explicit empty string entries in enum arrays before generation', () => {
     expect(validateArgs('values=["GET",""]')).toEqual({
+      ok: true,
+    });
+  });
+
+  test('rejects accidental empty CSV entries before generation', () => {
+    expect(validateArgs('csv="GET,,POST"')).toEqual({
       ok: false,
       error: 'Invalid keyword arguments: enum values cannot be empty',
     });

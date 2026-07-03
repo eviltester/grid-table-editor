@@ -98,6 +98,21 @@ test('generateFromTextSpec supports pict-style inline schema definitions', () =>
   assertNoCommonErrorPatternsInRows(result.rows);
 });
 
+test('generateFromTextSpec accepts explicit empty string enum values', () => {
+  const result = generateFromTextSpec({
+    textSpec: 'Status\nenum("","A")',
+    rowCount: 20,
+    outputFormat: 'json',
+  });
+
+  expect(result.ok).toBe(true);
+  expect(result.headers).toEqual(['Status']);
+  expect(result.rows).toHaveLength(20);
+  result.rows.forEach((row) => {
+    expect(['', 'A']).toContain(row[0]);
+  });
+});
+
 test('generateFromTextSpec serializes object return values as JSON strings', () => {
   const result = generateFromTextSpec({
     textSpec: 'Currency\nfinance.currency',
@@ -413,9 +428,9 @@ test.each([
     message: 'unknown named argument "valuez"',
   },
   {
-    label: 'empty enum values',
-    textSpec: 'Status\ndatatype.enum(values="")',
-    message: 'argument "values" is required',
+    label: 'accidental empty enum CSV value',
+    textSpec: 'Status\ndatatype.enum(csv="active,,pending")',
+    message: 'enum values cannot be empty',
   },
   {
     label: 'missing enum values',

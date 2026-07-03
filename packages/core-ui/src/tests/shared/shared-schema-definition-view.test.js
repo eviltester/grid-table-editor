@@ -242,8 +242,8 @@ describe('shared-schema-definition view', () => {
     const textArea = document.querySelector('[data-role="schema-textbox"]');
     const invalidEnumCases = [
       {
-        schemaText: 'Status\ndatatype.enum(values="")',
-        expectedMessage: 'Invalid keyword arguments: argument "values" is required',
+        schemaText: 'Status\ndatatype.enum(csv="active,,pending")',
+        expectedMessage: 'Invalid keyword arguments: enum values cannot be empty',
       },
       {
         schemaText: 'Status\ndatatype.enum()',

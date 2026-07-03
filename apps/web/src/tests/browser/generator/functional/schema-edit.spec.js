@@ -326,11 +326,11 @@ test.describe('Generator Schema Editing', () => {
   test('invalid enum text shows a schema error when previewing generator data', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
-    await generatorPage.schema.setSchemaText('Status\ndatatype.enum(values="")');
+    await generatorPage.schema.setSchemaText('Status\ndatatype.enum(csv="active,,pending")');
     await generatorPage.preview.clickPreview();
 
     await expect(generatorPage.schema.errorStatus).toContainText(
-      'Status failed domain validation - Invalid keyword arguments: argument "values" is required'
+      'Status failed domain validation - Invalid keyword arguments: enum values cannot be empty'
     );
     await expect.poll(async () => generatorPage.preview.getOutputPreviewText()).toBe('');
 

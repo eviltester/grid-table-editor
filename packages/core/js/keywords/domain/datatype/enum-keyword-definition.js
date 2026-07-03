@@ -2,19 +2,24 @@ import { validateEnumMemberValue } from '../../../command-help/command-help-vali
 import { normalizeDatatypeEnumArgs } from './datatype-enum.js';
 
 function validateDatatypeEnumArgs(args = []) {
-  const values = normalizeDatatypeEnumArgs(args).map((value) => String(value));
+  let values = [];
+  try {
+    values = normalizeDatatypeEnumArgs(args).map((value) => String(value));
+  } catch (error) {
+    const message = String(error?.message || error || '').trim();
+    return {
+      ok: false,
+      error:
+        message === 'Enum values cannot be empty'
+          ? 'Invalid keyword arguments: enum values cannot be empty'
+          : message || 'Invalid keyword arguments',
+    };
+  }
 
   if (values.length === 0) {
     return {
       ok: false,
       error: 'Invalid keyword arguments: argument "values" is required',
-    };
-  }
-
-  if (values.some((value) => value.length === 0)) {
-    return {
-      ok: false,
-      error: 'Invalid keyword arguments: enum values cannot be empty',
     };
   }
 

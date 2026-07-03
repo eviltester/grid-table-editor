@@ -3,22 +3,22 @@ import { EnumParser } from '../../../data_generation/utils/enumParser.js';
 function normalizeDatatypeEnumValuesFromArgs(args = []) {
   const rawArgs = Array.isArray(args) ? args : [];
   if (rawArgs.length === 1 && Array.isArray(rawArgs[0])) {
-    return rawArgs[0].map((value) => value);
+    return EnumParser.validateEnumValueList(rawArgs[0], 'values', { allowEmptyStrings: true }).map((value) => value);
   }
   if (rawArgs.length === 1 && typeof rawArgs[0] === 'string') {
-    const singleValue = rawArgs[0].trim();
-    if (singleValue.length === 0) {
-      return [];
-    }
-
-    try {
-      return EnumParser.extractEnumValues(singleValue);
-    } catch {
+    const singleValue = rawArgs[0];
+    if (!singleValue.includes(',')) {
       return [singleValue];
     }
+
+    return EnumParser.parseCsvEnumValues(singleValue);
   }
 
-  return rawArgs.flatMap((value) => (Array.isArray(value) ? value : [value]));
+  return EnumParser.validateEnumValueList(
+    rawArgs.flatMap((value) => (Array.isArray(value) ? value : [value])),
+    'values',
+    { allowEmptyStrings: true }
+  );
 }
 
 function normalizeDatatypeEnumArgs(args = []) {

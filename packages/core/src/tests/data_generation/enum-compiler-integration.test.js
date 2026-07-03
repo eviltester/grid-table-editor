@@ -67,6 +67,17 @@ describe('TestDataRulesCompiler with Enum Support', () => {
       expect(compiler.isValid()).toBe(true);
     });
 
+    test('compiles explicit enum with empty string value correctly', () => {
+      const rules = [new TestDataRule('Status', 'enum("", "A")')];
+
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0].type).toBe('domain');
+      expect(rules[0].ruleSpec).toBe('datatype.enum("", "A")');
+      expect(compiler.isValid()).toBe(true);
+    });
+
     test('compiles full awd enum format correctly', () => {
       const rules = [new TestDataRule('Priority', 'awd.datatype.enum("High", "Medium", "Low")')];
 

@@ -110,8 +110,8 @@ export class EnumParser {
     }
 
     try {
-      const values = this.parseCsvLiteral(spec);
-      return values.length >= 2 && values.every((value) => value.length > 0);
+      const fields = this.parseCsvLiteralFields(spec);
+      return fields.length >= 2 && fields.every((field) => field.value.length > 0 || field.quoted);
     } catch {
       return false;
     }
@@ -179,8 +179,9 @@ export class EnumParser {
 
     if (allowImplicitCsv && spec.includes(',')) {
       try {
-        const values = this.parseCsvLiteral(spec);
-        if (values.some((value) => value.length === 0)) {
+        const csvFields = this.parseCsvLiteralFields(spec);
+        const values = csvFields.map((field) => field.value);
+        if (csvFields.some((field) => field.value.length === 0 && !field.quoted)) {
           return {
             ok: false,
             values: [],
@@ -269,7 +270,7 @@ export class EnumParser {
         throw new Error(fragmentParsed.error);
       }
     }
-    return this.buildCanonicalSchemaRuleSpecFromValues(this.parseCsvLiteral(displayValue));
+    return this.buildCanonicalSchemaRuleSpecFromValues(this.parseCsvEnumValues(displayValue));
   }
 
   static looksLikeEnumInvocationArgumentFragment(value) {
@@ -319,6 +320,10 @@ export class EnumParser {
   }
 
   static parseCsvLiteral(csvText) {
+    return this.parseCsvLiteralFields(csvText).map((field) => field.value);
+  }
+
+  static parseCsvLiteralFields(csvText) {
     const text = String(csvText ?? '');
     const values = [];
     let currentValue = '';
@@ -346,7 +351,7 @@ export class EnumParser {
 
       if (afterClosingQuote) {
         if (char === ',') {
-          values.push(currentValue);
+          values.push({ value: currentValue, quoted: true });
           currentValue = '';
           quotedField = false;
           afterClosingQuote = false;
@@ -359,7 +364,7 @@ export class EnumParser {
       }
 
       if (char === ',') {
-        values.push(quotedField ? currentValue : currentValue.trim());
+        values.push({ value: quotedField ? currentValue : currentValue.trim(), quoted: quotedField });
         currentValue = '';
         quotedField = false;
         continue;
@@ -382,12 +387,15 @@ export class EnumParser {
       throw new Error('Invalid enum CSV: unclosed quote');
     }
 
-    values.push(quotedField || afterClosingQuote ? currentValue : currentValue.trim());
+    values.push({
+      value: quotedField || afterClosingQuote ? currentValue : currentValue.trim(),
+      quoted: quotedField || afterClosingQuote,
+    });
 
     return values;
   }
 
-  static validateEnumValueList(values, sourceName = 'values') {
+  static validateEnumValueList(values, sourceName = 'values', { allowEmptyStrings = false } = {}) {
     if (!Array.isArray(values)) {
       throw new Error(`Invalid keyword arguments: argument "${sourceName}" must be an array`);
     }
@@ -397,14 +405,20 @@ export class EnumParser {
     if (values.some((value) => typeof value !== 'string')) {
       throw new Error(`Invalid keyword arguments: argument "${sourceName}" must contain only strings`);
     }
-    if (values.some((value) => value.length === 0)) {
+    if (!allowEmptyStrings && values.some((value) => value.length === 0)) {
       throw new Error('Enum values cannot be empty');
     }
     return values;
   }
 
   static parseCsvEnumValues(csvText) {
-    return this.validateEnumValueList(this.parseCsvLiteral(csvText), 'csv');
+    const fields = this.parseCsvLiteralFields(csvText);
+    const values = fields.map((field) => field.value);
+    this.validateEnumValueList(values, 'csv', { allowEmptyStrings: true });
+    if (fields.some((field) => field.value.length === 0 && !field.quoted)) {
+      throw new Error('Enum values cannot be empty');
+    }
+    return values;
   }
 
   static parseEnumFunctionValues(ruleSpec) {
@@ -447,9 +461,12 @@ export class EnumParser {
       }
       if (name === 'values') {
         if (Array.isArray(argument.value)) {
-          return this.validateEnumValueList(argument.value, 'values');
+          return this.validateEnumValueList(argument.value, 'values', { allowEmptyStrings: true });
         }
         if (typeof argument.value === 'string') {
+          if (!argument.value.includes(',')) {
+            return this.validateEnumValueList([argument.value], 'values', { allowEmptyStrings: true });
+          }
           return this.parseCsvEnumValues(argument.value);
         }
         throw new Error('Invalid keyword arguments: argument "values" must be string or array');
@@ -461,15 +478,18 @@ export class EnumParser {
     if (positionalValues.length === 1) {
       const [value] = positionalValues;
       if (Array.isArray(value)) {
-        return this.validateEnumValueList(value, 'values');
+        return this.validateEnumValueList(value, 'values', { allowEmptyStrings: true });
       }
       if (typeof value === 'string') {
+        if (!value.includes(',')) {
+          return this.validateEnumValueList([value], 'values', { allowEmptyStrings: true });
+        }
         return this.parseCsvEnumValues(value);
       }
       throw new Error('Invalid keyword arguments: enum values must be strings or an array of strings');
     }
 
-    return this.validateEnumValueList(positionalValues, 'values');
+    return this.validateEnumValueList(positionalValues, 'values', { allowEmptyStrings: true });
   }
 
   static splitEnumParameterValues(paramsStr) {
@@ -537,7 +557,7 @@ export class EnumParser {
     }
 
     // Simple comma-separated format
-    return this.parseCsvLiteral(this.unwrapOptionalListParens(spec));
+    return this.parseCsvEnumValues(this.unwrapOptionalListParens(spec));
   }
 
   /**

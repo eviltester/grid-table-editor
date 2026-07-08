@@ -126,7 +126,7 @@
     "@babel/preset-env": "8.0.0",
     "@biomejs/biome": "2.5.1",
     "@changesets/cli": "2.31.0",
-    "@faker-js/faker": "10.4.0",
+    "@faker-js/faker": "10.5.0",
     "@playwright/test": "1.61.1",
     "@storybook/addon-a11y": "10.4.1",
     "@storybook/addon-docs": "10.4.6",

@@ -85,6 +85,60 @@ describe('schema-row-validation', () => {
     ]);
   });
 
+  test('reports unparseable autoIncrement.timestamp start values through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 't1',
+        sourceType: 'domain',
+        command: 'autoIncrement.timestamp',
+        params: '(start="1st Janvier 2027",step=1)',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        severity: 'error',
+        message:
+          'Row 1: invalid domain params - Invalid keyword arguments: argument "start" must be a valid date string or Unix timestamp',
+      }),
+    ]);
+  });
+
+  test('reports custom domain execution failures through the shared row validation path', () => {
+    const issues = getSchemaRowSemanticValidationIssues(
+      {
+        name: 'Method',
+        sourceType: 'domain',
+        command: 'internet.httpMethod',
+        params: '(excludes="GET,HEAD,POST,PUT,DELETE,PATCH,OPTIONS,TRACE,CONNECT")',
+      },
+      0,
+      {
+        schemaTextToDataRules,
+        faker,
+        RandExp,
+      }
+    );
+
+    expect(issues).toEqual([
+      expect.objectContaining({
+        code: 'compiler_validation_error',
+        field: 'params',
+        severity: 'error',
+        message:
+          'Row 1: invalid domain params - Invalid argument for excludes: no HTTP methods remain after exclusions.',
+      }),
+    ]);
+  });
+
   test('reports missing helpers.rangeToNumber max through the shared row validation path', () => {
     const issues = getSchemaRowSemanticValidationIssues(
       {

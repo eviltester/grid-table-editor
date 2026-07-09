@@ -55,22 +55,15 @@ class DomainTestDataRuleValidator {
       return false;
     }
 
-    if (
-      this.faker &&
-      keywordDefinition.delegate?.type === 'faker' &&
-      hasFakerDelegateTarget(this.faker, keywordDefinition.delegate?.target)
-    ) {
-      const validationFaker = createIsolatedFaker(this.faker);
-      try {
-        executeDomainKeyword(recognizedKeyword, {
-          faker: validationFaker,
-          args: parsed.args,
-          autoIncrementState: {},
-        });
-      } catch (error) {
-        this.validationError = error?.message || 'Domain keyword failed during validation';
-        return false;
-      }
+    const executionValidation = validateDomainKeywordExecution({
+      keyword: recognizedKeyword,
+      keywordDefinition,
+      args: parsed.args,
+      faker: this.faker,
+    });
+    if (!executionValidation.ok) {
+      this.validationError = executionValidation.error || 'Domain keyword failed during validation';
+      return false;
     }
 
     return true;
@@ -87,9 +80,59 @@ class DomainTestDataRuleValidator {
 
 function createIsolatedFaker(fakerInstance) {
   const rawDefinitions = fakerInstance?.rawDefinitions;
+  if (!rawDefinitions || typeof rawDefinitions !== 'object') {
+    return fakerInstance;
+  }
+
   const isolatedFaker = new Faker({ locale: rawDefinitions });
   isolatedFaker.seed(1);
   return isolatedFaker;
+}
+
+function validateDomainKeywordExecution({ keyword, keywordDefinition, args = [], faker = null } = {}) {
+  const executionContext = createValidationExecutionContext(keywordDefinition, faker);
+  if (!executionContext) {
+    return { ok: true };
+  }
+
+  try {
+    executeDomainKeyword(keyword, {
+      ...executionContext,
+      args,
+      autoIncrementState: {},
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      error: error?.message || 'Domain keyword failed during validation',
+    };
+  }
+
+  return { ok: true };
+}
+
+function createValidationExecutionContext(keywordDefinition, fakerInstance) {
+  const delegateType = String(keywordDefinition?.delegate?.type || '').trim();
+
+  if (delegateType === 'faker') {
+    if (!fakerInstance || !hasFakerDelegateTarget(fakerInstance, keywordDefinition?.delegate?.target)) {
+      return null;
+    }
+
+    return {
+      faker: createIsolatedFaker(fakerInstance),
+    };
+  }
+
+  if (delegateType === 'custom') {
+    return fakerInstance
+      ? {
+          faker: createIsolatedFaker(fakerInstance),
+        }
+      : {};
+  }
+
+  return null;
 }
 
 function hasFakerDelegateTarget(fakerInstance, target) {

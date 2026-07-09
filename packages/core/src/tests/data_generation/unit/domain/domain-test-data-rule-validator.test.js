@@ -93,6 +93,19 @@ describe('DomainTestDataRuleValidator', () => {
     expect(validator.getValidationError()).toContain('No words found that match the given length.');
   });
 
+  test('rejects custom domain commands that would throw during generation', () => {
+    const validator = new DomainTestDataRuleValidator();
+
+    const isValid = validator.validate({
+      ruleSpec: 'internet.httpMethod(excludes="GET,HEAD,POST,PUT,DELETE,PATCH,OPTIONS,TRACE,CONNECT")',
+    });
+
+    expect(isValid).toBe(false);
+    expect(validator.getValidationError()).toBe(
+      'Invalid argument for excludes: no HTTP methods remain after exclusions.'
+    );
+  });
+
   test('does not advance supplied faker while validating faker-backed domain commands', () => {
     const seed = 12345;
     const controlFaker = new Faker({ locale: faker.rawDefinitions });
@@ -101,6 +114,19 @@ describe('DomainTestDataRuleValidator', () => {
     const validator = new DomainTestDataRuleValidator(faker);
 
     const isValid = validator.validate({ ruleSpec: 'person.firstName()' });
+
+    expect(isValid).toBe(true);
+    expect(faker.person.firstName()).toBe(controlFaker.person.firstName());
+  });
+
+  test('does not advance supplied faker while validating custom domain commands', () => {
+    const seed = 54321;
+    const controlFaker = new Faker({ locale: faker.rawDefinitions });
+    controlFaker.seed(seed);
+    faker.seed(seed);
+    const validator = new DomainTestDataRuleValidator(faker);
+
+    const isValid = validator.validate({ ruleSpec: 'internet.httpMethod()' });
 
     expect(isValid).toBe(true);
     expect(faker.person.firstName()).toBe(controlFaker.person.firstName());

@@ -1,6 +1,6 @@
 import { validateUrlValue } from '../../../command-help/command-help-validators.js';
 
-const HTTP_PROTOCOL_RETURN_TYPE = 'http|https';
+const HTTP_PROTOCOL_RETURN_TYPE = ['http', 'https'];
 
 const INTERNET_URL_KEYWORD_DEFINITION = {
   keyword: 'internet.url',
@@ -41,7 +41,8 @@ const INTERNET_URL_KEYWORD_DEFINITION = {
       },
       {
         name: 'protocol',
-        type: HTTP_PROTOCOL_RETURN_TYPE,
+        type: 'enum',
+        enumValues: HTTP_PROTOCOL_RETURN_TYPE,
         required: false,
         description: 'The protocol to use.',
       },

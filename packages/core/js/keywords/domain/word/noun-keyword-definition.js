@@ -43,7 +43,8 @@ const WORD_NOUN_KEYWORD_DEFINITION = {
       },
       {
         name: 'strategy',
-        type: WORD_SELECTION_STRATEGY_TYPE,
+        type: 'enum',
+        enumValues: WORD_SELECTION_STRATEGY_TYPE,
         required: false,
         description:
           'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',

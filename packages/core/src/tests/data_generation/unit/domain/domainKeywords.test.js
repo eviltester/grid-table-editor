@@ -736,7 +736,7 @@ describe('faker keyword invocation styles', () => {
       const argsForInvocation = keyword.keyword.startsWith('lorem.')
         ? keyword.help.args.filter((arg) => ['min', 'max'].includes(arg.name))
         : keyword.help.args;
-      const sampleArgs = argsForInvocation.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg.name, arg.type));
+      const sampleArgs = argsForInvocation.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg));
       if (keyword.keyword === 'datatype.boolean') {
         sampleArgs[0] = 0.5;
       }

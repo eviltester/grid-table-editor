@@ -1,9 +1,12 @@
 import { JSDOM } from 'jsdom';
+import { readFileSync } from 'node:fs';
 import { fireEvent, within } from '@testing-library/dom';
 import { jest } from '@jest/globals';
 import {
   splitTopLevelCommaSeparated,
   parseInitialParamEntries,
+  inferEnumChoicesFromType,
+  resolveEnumChoices,
   buildParamsTextFromEditorEntries,
   openParamsEditorModal,
 } from '../../../js/gui_components/shared/test-data/ui/params-editor-modal.js';
@@ -72,6 +75,47 @@ describe('params editor modal', () => {
     ]);
   });
 
+  test('derives enum choices from explicit enum value arrays before pipe-delimited types', () => {
+    expect(
+      resolveEnumChoices({
+        type: 'alpha-2|alpha-3|numeric',
+        allowedValues: ['svg-uri', 'svg-base64'],
+        choices: ['ignored'],
+        enumValues: ['also-ignored'],
+      })
+    ).toEqual(['svg-uri', 'svg-base64']);
+    expect(resolveEnumChoices({ type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'] })).toEqual([
+      'alpha-2',
+      'alpha-3',
+      'numeric',
+    ]);
+    expect(resolveEnumChoices({ type: 'alpha-2|alpha-3|numeric' })).toEqual(['alpha-2', 'alpha-3', 'numeric']);
+    expect(resolveEnumChoices({ type: 'female|generic|male' })).toEqual(['female', 'generic', 'male']);
+  });
+
+  test('does not derive enum choices from broad type unions', () => {
+    expect(inferEnumChoicesFromType('string|number|date')).toEqual([]);
+    expect(inferEnumChoicesFromType('comma-separated list|array')).toEqual([]);
+    expect(inferEnumChoicesFromType('number | { min: number; max: number; }')).toEqual([]);
+    expect(inferEnumChoicesFromType('array | () => unknown')).toEqual([]);
+  });
+
+  test('parses explicit enum metadata into enum editor entries', () => {
+    const parsed = parseInitialParamEntries({
+      params: [
+        { name: 'sex', type: 'enum', enumValues: ['female', 'male'], optional: true },
+        { name: 'refDate', type: 'string|number|date', optional: true },
+      ],
+      initialParams: '',
+    });
+
+    expect(parsed.error).toBe('');
+    expect(parsed.entries).toEqual([
+      expect.objectContaining({ name: 'sex', enumChoices: ['female', 'male'], mode: 'enum' }),
+      expect.objectContaining({ name: 'refDate', enumChoices: [], mode: 'auto' }),
+    ]);
+  });
+
   test('parses variadic documented params as a single editable list value', () => {
     const parsed = parseInitialParamEntries({
       params: [{ name: 'values', type: 'comma-separated list', optional: false, variadic: true }],
@@ -136,6 +180,80 @@ describe('params editor modal', () => {
 
     expect(result).toEqual({
       paramsText: '(locale="en-GB",items=["Ada","Bob"])',
+      errors: [],
+    });
+  });
+
+  test('auto quotes non-numeric values for string-capable union params', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'refDate', type: 'string|number|date', value: '2026-06-18T00:00:00.000Z', mode: 'auto' },
+          { name: 'start', type: 'string|number', value: '2026-06-12T12:39:23Z', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(refDate="2026-06-18T00:00:00.000Z",start="2026-06-12T12:39:23Z")',
+      errors: [],
+    });
+  });
+
+  test('keeps parser-valid numeric values raw for string-capable union params', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'integer', type: 'string|number', value: '123', mode: 'auto' },
+          { name: 'decimal', type: 'string|number', value: '12.5', mode: 'auto' },
+          { name: 'negative', type: 'string|number', value: '-12', mode: 'auto' },
+          { name: 'leadingZeros', type: 'string|number', value: '001', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(integer=123,decimal=12.5,negative=-12,leadingZeros=001)',
+      errors: [],
+    });
+  });
+
+  test('quotes number-like text that the domain parser does not treat as numeric', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'plus', type: 'string|number', value: '+12', mode: 'auto' },
+          { name: 'exponent', type: 'string|number', value: '1e3', mode: 'auto' },
+          { name: 'infinity', type: 'string|number', value: 'Infinity', mode: 'auto' },
+          { name: 'notNumber', type: 'string|number', value: 'NaN', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(plus="+12",exponent="1e3",infinity="Infinity",notNumber="NaN")',
+      errors: [],
+    });
+  });
+
+  test('preserves raw structured values when string-capable union params allow them', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'arrayValue', type: 'string|array', value: '["Ada","Bob"]', mode: 'auto' },
+          { name: 'objectValue', type: 'string|object', value: '{ name: "Ada" }', mode: 'auto' },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(arrayValue=["Ada","Bob"],objectValue={ name: "Ada" })',
+      errors: [],
+    });
+  });
+
+  test('builds enum params with string choices quoted and numeric choices raw', () => {
+    expect(
+      buildParamsTextFromEditorEntries({
+        entries: [
+          { name: 'variant', type: 'enum', value: 'alpha-3', mode: 'enum', optional: true },
+          { name: 'version', type: 'enum', value: '7', mode: 'enum', optional: true },
+        ],
+      })
+    ).toEqual({
+      paramsText: '(variant="alpha-3",version=7)',
       errors: [],
     });
   });
@@ -216,6 +334,17 @@ describe('params editor modal', () => {
     });
   });
 
+  test('auto quotes string-capable union params without double quoting existing quoted input', () => {
+    const result = buildParamsTextFromEditorEntries({
+      entries: [{ name: 'refDate', type: 'string|number|date', value: '"2026-06-18T00:00:00.000Z"', mode: 'auto' }],
+    });
+
+    expect(result).toEqual({
+      paramsText: '(refDate="2026-06-18T00:00:00.000Z")',
+      errors: [],
+    });
+  });
+
   test('switches to named params when later values skip optional gaps', () => {
     const result = buildParamsTextFromEditorEntries({
       entries: [
@@ -278,6 +407,265 @@ describe('params editor modal', () => {
 
     fireEvent.click(applyButton);
     await expect(promise).resolves.toBe('(active,inactive,pending)');
+  });
+
+  test('renders required enum params as a select and requires a choice', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'location.countryCode',
+      helpModel: {
+        summary: 'Country code helper',
+        params: [{ name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: false }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for location\.countrycode/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+
+    expect(within(dialog).queryByRole('textbox', { name: /variant value/i })).toBeNull();
+    expect(variantSelect.options[0].selected).toBe(true);
+    expect(variantSelect.options[0].textContent).toBe('Select...');
+    expect(applyButton.disabled).toBe(true);
+    expect(dialog.querySelector('[data-role="params-editor-error"]').textContent).toContain('required');
+
+    variantSelect.value = 'alpha-3';
+    fireEvent.change(variantSelect);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(
+      within(dialog).getByText('(variant="alpha-3")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(variant="alpha-3")');
+  });
+
+  test('renders param row cell labels used by the stacked mobile layout', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'location.countryCode',
+      helpModel: {
+        summary: 'Country code helper',
+        params: [{ name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: false }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for location\.countrycode/i });
+    const cells = Array.from(dialog.querySelectorAll('.params-editor-table tbody tr:first-child td')).map((cell) =>
+      cell.getAttribute('data-label')
+    );
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+
+    expect(cells).toEqual(['Name', 'Type', 'Req', 'Value']);
+    expect(variantSelect.closest('td')?.getAttribute('data-label')).toBe('Value');
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('renders optional explicit enum choices with an unset option', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'image.dataUri',
+      helpModel: {
+        summary: 'Image data URI helper',
+        params: [{ name: 'type', type: 'string', optional: true, allowedValues: ['svg-uri', 'svg-base64'] }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for image\.datauri/i });
+    const typeSelect = within(dialog).getByRole('combobox', { name: /type value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    expect(typeSelect.options[0].selected).toBe(true);
+    expect(typeSelect.options[0].textContent).toBe('Unset');
+    expect(applyButton.disabled).toBe(false);
+
+    typeSelect.value = 'svg-base64';
+    fireEvent.change(typeSelect);
+
+    expect(
+      within(dialog).getByText('(type="svg-base64")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(type="svg-base64")');
+  });
+
+  test('serializes explicit empty string enum choices separately from optional unset', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'internet.mac',
+      helpModel: {
+        summary: 'MAC helper',
+        params: [{ name: 'separator', type: 'enum', optional: true, enumValues: [':', '-', ''] }],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for internet\.mac/i });
+    const separatorSelect = within(dialog).getByRole('combobox', { name: /separator value/i });
+    const emptyStringOption = Array.from(separatorSelect.options).find((option) => option.textContent === '""');
+
+    expect(separatorSelect.options[0].textContent).toBe('Unset');
+    expect(emptyStringOption).toBeDefined();
+
+    separatorSelect.value = emptyStringOption.value;
+    fireEvent.change(separatorSelect);
+
+    expect(
+      within(dialog).getByText('(separator="")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+    await expect(promise).resolves.toBe('(separator="")');
+  });
+
+  test('prefills enum selects from existing params and numeric defaults', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'string.uuid',
+      helpModel: {
+        summary: 'UUID helper',
+        params: [
+          { name: 'version', type: 'enum', enumValues: ['4', '7'], optional: true, defaultValue: '7' },
+          { name: 'refDate', type: 'string|number|date', optional: true },
+        ],
+      },
+      initialParams: '(version=4)',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for string\.uuid/i });
+    const versionSelect = within(dialog).getByRole('combobox', { name: /version value/i });
+
+    expect(versionSelect.value).toBe('4');
+    expect(within(dialog).queryByRole('combobox', { name: /refdate value/i })).toBeNull();
+    expect(within(dialog).getByRole('textbox', { name: /refdate value/i })).toBeTruthy();
+    expect(
+      within(dialog).getByText('(version=4)', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
+  });
+
+  test('auto quotes string.uuid refDate values entered without raw schema quotes', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'string.uuid',
+      helpModel: {
+        summary: 'UUID helper',
+        params: [
+          { name: 'version', type: 'enum', enumValues: ['4', '7'], optional: true },
+          { name: 'refDate', type: 'string|number|date', optional: true },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for string\.uuid/i });
+    const versionSelect = within(dialog).getByRole('combobox', { name: /version value/i });
+    const refDateInput = within(dialog).getByRole('textbox', { name: /refdate value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    versionSelect.value = '7';
+    fireEvent.change(versionSelect);
+    refDateInput.value = '2026-06-18T00:00:00.000Z';
+    fireEvent.input(refDateInput);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(
+      within(dialog).getByText('(version=7,refDate="2026-06-18T00:00:00.000Z")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(version=7,refDate="2026-06-18T00:00:00.000Z")');
+  });
+
+  test('auto quotes autoIncrement timestamp start and enum type while keeping numeric step raw', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'autoIncrement.timestamp',
+      helpModel: {
+        summary: 'Timestamp helper',
+        params: [
+          { name: 'start', type: 'string|number', optional: true },
+          { name: 'step', type: 'number', optional: true, defaultValue: '1' },
+          { name: 'type', type: 'enum', enumValues: ['seconds', 'minutes', 'hours', 'days'], optional: true },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for autoincrement\.timestamp/i });
+    const startInput = within(dialog).getByRole('textbox', { name: /start value/i });
+    const stepInput = within(dialog).getByRole('textbox', { name: /step value/i });
+    const typeSelect = within(dialog).getByRole('combobox', { name: /type value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    startInput.value = '2026-06-12T12:39:23Z';
+    fireEvent.input(startInput);
+    stepInput.value = '15';
+    fireEvent.input(stepInput);
+    typeSelect.value = 'minutes';
+    fireEvent.change(typeSelect);
+
+    expect(applyButton.disabled).toBe(false);
+    expect(
+      within(dialog).getByText('(start="2026-06-12T12:39:23Z",step=15,type="minutes")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(start="2026-06-12T12:39:23Z",step=15,type="minutes")');
+  });
+
+  test('focuses the first editor control in rendered order when enum precedes text params', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'location.countryCode',
+      helpModel: {
+        summary: 'Country code helper',
+        params: [
+          { name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: true },
+          { name: 'locale', type: 'string', optional: true },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for location\.countrycode/i });
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+
+    expect(document.activeElement).toBe(variantSelect);
+
+    fireEvent.click(within(dialog).getByRole('button', { name: /^cancel$/i }));
+    await expect(promise).resolves.toBeNull();
   });
 
   test('keeps apply enabled when semantic validation returns a warning', async () => {
@@ -383,6 +771,17 @@ describe('params editor modal', () => {
     fireEvent.keyDown(dialog, { key: 'Escape' });
     await expect(promise).resolves.toBeNull();
     expect(document.activeElement).toBe(trigger);
+  });
+
+  test('params editor stylesheet stacks table rows on narrow screens instead of forcing horizontal scroll', () => {
+    const css = readFileSync(
+      new URL('../../../js/gui_components/shared/test-data/ui/params-editor-modal.css', import.meta.url),
+      'utf8'
+    );
+
+    expect(css).toContain('@media (max-width: 560px)');
+    expect(css).toContain('content: attr(data-label)');
+    expect(css).not.toContain('min-width: 720px');
   });
 
   test('shows a warning when existing params cannot be mapped to the documented fields', async () => {
@@ -589,6 +988,46 @@ describe('params editor modal', () => {
 
     fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
     await expect(promise).resolves.toBe('(abbreviated=false)');
+  });
+
+  test('leaves optional boolean unset without shifting later required params', async () => {
+    const promise = openParamsEditorModal({
+      documentObj: document,
+      windowObj: window,
+      commandLabel: 'internet.email',
+      helpModel: {
+        summary: 'Returns an email address.',
+        params: [
+          { name: 'commonOnly', type: 'boolean', optional: true },
+          { name: 'provider', type: 'string', optional: false },
+        ],
+      },
+      initialParams: '',
+    });
+
+    const dialog = within(getOverlay()).getByRole('dialog', { name: /edit params for internet\.email/i });
+    const unsetRadio = within(dialog).getByRole('radio', { name: /unset/i });
+    const providerInput = within(dialog).getByRole('textbox', { name: /provider value/i });
+    const applyButton = within(dialog).getByRole('button', { name: /^apply$/i });
+
+    expect(unsetRadio.checked).toBe(true);
+    expect(
+      within(dialog).getByText('()', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+    expect(applyButton.disabled).toBe(true);
+
+    fireEvent.input(providerInput, { target: { value: 'example.com' } });
+
+    expect(
+      within(dialog).getByText('(provider="example.com")', {
+        selector: '[data-role="params-editor-preview"]',
+      })
+    ).toBeTruthy();
+
+    fireEvent.click(applyButton);
+    await expect(promise).resolves.toBe('(provider="example.com")');
   });
 
   test('prefills required boolean params from existing values', async () => {

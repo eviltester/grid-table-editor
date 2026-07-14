@@ -26,12 +26,6 @@ export class EnumTestDataRuleValidator {
         return false;
       }
 
-      // Values must not be empty
-      if (enumValues.some((v) => v.length === 0)) {
-        this.validationError = 'Enum values cannot be empty';
-        return false;
-      }
-
       return true;
     } catch (err) {
       this.validationError = err.message || String(err);

@@ -28,7 +28,7 @@ function addDomainParamInvocationCoverageTests(domainName) {
 
   for (const keyword of keywords) {
     test(`${keyword.keyword} supports equivalent positional and named documented params`, () => {
-      const sampleArgs = keyword.help.args.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg.name, arg.type));
+      const sampleArgs = keyword.help.args.map((arg) => sampleValueForKeywordArg(keyword.keyword, arg));
 
       const positionalInvocation = `${keyword.keyword}(${sampleArgs.map(valueToInvocationLiteral).join(', ')})`;
       const namedInvocation = `${keyword.keyword}(${keyword.help.args

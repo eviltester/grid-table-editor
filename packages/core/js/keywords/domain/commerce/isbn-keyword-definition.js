@@ -39,7 +39,8 @@ const COMMERCE_ISBN_KEYWORD_DEFINITION = {
       },
       {
         name: 'variant',
-        type: '10|13',
+        type: 'enum',
+        enumValues: ['10', '13'],
         required: false,
         description: 'ISBN length variant: use 10 for ISBN-10 or 13 for ISBN-13.',
       },

@@ -69,6 +69,17 @@ describe('EnumTestDataRuleValidator', () => {
       expect(validator.isValid()).toBe(true);
     });
 
+    test('accepts explicit enum syntax with an empty string value', () => {
+      const rule = new TestDataRule('MaybeBlank', 'enum("", "A")');
+      rule.type = 'enum';
+
+      const validator = new EnumTestDataRuleValidator();
+      const isValid = validator.validate(rule);
+
+      expect(isValid).toBe(true);
+      expect(validator.isValid()).toBe(true);
+    });
+
     test('validates command-looking comma-separated values as enum literals', () => {
       const rule = new TestDataRule('Names', 'person.firstName,person.lastName');
       rule.type = 'enum';

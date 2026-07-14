@@ -76,6 +76,9 @@ function extractSimpleDefaultValue(param = {}) {
 function normalizeHelpParam(param = {}) {
   return {
     ...param,
+    allowedValues: Array.isArray(param.allowedValues) ? param.allowedValues : [],
+    choices: Array.isArray(param.choices) ? param.choices : [],
+    enumValues: Array.isArray(param.enumValues) ? param.enumValues : [],
     optional: param.optional === true || param.required === false,
     defaultValue: extractSimpleDefaultValue(param),
   };

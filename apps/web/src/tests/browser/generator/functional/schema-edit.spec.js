@@ -326,11 +326,11 @@ test.describe('Generator Schema Editing', () => {
   test('invalid enum text shows a schema error when previewing generator data', async ({ page }) => {
     const { generatorPage, pageErrors } = await openGenerator(page);
 
-    await generatorPage.schema.setSchemaText('Status\ndatatype.enum(values="")');
+    await generatorPage.schema.setSchemaText('Status\ndatatype.enum(csv="active,,pending")');
     await generatorPage.preview.clickPreview();
 
     await expect(generatorPage.schema.errorStatus).toContainText(
-      'Status failed domain validation - Invalid keyword arguments: argument "values" is required'
+      'Status failed domain validation - Invalid keyword arguments: enum values cannot be empty'
     );
     await expect.poll(async () => generatorPage.preview.getOutputPreviewText()).toBe('');
 
@@ -472,6 +472,27 @@ test.describe('Generator Schema Editing', () => {
     await expect
       .poll(async () => generatorPage.schema.getSchemaText())
       .toContain('enum("active","inactive","pending")');
+
+    expectNoPageErrors(pageErrors);
+  });
+
+  test('enum command params can be selected through the guided params dialog', async ({ page }) => {
+    const { generatorPage, pageErrors } = await openGenerator(page);
+
+    await generatorPage.schema.setTextMode(false);
+    await generatorPage.schema.setRowName(0, 'Country Code');
+    await generatorPage.schema.editor.setRowTypeValue(0, 'location.countryCode');
+    await generatorPage.schema.editor.editRowEnumParamsWithDialog(0, {
+      variant: 'alpha-3',
+    });
+
+    await expect(generatorPage.schema.row(0).locator('[data-action="pick-command"]')).toHaveText(
+      'location.countryCode'
+    );
+    await expect(generatorPage.schema.row(0).locator('input[data-field="params"]')).toHaveValue('(variant="alpha-3")');
+    await expect
+      .poll(async () => generatorPage.schema.getSchemaText())
+      .toContain('location.countryCode(variant="alpha-3")');
 
     expectNoPageErrors(pageErrors);
   });

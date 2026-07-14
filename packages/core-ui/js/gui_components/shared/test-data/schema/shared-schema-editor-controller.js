@@ -116,6 +116,14 @@ function createSharedSchemaEditorController({
     elements.constraintsSummaryElement || getElementByRole(SCHEMA_CONSTRAINTS_SUMMARY_ROLE);
   const getConstraintsTextElement = () =>
     elements.constraintsTextElement || getElementByRole(SCHEMA_CONSTRAINTS_TEXT_ROLE);
+  const focusParamsButtonForRow = (rowId) => {
+    if (!rowId) {
+      return;
+    }
+    Array.from(rootElement?.querySelectorAll?.('[data-action="edit-params"]') || [])
+      .find((button) => button.getAttribute('data-row-id') === rowId)
+      ?.focus?.();
+  };
 
   const refreshHelpHints = () => {
     updateHelpHints?.();
@@ -874,6 +882,7 @@ function createSharedSchemaEditorController({
             renderRows();
             syncTextFromRows();
             scheduleSemanticValidationForRow(rowId, { immediate: true });
+            focusParamsButtonForRow(rowId);
           }
         } catch (error) {
           console.error('Failed opening params editor dialog.', error);

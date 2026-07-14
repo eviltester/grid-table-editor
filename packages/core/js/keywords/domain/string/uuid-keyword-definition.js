@@ -33,7 +33,8 @@ const STRING_UUID_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'version',
-        type: '4|7',
+        type: 'enum',
+        enumValues: ['4', '7'],
         required: false,
         description:
           'The specific UUID version to use. If refDate is supplied and version is omitted, version 7 is used automatically.',

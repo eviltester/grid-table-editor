@@ -1,6 +1,6 @@
 import { validateMacAddressValue } from '../../../command-help/command-help-validators.js';
 
-const MAC_SEPARATOR_TYPE = '":"|"-"|""';
+const MAC_SEPARATOR_TYPE = [':', '-', ''];
 
 const INTERNET_MAC_KEYWORD_DEFINITION = {
   keyword: 'internet.mac',
@@ -30,7 +30,8 @@ const INTERNET_MAC_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'separator',
-        type: MAC_SEPARATOR_TYPE,
+        type: 'enum',
+        enumValues: MAC_SEPARATOR_TYPE,
         required: false,
         description: "The optional separator to use. Can be either ':', '-' or ''.",
       },

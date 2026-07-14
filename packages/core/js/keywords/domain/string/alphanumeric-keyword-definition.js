@@ -1,7 +1,7 @@
 import { validateAlphanumericStringValue } from '../../../command-help/command-help-validators.js';
 import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
-const STRING_CASING_TYPE = 'upper|lower|mixed';
+const STRING_CASING_TYPE = ['upper', 'lower', 'mixed'];
 const validateStringAlphanumericArgs = createPositiveIntegerArgsValidator(['length']);
 
 const STRING_ALPHANUMERIC_KEYWORD_DEFINITION = {
@@ -49,7 +49,8 @@ const STRING_ALPHANUMERIC_KEYWORD_DEFINITION = {
       },
       {
         name: 'casing',
-        type: STRING_CASING_TYPE,
+        type: 'enum',
+        enumValues: STRING_CASING_TYPE,
         required: false,
         description: 'The casing of the characters.',
       },

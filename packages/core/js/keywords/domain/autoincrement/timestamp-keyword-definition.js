@@ -1,4 +1,52 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
+import { executeCustomAutoIncrementTimestamp } from './auto-increment-timestamp.js';
+
+const AUTO_INCREMENT_TIMESTAMP_STEP_TYPES = [
+  'milliseconds',
+  'seconds',
+  'minutes',
+  'hours',
+  'days',
+  'weeks',
+  'months',
+  'years',
+];
+const AUTO_INCREMENT_TIMESTAMP_VALIDATION_RUN_STARTED_AT = new Date('2026-06-18T15:55:20.000Z');
+
+function normaliseAutoIncrementTimestampValidationError(error) {
+  const message = String(error?.message || error || '').trim();
+
+  if (message === 'Invalid start date.') {
+    return 'Invalid keyword arguments: argument "start" must be a valid date string or Unix timestamp';
+  }
+
+  if (message.startsWith('Invalid keyword arguments:')) {
+    return message;
+  }
+
+  if (message.startsWith('Invalid argument for ')) {
+    return `Invalid keyword arguments: ${message}`;
+  }
+
+  return message ? `Invalid keyword arguments: ${message}` : 'Invalid keyword arguments';
+}
+
+function validateAutoIncrementTimestampArgs(args = []) {
+  try {
+    executeCustomAutoIncrementTimestamp({
+      args: Array.isArray(args) ? args : [],
+      rowIndex: 0,
+      runStartedAt: AUTO_INCREMENT_TIMESTAMP_VALIDATION_RUN_STARTED_AT,
+    });
+  } catch (error) {
+    return {
+      ok: false,
+      error: normaliseAutoIncrementTimestampValidationError(error),
+    };
+  }
+
+  return { ok: true };
+}
 
 const AUTO_INCREMENT_TIMESTAMP_KEYWORD_DEFINITION = {
   keyword: 'autoIncrement.timestamp',
@@ -12,6 +60,7 @@ const AUTO_INCREMENT_TIMESTAMP_KEYWORD_DEFINITION = {
     docsUrl: 'https://anywaydata.com/docs/test-data/domain/autoIncrement',
     fakerDocsUrl: '',
     validator: validateStringValue,
+    argsValidator: validateAutoIncrementTimestampArgs,
     returnType: 'string',
     usageExamples: [
       {
@@ -84,7 +133,8 @@ const AUTO_INCREMENT_TIMESTAMP_KEYWORD_DEFINITION = {
       },
       {
         name: 'type',
-        type: 'string',
+        type: 'enum',
+        enumValues: AUTO_INCREMENT_TIMESTAMP_STEP_TYPES,
         required: false,
         description:
           'Unit applied to step for each row. Supports milliseconds, seconds, minutes, hours, days, weeks, months, or years. Defaults to seconds.',

@@ -38,12 +38,27 @@ function ensurePortFree(port) {
   });
 }
 
-ensurePortFree(6006);
+const STORYBOOK_PORT = 6006;
+const BROWSER_API_PORT = 51315;
 
-const child = spawn('pnpm', ['exec', 'vitest', '--project=storybook', '--run', '--api.host=127.0.0.1'], {
-  stdio: 'inherit',
-  shell: process.platform === 'win32',
-});
+ensurePortFree(STORYBOOK_PORT);
+ensurePortFree(BROWSER_API_PORT);
+
+const child = spawn(
+  'pnpm',
+  [
+    'exec',
+    'vitest',
+    '--project=storybook',
+    '--run',
+    '--browser.api.host=127.0.0.1',
+    `--browser.api.port=${BROWSER_API_PORT}`,
+  ],
+  {
+    stdio: 'inherit',
+    shell: process.platform === 'win32',
+  }
+);
 
 child.on('exit', (code, signal) => {
   if (signal) {

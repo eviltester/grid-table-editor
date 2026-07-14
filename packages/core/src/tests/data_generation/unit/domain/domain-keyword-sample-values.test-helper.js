@@ -50,9 +50,35 @@ function sampleValueForType(typeName, { arraySample = ['x', 'y'] } = {}) {
   return 'sample';
 }
 
-function sampleValueForKeywordArg(keywordName, argName, typeName) {
+function sampleValueForArgSpec(argSpec, options) {
+  if (argSpec?.type === 'enum' && Array.isArray(argSpec.enumValues) && argSpec.enumValues.length > 0) {
+    const nonEmptyValue = argSpec.enumValues.find((entry) => String(entry).length > 0);
+    return nonEmptyValue ?? argSpec.enumValues[0];
+  }
+
+  return sampleValueForType(argSpec?.type, options);
+}
+
+function normalizeArgInput(argOrName, typeName) {
+  if (argOrName && typeof argOrName === 'object') {
+    return {
+      argName: argOrName.name,
+      typeName: argOrName.type,
+      argSpec: argOrName,
+    };
+  }
+
+  return {
+    argName: argOrName,
+    typeName,
+    argSpec: undefined,
+  };
+}
+
+function sampleValueForKeywordArg(keywordName, argOrName, typeName) {
+  const { argName, typeName: resolvedTypeName, argSpec } = normalizeArgInput(argOrName, typeName);
   const key = `${keywordName}.${argName}`;
-  const type = String(typeName || '');
+  const type = String(resolvedTypeName || '');
 
   if (key === 'date.between.from' || key === 'date.betweens.from') return 1577836800000;
   if (key === 'date.between.to' || key === 'date.betweens.to') return 1609372800000;
@@ -131,6 +157,7 @@ function sampleValueForKeywordArg(keywordName, argName, typeName) {
   if (type.includes('regexp')) return '[A-Z]';
   if (type.includes('boolean')) return true;
   if (type.includes('array')) return ['x', 'y'];
+  if (argSpec) return sampleValueForArgSpec(argSpec);
   return sampleValueForType(type);
 }
 
@@ -150,4 +177,4 @@ function valueToInvocationLiteral(value) {
   throw new Error(`Unsupported invocation literal value: ${String(value)}`);
 }
 
-export { sampleValueForKeywordArg, sampleValueForType, valueToInvocationLiteral };
+export { sampleValueForArgSpec, sampleValueForKeywordArg, sampleValueForType, valueToInvocationLiteral };

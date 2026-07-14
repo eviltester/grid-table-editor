@@ -541,3 +541,55 @@ export const ParamsDialog = {
     );
   },
 };
+
+export const EnumParamsDialog = {
+  render: renderSharedSchemaDefinitionStory,
+  args: {
+    storyMinHeight: '820px',
+    initialRows: [
+      {
+        id: 'country-code-row',
+        name: 'Country Code',
+        sourceType: 'domain',
+        command: 'location.countryCode',
+        params: '',
+        value: '',
+        comments: '',
+        leadingTextLines: [],
+      },
+    ],
+  },
+  parameters: {
+    layout: 'fullscreen',
+    docs: {
+      description: {
+        story:
+          'Enum params editing flow. This story demonstrates explicit `type: "enum"` metadata as a dropdown: `location.countryCode` exposes `variant` choices from `enumValues`, and applying a selection writes the generated named params back into the schema row without free-text entry.',
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    expectSchemaModeVisible(canvasElement);
+    const initialRow = canvasElement.querySelector('.shared-schema-row');
+    const paramsButton = initialRow.querySelector('[data-action="edit-params"]');
+    expect(paramsButton).not.toBeNull();
+    await userEvent.click(paramsButton);
+
+    const dialog = within(document.body).getByRole('dialog', { name: /edit params for .*location\.countrycode/i });
+    const dialogScope = within(dialog);
+    const variantSelect = dialogScope.getByRole('combobox', { name: /variant value/i });
+    await expect(variantSelect).toBeVisible();
+    await expect(dialogScope.queryByRole('textbox', { name: /variant value/i })).toBeNull();
+    await userEvent.selectOptions(variantSelect, 'alpha-3');
+    await waitFor(() =>
+      expect(dialog.querySelector('[data-role="params-editor-preview"]')?.textContent || '').toContain(
+        'variant="alpha-3"'
+      )
+    );
+    await userEvent.click(dialogScope.getByRole('button', { name: /^apply$/i }));
+
+    await waitFor(() =>
+      expect(canvasElement.querySelector('.shared-schema-row [data-field="params"]').value).toBe('(variant="alpha-3")')
+    );
+  },
+};

@@ -1,6 +1,6 @@
 import { validateArrayOrStringValue } from '../../../command-help/command-help-validators.js';
 
-const COLOR_FORMAT_TYPE = 'decimal|css|binary';
+const COLOR_FORMAT_TYPE = ['decimal', 'css', 'binary'];
 
 const COLOR_HSL_KEYWORD_DEFINITION = {
   keyword: 'color.hsl',
@@ -40,7 +40,8 @@ const COLOR_HSL_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'format',
-        type: COLOR_FORMAT_TYPE,
+        type: 'enum',
+        enumValues: COLOR_FORMAT_TYPE,
         required: false,
         description: 'Format of generated HSL color.',
       },

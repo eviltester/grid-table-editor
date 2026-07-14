@@ -52,6 +52,14 @@ function isDomainEnumCommand(commandValue) {
   return /^(?:datatype\.enum|awd\.datatype\.enum)$/i.test(String(commandValue || '').trim());
 }
 
+function buildEditableEnumRuleSpec(enumInput, fallbackRuleSpec) {
+  try {
+    return EnumParser.buildSchemaRuleSpecFromInput(enumInput);
+  } catch {
+    return String(fallbackRuleSpec ?? enumInput ?? '').trim();
+  }
+}
+
 function buildRuleSpecFromSchemaRow(row) {
   const sourceType = normaliseSourceType(row?.sourceType);
   if (sourceType === SOURCE_TYPE_FAKER) {
@@ -65,7 +73,7 @@ function buildRuleSpecFromSchemaRow(row) {
       allowUnwrapped: isDomainEnumCommand(command),
     });
     if (isDomainEnumCommand(command)) {
-      return EnumParser.buildSchemaRuleSpecFromInput(params);
+      return buildEditableEnumRuleSpec(params, `${command}${normaliseCommandParams(params)}`);
     }
     return `${command}${params}`;
   }
@@ -92,7 +100,7 @@ function buildRuleSpecFromSchemaRow(row) {
     return `regex(${regexValue})`;
   }
   if (sourceType === SOURCE_TYPE_ENUM) {
-    return EnumParser.buildSchemaRuleSpecFromInput(row?.value);
+    return buildEditableEnumRuleSpec(row?.value);
   }
   return String(row?.value ?? '').trim();
 }

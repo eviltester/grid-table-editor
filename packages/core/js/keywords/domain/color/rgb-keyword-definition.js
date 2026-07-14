@@ -1,8 +1,8 @@
 import { validateArrayOrStringValue } from '../../../command-help/command-help-validators.js';
 
-const COLOR_RGB_FORMAT_TYPE = 'hex|decimal|css|binary';
+const COLOR_RGB_FORMAT_TYPE = ['hex', 'decimal', 'css', 'binary'];
 
-const COLOR_CASING_TYPE = 'lower|upper|mixed';
+const COLOR_CASING_TYPE = ['lower', 'upper', 'mixed'];
 
 const COLOR_RGB_KEYWORD_DEFINITION = {
   keyword: 'color.rgb',
@@ -47,14 +47,16 @@ const COLOR_RGB_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'casing',
-        type: COLOR_CASING_TYPE,
+        type: 'enum',
+        enumValues: COLOR_CASING_TYPE,
         required: false,
         description: "Letter type case of the generated hex color. Only applied when 'hex' format is used.",
         examples: ['upper'],
       },
       {
         name: 'format',
-        type: COLOR_RGB_FORMAT_TYPE,
+        type: 'enum',
+        enumValues: COLOR_RGB_FORMAT_TYPE,
         required: false,
         description: 'Format of generated RGB color.',
         examples: ['hex'],

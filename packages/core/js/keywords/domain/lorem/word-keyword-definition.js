@@ -1,7 +1,7 @@
 import { validateStringValue } from '../../../command-help/command-help-validators.js';
 import { createPositiveIntegerArgsValidator } from '../shared/common-arg-validators.js';
 
-const LOREM_WORD_STRATEGY_TYPE = 'fail|closest|shortest|longest|any-length';
+const LOREM_WORD_STRATEGY_TYPE = ['fail', 'closest', 'shortest', 'longest', 'any-length'];
 const validateLoremWordArgs = createPositiveIntegerArgsValidator(['length']);
 
 const LOREM_WORD_KEYWORD_DEFINITION = {
@@ -44,7 +44,8 @@ const LOREM_WORD_KEYWORD_DEFINITION = {
       },
       {
         name: 'strategy',
-        type: LOREM_WORD_STRATEGY_TYPE,
+        type: 'enum',
+        enumValues: LOREM_WORD_STRATEGY_TYPE,
         required: false,
         description:
           'The strategy to apply when no words with a matching length are found. Available error handling strategies: fail: Throws an error if no words with the given length are found. shortest: Returns any of the shortest words. closest: Returns any of the words closest to the given length. longest: Returns any of the longest words. any-length: Returns a word with any length.',

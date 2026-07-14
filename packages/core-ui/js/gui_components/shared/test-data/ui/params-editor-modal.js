@@ -2,6 +2,8 @@ import { createHelpTooltipService } from '../../../../help/help-tooltips.js';
 import { getDefaultDocumentObj, getDefaultWindowObj, resolveWindowObj } from '../../dom/default-objects.js';
 
 const STYLE_ID = 'params-editor-modal-styles-link';
+const ENUM_UNSET_VALUE = '__params_editor_unset__';
+const ENUM_EMPTY_VALUE = '__params_editor_empty__';
 const FOCUSABLE_SELECTOR = [
   'a[href]',
   'button:not([disabled])',
@@ -190,6 +192,92 @@ function inferEditorMode(rawValue, paramType = '') {
   return 'auto';
 }
 
+function normalizeChoiceValues(values = [], { allowEmpty = false } = {}) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+  return [
+    ...new Set(values.map((value) => String(value ?? '').trim()).filter((value) => allowEmpty || value.length > 0)),
+  ];
+}
+
+function isPrimitiveTypeToken(token = '') {
+  return /^(?:array|bigint|bool|boolean|date|decimal|double|float|function|int|integer|json|list|map|null|number|object|record|regexp?|string|tuple|undefined|unknown|void)$/iu.test(
+    String(token || '').trim()
+  );
+}
+
+function isLiteralChoiceTypeToken(token = '') {
+  const value = String(token || '').trim();
+  return (
+    value.length > 0 &&
+    !/\s/u.test(value) &&
+    !/[{}()[\],;:]/u.test(value) &&
+    !/[<>]/u.test(value) &&
+    !/=>/u.test(value) &&
+    !isPrimitiveTypeToken(value)
+  );
+}
+
+function inferEnumChoicesFromType(paramType = '') {
+  const type = String(paramType || '').trim();
+  if (!type || !type.includes('|')) {
+    return [];
+  }
+  if (/\s\|\s/u.test(type) || /[{}()[\],;:]/u.test(type) || /=>/u.test(type)) {
+    return [];
+  }
+  const tokens = type.split('|').map((token) => token.trim());
+  if (tokens.length < 2 || tokens.some((token) => !isLiteralChoiceTypeToken(token))) {
+    return [];
+  }
+  return normalizeChoiceValues(tokens);
+}
+
+function resolveEnumChoices(param = {}) {
+  const explicitChoiceSets = [param.allowedValues, param.choices, param.enumValues];
+  for (const choiceSet of explicitChoiceSets) {
+    const choices = normalizeChoiceValues(choiceSet, { allowEmpty: true });
+    if (choices.length > 0) {
+      return choices;
+    }
+  }
+  return inferEnumChoicesFromType(param.type);
+}
+
+function normalizeParamMetadata(param = {}, value = '', mode = 'auto', { isSet = null } = {}) {
+  const resolvedValue = String(value ?? '');
+  const entry = {
+    name: param?.name || '',
+    type: param?.type || '',
+    optional: param?.optional === true,
+    variadic: param?.variadic === true,
+    positionalOnly: param?.positionalOnly === true,
+    description: param?.description || '',
+    example: param?.example || '',
+    examples: Array.isArray(param?.examples) ? param.examples : [],
+    defaultValue: String(param?.defaultValue ?? ''),
+    min: param?.min,
+    minimum: param?.minimum,
+    max: param?.max,
+    maximum: param?.maximum,
+    pattern: param?.pattern,
+    multipleOf: param?.multipleOf,
+    allowedValues: Array.isArray(param?.allowedValues) ? param.allowedValues : [],
+    choices: Array.isArray(param?.choices) ? param.choices : [],
+    enumValues: Array.isArray(param?.enumValues) ? param.enumValues : [],
+    value: resolvedValue,
+    isSet: isSet ?? resolvedValue.trim().length > 0,
+    mode,
+  };
+  const enumChoices = resolveEnumChoices(entry);
+  return {
+    ...entry,
+    enumChoices,
+    mode: enumChoices.length > 0 ? 'enum' : mode,
+  };
+}
+
 function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
   const metadata = Array.isArray(params) ? params : [];
   const variadicIndex = metadata.findIndex((param) => param?.variadic === true);
@@ -197,28 +285,11 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
   const trimmed = stripOuterParens(initialParams);
   if (!trimmed) {
     return {
-      entries: metadata.map((param) => ({
-        name: param?.name || '',
-        type: param?.type || '',
-        optional: param?.optional === true,
-        variadic: param?.variadic === true,
-        positionalOnly: param?.positionalOnly === true,
-        description: param?.description || '',
-        example: param?.example || '',
-        examples: Array.isArray(param?.examples) ? param.examples : [],
-        defaultValue: String(param?.defaultValue ?? ''),
-        min: param?.min,
-        minimum: param?.minimum,
-        max: param?.max,
-        maximum: param?.maximum,
-        pattern: param?.pattern,
-        multipleOf: param?.multipleOf,
-        allowedValues: Array.isArray(param?.allowedValues) ? param.allowedValues : [],
-        choices: Array.isArray(param?.choices) ? param.choices : [],
-        enumValues: Array.isArray(param?.enumValues) ? param.enumValues : [],
-        value: String(param?.defaultValue ?? ''),
-        mode: 'auto',
-      })),
+      entries: metadata.map((param) =>
+        normalizeParamMetadata(param, param?.defaultValue ?? '', 'auto', {
+          isSet: String(param?.defaultValue ?? '').trim().length > 0,
+        })
+      ),
       error: '',
     };
   }
@@ -285,28 +356,12 @@ function parseInitialParamEntries({ params = [], initialParams = '' } = {}) {
   return {
     entries: metadata.map((param, index) => {
       const rawValue = assignedValues[index] || '';
-      return {
-        name: param?.name || '',
-        type: param?.type || '',
-        optional: param?.optional === true,
-        variadic: param?.variadic === true,
-        positionalOnly: param?.positionalOnly === true,
-        description: param?.description || '',
-        example: param?.example || '',
-        examples: Array.isArray(param?.examples) ? param.examples : [],
-        defaultValue: String(param?.defaultValue ?? ''),
-        min: param?.min,
-        minimum: param?.minimum,
-        max: param?.max,
-        maximum: param?.maximum,
-        pattern: param?.pattern,
-        multipleOf: param?.multipleOf,
-        allowedValues: Array.isArray(param?.allowedValues) ? param.allowedValues : [],
-        choices: Array.isArray(param?.choices) ? param.choices : [],
-        enumValues: Array.isArray(param?.enumValues) ? param.enumValues : [],
-        value: rawValue ? unquoteValue(rawValue) : '',
-        mode: inferEditorMode(rawValue, param?.type || ''),
-      };
+      return normalizeParamMetadata(
+        param,
+        rawValue ? unquoteValue(rawValue) : '',
+        inferEditorMode(rawValue, param?.type || ''),
+        { isSet: rawValue.length > 0 }
+      );
     }),
     error: '',
   };
@@ -318,17 +373,81 @@ function isRawPreferredType(paramType = '') {
   );
 }
 
+function isPlainStringType(paramType = '') {
+  return (
+    String(paramType || '')
+      .trim()
+      .toLowerCase() === 'string'
+  );
+}
+
+function isStringCapableUnionType(paramType = '') {
+  const normalizedType = String(paramType || '');
+  return !isPlainStringType(normalizedType) && /\bstring\b/iu.test(normalizedType);
+}
+
+function isParserNumericLiteral(value = '') {
+  return /^-?\d+(?:\.\d+)?$/u.test(String(value ?? '').trim());
+}
+
+function isBooleanCapableType(paramType = '') {
+  return /\b(?:bool|boolean)\b/iu.test(String(paramType || ''));
+}
+
+function isStructuredRawCapableType(paramType = '') {
+  return /\b(?:array|list|object|json|record|map|tuple)\b/iu.test(String(paramType || ''));
+}
+
+function isNumericEnumToken(value = '') {
+  return /^[+-]?\d+(?:\.\d+)?$/u.test(String(value ?? '').trim());
+}
+
 function validateBalancedRawValue(value) {
   return splitTopLevelCommaSeparated(`[${String(value ?? '').trim()}]`).error.replace(/^Current params/u, 'Raw value');
 }
 
+function shouldKeepStringUnionValueRaw(rawValue = '', paramType = '') {
+  const trimmedValue = String(rawValue ?? '').trim();
+  if (isParserNumericLiteral(trimmedValue)) {
+    return true;
+  }
+  if (isBooleanCapableType(paramType) && /^(?:true|false)$/u.test(trimmedValue)) {
+    return true;
+  }
+  if (
+    isStructuredRawCapableType(paramType) &&
+    (trimmedValue.startsWith('[') || trimmedValue.startsWith('{')) &&
+    !validateBalancedRawValue(trimmedValue)
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function formatEditorValue(value, mode, paramType = '') {
   const rawValue = String(value ?? '');
+  if (mode === 'enum' && rawValue.length === 0) {
+    return JSON.stringify('');
+  }
   if (rawValue.trim().length === 0) {
     return '';
   }
 
-  const resolvedMode = mode === 'auto' ? (isRawPreferredType(paramType) ? 'raw' : 'text') : mode;
+  const resolvedMode =
+    mode === 'enum' && isNumericEnumToken(rawValue)
+      ? 'raw'
+      : mode === 'auto'
+        ? isStringCapableUnionType(paramType)
+          ? shouldKeepStringUnionValueRaw(rawValue, paramType)
+            ? 'raw'
+            : 'text'
+          : isRawPreferredType(paramType)
+            ? 'raw'
+            : 'text'
+        : mode;
+  if (mode === 'enum' && !isNumericEnumToken(rawValue)) {
+    return JSON.stringify(unquoteValue(rawValue));
+  }
   if (resolvedMode === 'raw') {
     return rawValue.trim();
   }
@@ -337,8 +456,9 @@ function formatEditorValue(value, mode, paramType = '') {
 
 function buildParamsTextFromEditorEntries({ entries = [], validateParams = null } = {}) {
   const normalizedEntries = Array.isArray(entries) ? entries : [];
+  const hasEntryValue = (entry = {}) => entry.isSet === true || String(entry?.value ?? '').trim().length > 0;
   const lastFilledIndex = normalizedEntries.reduce(
-    (lastIndex, entry, index) => (String(entry?.value ?? '').trim().length > 0 ? index : lastIndex),
+    (lastIndex, entry, index) => (hasEntryValue(entry) ? index : lastIndex),
     -1
   );
   const errors = [];
@@ -358,7 +478,7 @@ function buildParamsTextFromEditorEntries({ entries = [], validateParams = null 
     const entry = normalizedEntries[index] || {};
     const rawValue = String(entry.value ?? '');
     const trimmedValue = rawValue.trim();
-    if (!trimmedValue) {
+    if (!hasEntryValue(entry)) {
       if (entry.optional === true) {
         continue;
       }
@@ -437,7 +557,7 @@ function buildParamValidationRules(entry = {}) {
     rules.push(`Pattern: ${pattern}`);
   }
 
-  const allowedValues = entry.allowedValues || entry.choices || entry.enumValues || [];
+  const allowedValues = resolveEnumChoices(entry);
   if (Array.isArray(allowedValues) && allowedValues.length > 0) {
     rules.push(`Allowed values: ${allowedValues.join(', ')}`);
   }
@@ -497,6 +617,37 @@ function isBooleanParamType(paramType = '') {
   return /\b(bool|boolean)\b/iu.test(String(paramType || ''));
 }
 
+function isEnumParam(entry = {}) {
+  return Array.isArray(entry.enumChoices) && entry.enumChoices.length > 0;
+}
+
+function renderEnumValueEditor(entry, index) {
+  const value = String(entry.value ?? '').trim();
+  const optionValues = Array.isArray(entry.enumChoices) ? entry.enumChoices : [];
+  const hasMatchingValue = optionValues.includes(value) && (value.length > 0 || entry.isSet === true);
+  const resolvedValue = hasMatchingValue ? value : ENUM_UNSET_VALUE;
+  const emptyOptionLabel = entry.optional === true ? 'Unset' : 'Select...';
+  return `
+    <select
+      id="params-editor-value-${index}"
+      data-role="params-editor-enum"
+      data-index="${index}"
+      aria-label="${escapeHtml(entry.name)} value"
+    >
+      <option value="${ENUM_UNSET_VALUE}" ${resolvedValue === ENUM_UNSET_VALUE ? 'selected' : ''}>${emptyOptionLabel}</option>
+      ${optionValues
+        .map(
+          (optionValue) => `<option
+            value="${escapeHtml(optionValue === '' ? ENUM_EMPTY_VALUE : optionValue)}"
+            data-enum-value="${escapeHtml(optionValue)}"
+            ${optionValue === resolvedValue ? 'selected' : ''}
+          >${escapeHtml(optionValue === '' ? '""' : optionValue)}</option>`
+        )
+        .join('')}
+    </select>
+  `;
+}
+
 function renderValueEditor(entry, index) {
   if (isBooleanParamType(entry.type || '')) {
     const value = String(entry.value ?? '')
@@ -549,6 +700,10 @@ function renderValueEditor(entry, index) {
     `;
   }
 
+  if (isEnumParam(entry)) {
+    return renderEnumValueEditor(entry, index);
+  }
+
   return `
     <input
       id="params-editor-value-${index}"
@@ -562,17 +717,39 @@ function renderValueEditor(entry, index) {
   `;
 }
 
-function readRenderedEntryValue(rootElement, entry, index) {
+function readRenderedEntryState(rootElement, entry, index) {
   if (isBooleanParamType(entry?.type || '')) {
     const checkedBooleanOption = rootElement.querySelector(
       `[data-role="params-editor-boolean"][data-index="${index}"]:checked`
     );
-    return checkedBooleanOption?.value ?? '';
+    const value = checkedBooleanOption?.value ?? '';
+    return {
+      value,
+      isSet: String(value).trim().length > 0,
+    };
   }
 
-  return (
-    rootElement.querySelector(`[data-role="params-editor-value"][data-index="${index}"]`)?.value ?? entry?.value ?? ''
-  );
+  if (isEnumParam(entry)) {
+    const enumInput = rootElement.querySelector(`[data-role="params-editor-enum"][data-index="${index}"]`);
+    const selectedOption = enumInput?.selectedOptions?.[0] || null;
+    if (selectedOption?.hasAttribute('data-enum-value')) {
+      return {
+        value: selectedOption.getAttribute('data-enum-value') ?? '',
+        isSet: true,
+      };
+    }
+    return {
+      value: '',
+      isSet: false,
+    };
+  }
+
+  const value =
+    rootElement.querySelector(`[data-role="params-editor-value"][data-index="${index}"]`)?.value ?? entry?.value ?? '';
+  return {
+    value,
+    isSet: String(value ?? '').trim().length > 0,
+  };
 }
 
 function renderEntryRows(entries = []) {
@@ -586,7 +763,7 @@ function renderEntryRows(entries = []) {
       const requiredStateAccessibleLabel = `${requiredStateLabel} ${entry.name}`;
       return `
         <tr>
-          <td>
+          <td data-label="Name">
             <div class="params-editor-name-cell">
               ${nameLabel}
               <span
@@ -598,8 +775,8 @@ function renderEntryRows(entries = []) {
               ></span>
             </div>
           </td>
-          <td><code>${escapeHtml(entry.type || 'unknown')}</code></td>
-          <td>
+          <td data-label="Type"><code>${escapeHtml(entry.type || 'unknown')}</code></td>
+          <td data-label="Req">
             <label
               class="params-editor-required-checkbox-label"
               title="${escapeHtml(requiredStateAccessibleLabel)}"
@@ -614,7 +791,7 @@ function renderEntryRows(entries = []) {
               />
             </label>
           </td>
-          <td>
+          <td data-label="Value">
             ${renderValueEditor(entry, index)}
             ${
               entry.defaultValue
@@ -766,6 +943,13 @@ function openParamsEditorModal({
   const dialogElement = overlay.querySelector('[data-role="params-editor-dialog"]');
   const valueInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-value"]'));
   const booleanInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-boolean"]'));
+  const enumInputs = () => Array.from(overlay.querySelectorAll('[data-role="params-editor-enum"]'));
+  const editorInputs = () =>
+    Array.from(
+      overlay.querySelectorAll(
+        '[data-role="params-editor-value"], [data-role="params-editor-enum"], [data-role="params-editor-boolean"]'
+      )
+    );
   const helpTooltipService = createHelpTooltipService({
     documentObj,
     windowObj,
@@ -799,10 +983,13 @@ function openParamsEditorModal({
       return;
     }
 
-    currentEntries = currentEntries.map((entry, index) => ({
-      ...entry,
-      value: readRenderedEntryValue(overlay, entry, index),
-    }));
+    currentEntries = currentEntries.map((entry, index) => {
+      const state = readRenderedEntryState(overlay, entry, index);
+      return {
+        ...entry,
+        ...state,
+      };
+    });
     const result = buildParamsTextFromEditorEntries({
       entries: currentEntries,
       validateParams,
@@ -878,11 +1065,14 @@ function openParamsEditorModal({
     booleanInputs().forEach((input) => {
       input.addEventListener('change', syncPreview);
     });
+    enumInputs().forEach((input) => {
+      input.addEventListener('change', syncPreview);
+    });
 
     documentObj.body.appendChild(overlay);
     helpTooltipService.update();
     syncPreview();
-    const firstInput = valueInputs()[0] || booleanInputs()[0];
+    const firstInput = editorInputs()[0];
     const focusFn = windowObj?.requestAnimationFrame?.bind(windowObj) || windowObj?.setTimeout?.bind(windowObj);
     focusFn?.(() => (firstInput || getFocusableElements(dialogElement)[0] || dialogElement)?.focus?.());
   });
@@ -892,6 +1082,8 @@ export {
   splitTopLevelCommaSeparated,
   parseInitialParamEntries,
   inferEditorMode,
+  inferEnumChoicesFromType,
+  resolveEnumChoices,
   buildParamsTextFromEditorEntries,
   openParamsEditorModal,
 };

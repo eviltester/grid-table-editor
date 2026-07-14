@@ -207,6 +207,83 @@ describe('createSharedSchemaEditorController', () => {
     expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(values=active,inactive,pending)');
   });
 
+  test('applies enum picker params back to the row and emits synced schema text', async () => {
+    const root = createRoot(dom.window.document);
+    const onSchemaTextChanged = jest.fn();
+    const dataRulesToSchemaText = jest.fn(({ dataRules = [] } = {}) => {
+      const rule = dataRules[0] || {};
+      return { text: `${rule.name}\n${rule.ruleSpec}` };
+    });
+    const controller = createSharedSchemaEditorController({
+      documentObj: dom.window.document,
+      rootElement: root,
+      createBlankRow: () => ({
+        id: 'row-1',
+        name: 'Country Code',
+        sourceType: 'domain',
+        command: 'location.countryCode',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      mapRuleToRow: () => ({
+        id: 'row-1',
+        name: 'Country Code',
+        sourceType: 'domain',
+        command: 'location.countryCode',
+        value: '',
+        params: '',
+        semanticValidationIssues: [],
+      }),
+      schemaTextToDataRules: jest.fn(() => ({ dataRules: [], errors: [] })),
+      dataRulesToSchemaText,
+      onSchemaTextChanged,
+      getMethodPickerOptions: () => [
+        {
+          sourceType: 'domain',
+          command: 'location.countryCode',
+          helpModel: {
+            heading: 'location.countryCode',
+            summary: 'Country code helper',
+            params: [{ name: 'variant', type: 'enum', enumValues: ['alpha-2', 'alpha-3', 'numeric'], optional: true }],
+          },
+        },
+      ],
+      getVisibleDomainCommands: () => ['location.countryCode'],
+      validateSchemaRows: jest.fn((rows) => ({ rows, errors: [] })),
+      updatePairwiseButtonVisibility: jest.fn(),
+      updateHelpHints: jest.fn(),
+    });
+
+    controller.init();
+    const paramsButton = dom.window.document.querySelector('[data-action="edit-params"]');
+    const dialogPromise = controller.handleClick({ target: paramsButton });
+
+    const dialog = within(dom.window.document.body).getByRole('dialog', {
+      name: /edit params for location\.countrycode/i,
+    });
+    const variantSelect = within(dialog).getByRole('combobox', { name: /variant value/i });
+    variantSelect.value = 'alpha-3';
+    fireEvent.change(variantSelect);
+    fireEvent.click(within(dialog).getByRole('button', { name: /^apply$/i }));
+
+    await dialogPromise;
+
+    expect(dom.window.document.querySelector('[data-field="params"]').value).toBe('(variant="alpha-3")');
+    expect(dom.window.document.activeElement).toBe(dom.window.document.querySelector('[data-action="edit-params"]'));
+    expect(dataRulesToSchemaText).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        dataRules: [
+          expect.objectContaining({
+            name: 'Country Code',
+            ruleSpec: 'location.countryCode(variant="alpha-3")',
+          }),
+        ],
+      })
+    );
+    expect(onSchemaTextChanged).toHaveBeenLastCalledWith('Country Code\nlocation.countryCode(variant="alpha-3")');
+  });
+
   test('restores focus to the command picker button after applying a method picker selection', async () => {
     const root = createRoot(dom.window.document);
     const controller = createSharedSchemaEditorController({

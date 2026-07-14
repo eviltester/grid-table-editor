@@ -134,7 +134,7 @@ class SchemaEditorComponent {
     const mapped = this.resolveField(field);
     const input = this.row(index).locator(`[data-field="${mapped}"]`);
     await input.fill(String(value));
-    await input.blur();
+    await this.page.keyboard.press('Tab');
   }
 
   async getRowField(index, field) {
@@ -187,11 +187,23 @@ class SchemaEditorComponent {
   }
 
   async editRowParamsWithDialog(index, valuesByName) {
+    await this.editRowParamsWithDialogFlow(index, valuesByName, async (name, value) => {
+      await this.paramsEditor.setValue(name, value);
+    });
+  }
+
+  async editRowEnumParamsWithDialog(index, valuesByName) {
+    await this.editRowParamsWithDialogFlow(index, valuesByName, async (name, value) => {
+      await this.paramsEditor.selectEnumValue(name, value);
+    });
+  }
+
+  async editRowParamsWithDialogFlow(index, valuesByName, setParamValue) {
     await this.ensureSchemaMode();
     await this.dismissOpenHelpTooltips();
     await this.row(index).locator('[data-action="edit-params"]').click();
     for (const [name, value] of Object.entries(valuesByName || {})) {
-      await this.paramsEditor.setValue(name, value);
+      await setParamValue(name, value);
     }
     await this.paramsEditor.apply();
   }

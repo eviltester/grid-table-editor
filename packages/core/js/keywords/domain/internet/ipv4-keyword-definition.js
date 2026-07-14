@@ -1,7 +1,17 @@
 import { validateIpv4Value } from '../../../command-help/command-help-validators.js';
 
-const IPV4_NETWORK_TYPE =
-  'any|loopback|private-a|private-b|private-c|test-net-1|test-net-2|test-net-3|link-local|multicast';
+const IPV4_NETWORK_TYPE = [
+  'any',
+  'loopback',
+  'private-a',
+  'private-b',
+  'private-c',
+  'test-net-1',
+  'test-net-2',
+  'test-net-3',
+  'link-local',
+  'multicast',
+];
 
 const INTERNET_IPV4_KEYWORD_DEFINITION = {
   keyword: 'internet.ipv4',
@@ -43,7 +53,8 @@ const INTERNET_IPV4_KEYWORD_DEFINITION = {
       },
       {
         name: 'network',
-        type: IPV4_NETWORK_TYPE,
+        type: 'enum',
+        enumValues: IPV4_NETWORK_TYPE,
         required: false,
         description: 'The optional network to use. This is intended as an alias for well-known cidrBlocks.',
         examples: ['private-a'],

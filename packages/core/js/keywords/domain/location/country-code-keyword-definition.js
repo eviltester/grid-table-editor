@@ -28,7 +28,8 @@ const LOCATION_COUNTRY_CODE_KEYWORD_DEFINITION = {
     args: [
       {
         name: 'variant',
-        type: 'alpha-2|alpha-3|numeric',
+        type: 'enum',
+        enumValues: ['alpha-2', 'alpha-3', 'numeric'],
         required: false,
         description:
           "The code to return. Can be either 'alpha-2' (two-letter code), 'alpha-3' (three-letter code) or 'numeric' (numeric code).",

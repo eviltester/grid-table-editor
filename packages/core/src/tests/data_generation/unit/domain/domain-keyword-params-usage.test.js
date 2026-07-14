@@ -1,7 +1,7 @@
 import { DOMAIN_KEYWORDS, executeDomainKeyword } from '../../../../../js/domain/domain-keywords.js';
 import { faker } from '@faker-js/faker';
 import { assertDomainKeywordResult } from './domain-result-assertions.test-helper.js';
-import { sampleValueForKeywordArg, sampleValueForType } from './domain-keyword-sample-values.test-helper.js';
+import { sampleValueForArgSpec, sampleValueForKeywordArg } from './domain-keyword-sample-values.test-helper.js';
 
 function setDeepMethod(root, target, fn) {
   const parts = String(target || '')
@@ -53,7 +53,7 @@ function buildValidArgs(keyword) {
   for (let index = 0; index < keyword.help.args.length; index += 1) {
     const argSpec = keyword.help.args[index];
     if (argSpec.required) {
-      args[index] = sampleValueForType(argSpec.type);
+      args[index] = sampleValueForArgSpec(argSpec);
     }
   }
   return args;
@@ -125,7 +125,7 @@ describe('domain keyword parameter usage', () => {
         });
 
         const args = applyKeywordExecutionDefaults(keyword, buildValidArgs(keyword));
-        const sample = sampleValueForKeywordArg(keyword.keyword, argSpec.name, argSpec.type);
+        const sample = sampleValueForKeywordArg(keyword.keyword, argSpec);
         args[argIndex] = sample;
 
         executeDomainKeyword(keyword.keyword, { faker, args });
@@ -147,7 +147,7 @@ describe('domain keyword parameter usage', () => {
 
       test(`${keyword.keyword} executes with parameter "${argSpec.name}" against faker`, () => {
         const args = applyKeywordExecutionDefaults(keyword, buildValidArgs(keyword));
-        args[argIndex] = sampleValueForKeywordArg(keyword.keyword, argSpec.name, argSpec.type);
+        args[argIndex] = sampleValueForKeywordArg(keyword.keyword, argSpec);
 
         if (shouldSkipRuntimeExecution(argSpec)) {
           return;

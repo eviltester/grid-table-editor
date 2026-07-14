@@ -41,6 +41,13 @@ describe('autoIncrement.timestamp parameter validation', () => {
     });
   });
 
+  test('rejects unparseable start date strings before generation', () => {
+    expect(validateArgs('start="1st Janvier 2027", step=1')).toEqual({
+      ok: false,
+      error: 'Invalid keyword arguments: argument "start" must be a valid date string or Unix timestamp',
+    });
+  });
+
   test('rejects invalid step type before generation', () => {
     expect(validateArgs('start="2026-06-12T12:39:23Z", step={"bad":true}, type="seconds"')).toEqual({
       ok: false,
@@ -51,7 +58,8 @@ describe('autoIncrement.timestamp parameter validation', () => {
   test('rejects invalid type type before generation', () => {
     expect(validateArgs('start="2026-06-12T12:39:23Z", step=1, type={"bad":true}')).toEqual({
       ok: false,
-      error: 'Invalid keyword arguments: argument "type" must be string, not object',
+      error:
+        'Invalid keyword arguments: argument "type" must be milliseconds, seconds, minutes, hours, days, weeks, months or years, not object',
     });
   });
 

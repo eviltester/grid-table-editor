@@ -131,6 +131,34 @@ describe('enum surface parity', () => {
     }
   });
 
+  test('compiled enum surfaces preserve explicit empty string values', () => {
+    const compiler = new TestDataRulesCompiler(faker, RandExp);
+    const rules = [new TestDataRule('Status', 'enum("", "active")')];
+    const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0);
+
+    try {
+      compiler.compile(rules);
+      compiler.validate();
+
+      expect(rules[0]).toMatchObject({
+        type: 'domain',
+        ruleSpec: 'datatype.enum("", "active")',
+      });
+      expect(compiler.isValid()).toBe(true);
+
+      const result = generateFromTextSpec({
+        textSpec: `Status\n${rules[0].ruleSpec}`,
+        rowCount: 1,
+        outputFormat: 'json',
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.rows).toEqual([['']]);
+    } finally {
+      randomSpy.mockRestore();
+    }
+  });
+
   test.each([
     ['malformed named values quote', 'datatype.enum(values="active,pending)', 'unbalanced expression'],
     ['unknown named values argument', 'datatype.enum(valuez="active,pending")', 'unknown named argument "valuez"'],

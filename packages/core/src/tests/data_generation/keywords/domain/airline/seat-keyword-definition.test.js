@@ -39,7 +39,8 @@ describe('airline.seat parameter validation', () => {
   test('rejects unsupported aircraftType value before generation', () => {
     expect(validateArgs('aircraftType="unknown"')).toEqual({
       ok: false,
-      error: 'Invalid keyword arguments: argument "aircraftType" must be narrowbody, regional or widebody, not string',
+      error:
+        'Invalid keyword arguments: argument "aircraftType" must be narrowbody, regional or widebody, not "unknown"',
     });
   });
 });

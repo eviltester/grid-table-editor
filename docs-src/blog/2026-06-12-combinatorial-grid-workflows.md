@@ -1,10 +1,11 @@
 slug: combinatorial-grid-workflows
+title: "Combinatorial Data Generation"
 authors: [alan]
 tags: [release, feature, combinatorial, schema, import, export, ux, faker, api, cli, mcp]
 date: 2026-06-12T10:00
 ---
 
-The next release is centered on one theme: faster paths from existing data to realistic, constrained, exportable test sets.
+The release is centered on one theme: faster paths from existing data to realistic, constrained, exportable test sets.
 
 This release adds broader combinatorial generation, schema authoring improvements, safe-by-default Faker helper controls across interfaces, better import/export controls, and a few high-value grid usability upgrades.
 

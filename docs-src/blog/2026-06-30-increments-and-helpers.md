@@ -1,5 +1,6 @@
 ---
 slug: auto-increments-helpers
+title: "Auto Increments"
 authors: [alan]
 tags: [release, feature]
 date: 2026-06-30T10:00

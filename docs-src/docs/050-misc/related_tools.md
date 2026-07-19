@@ -50,6 +50,7 @@ Other tools that are similar to Any Way Data that might be useful.
 Online Table editors for multiple formats.
 
 - [Ascii Table](https://ozh.github.io/ascii-tables/) - convert tab delimited data to various ASCII and Markdown formats and can prefix programming language comment indicators for pasting into source code.
+- [Excel to Markdown](https://exceltomd.com/excel-to-markdown) - Convert XLSX, XLS, and CSV files to Markdown tables locally in the browser, with worksheet, header, and column-alignment controls.
 - [Table Convert](https://tableconvert.com/) - Convert CSV, Excel, HTML, Markdown, JSON, SQL, Latex, MediaWiki to Markdown, SQL and Latex
 - [Tables Generator](https://www.tablesgenerator.com/) - CSV to Latex, HTML, Text and Markdown tables
 - [Truben Table Editor](https://truben.no/table/) - Interactive table editor convert to Latex, Balsamiq, BBCode, CSV, HTML, JSON, Markdown, Mathematica, Plain Text, reStructuredText, SQL, Wiki.

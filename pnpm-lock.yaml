@@ -37,8 +37,8 @@ importers:
         version: 6.3.7
     devDependencies:
       '@ast-grep/cli':
-        specifier: 0.44.0
-        version: 0.44.0
+        specifier: 0.44.1
+        version: 0.44.1
       '@babel/preset-env':
         specifier: 8.0.0
         version: 8.0.0(@babel/core@7.29.7)
@@ -329,52 +329,52 @@ packages:
   '@asamuzakjp/nwsapi@2.3.9':
     resolution: {integrity: sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==}
 
-  '@ast-grep/cli-darwin-arm64@0.44.0':
-    resolution: {integrity: sha512-bF7euu/hF/cYg4510z8110vh60rrqfrBdsfRqVGd6xqNSPENu7CJnTVN/Z4Nk5U1NM8YKzUD+dYx1ySUJ0CUNQ==}
+  '@ast-grep/cli-darwin-arm64@0.44.1':
+    resolution: {integrity: sha512-wOzb+IqFy4Pdhvs+PeaHdQJ1VemsI1SgoOGJf+x0J0KBSJ+s/hUg2n1fVJwfsrw/XDIbz9m7PGKTGCLxsgYa1g==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@ast-grep/cli-darwin-x64@0.44.0':
-    resolution: {integrity: sha512-0fI9caQGp1dFcmBATNlVytIRdAeYb91v1D2xjMIi1bSX+l8Uj846JUiaimUGBuBZmyFq+BScoWM4RnprEmZMpQ==}
+  '@ast-grep/cli-darwin-x64@0.44.1':
+    resolution: {integrity: sha512-X3OzzsnO9Q3ISQ4qO3jasWk8EZhJA03xfmJHhuS9rGJZZCbNEuqjicrwrDMKK8EgEGJ7MG4oL0BE5qUcn3twLw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@ast-grep/cli-linux-arm64-gnu@0.44.0':
-    resolution: {integrity: sha512-JB6EUnqEtGGtyg1GqNquld/++1CvaWD7r84IwwhddX1qx0NmDoHyn2mKd8vnQ24Z0RkV3g7y7foMLakELbGtDw==}
+  '@ast-grep/cli-linux-arm64-gnu@0.44.1':
+    resolution: {integrity: sha512-2F1YBRd9tQnfrGX+4BlkfXWLb2jqNgTmjp0ETLNRLMmSDinR905QsZn2A55qcAZxhQDU982mEzzgT4NduPXIGg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@ast-grep/cli-linux-x64-gnu@0.44.0':
-    resolution: {integrity: sha512-rNL0LsI682D9EMzfaGVEtZa1xaqTtGb2I+Zk4ZzidX6u+fF7f79wdqyKahKjXzoIrGkuhkoL3gcyLKAtQd9+qg==}
+  '@ast-grep/cli-linux-x64-gnu@0.44.1':
+    resolution: {integrity: sha512-d5UNoDLT2i6xV4GGqcPnrAR6CB3H078+v3BiqjKxZdZMHFnDe46+i+DxfH1IK6yvJqViqv2F611+wiAAn/s7qw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@ast-grep/cli-win32-arm64-msvc@0.44.0':
-    resolution: {integrity: sha512-lqD0MhGQAddh2YoV/brKQ6GVcFLmRiTBwIElutwedaUvRCdasTGukFPYuSWk/iI8Kv19xom6s7l+mGuZ7v+xwQ==}
+  '@ast-grep/cli-win32-arm64-msvc@0.44.1':
+    resolution: {integrity: sha512-r6K49Z14BLOeJdBSmaoK+TdgtPRqJfJ562F0n0KvRi0qH3o8is8N2dXtEMYKynYm/tdOd65i69Mc1WKSuIeWyA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  '@ast-grep/cli-win32-ia32-msvc@0.44.0':
-    resolution: {integrity: sha512-ZJrnS+2OkNfwyr6yrN69glP67uybBxDvl9mqZvh1J44vB3OFn9U9c+cVAoZIAo7JD5F4rZNxwyu3gcy4+xuwEA==}
+  '@ast-grep/cli-win32-ia32-msvc@0.44.1':
+    resolution: {integrity: sha512-AusXTP5SfUQEL/EkF0fhHoA4H30M7hsVgvsVEZ7PeZrxB69trzUcqKnHC8pBDYTmgIsJsr9dtXjTPDcBauaPiA==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
 
-  '@ast-grep/cli-win32-x64-msvc@0.44.0':
-    resolution: {integrity: sha512-OJEo7f95YYaSuS1byUB7ZctbzxoA7/wCoAol+pt6pvfdW/8Wq+L1qU28glwx7dQ0HgTsnPZbWpXQwmZpCBHhZg==}
+  '@ast-grep/cli-win32-x64-msvc@0.44.1':
+    resolution: {integrity: sha512-gDMHT17Edmp/tXTDdMSQHd9vJki2Y2WSXq9ycrvjziHwpmnsnc6xlCQ7SEOGA1987vepSpkOkqBCPliP2TVW0w==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
 
-  '@ast-grep/cli@0.44.0':
-    resolution: {integrity: sha512-Jf4PuP7XjzsMa3m9gYxmzV8KyWZc4w1ZzKe/t0+90wWxmSasQJe6AtMkJxHEi98MGgfAF1nWziqjDd0/6EsBjA==}
+  '@ast-grep/cli@0.44.1':
+    resolution: {integrity: sha512-wSjtu0/9xSYzzo/EW31w5pf1qB33tejYKmKXb2nBAlZ5PpYtOqwFmk9H1nywhjzO913beugsKAZYxrwciqW9AQ==}
     engines: {node: '>= 12.0.0'}
     hasBin: true
 
@@ -9109,38 +9109,38 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@ast-grep/cli-darwin-arm64@0.44.0':
+  '@ast-grep/cli-darwin-arm64@0.44.1':
     optional: true
 
-  '@ast-grep/cli-darwin-x64@0.44.0':
+  '@ast-grep/cli-darwin-x64@0.44.1':
     optional: true
 
-  '@ast-grep/cli-linux-arm64-gnu@0.44.0':
+  '@ast-grep/cli-linux-arm64-gnu@0.44.1':
     optional: true
 
-  '@ast-grep/cli-linux-x64-gnu@0.44.0':
+  '@ast-grep/cli-linux-x64-gnu@0.44.1':
     optional: true
 
-  '@ast-grep/cli-win32-arm64-msvc@0.44.0':
+  '@ast-grep/cli-win32-arm64-msvc@0.44.1':
     optional: true
 
-  '@ast-grep/cli-win32-ia32-msvc@0.44.0':
+  '@ast-grep/cli-win32-ia32-msvc@0.44.1':
     optional: true
 
-  '@ast-grep/cli-win32-x64-msvc@0.44.0':
+  '@ast-grep/cli-win32-x64-msvc@0.44.1':
     optional: true
 
-  '@ast-grep/cli@0.44.0':
+  '@ast-grep/cli@0.44.1':
     dependencies:
       detect-libc: 2.1.2
     optionalDependencies:
-      '@ast-grep/cli-darwin-arm64': 0.44.0
-      '@ast-grep/cli-darwin-x64': 0.44.0
-      '@ast-grep/cli-linux-arm64-gnu': 0.44.0
-      '@ast-grep/cli-linux-x64-gnu': 0.44.0
-      '@ast-grep/cli-win32-arm64-msvc': 0.44.0
-      '@ast-grep/cli-win32-ia32-msvc': 0.44.0
-      '@ast-grep/cli-win32-x64-msvc': 0.44.0
+      '@ast-grep/cli-darwin-arm64': 0.44.1
+      '@ast-grep/cli-darwin-x64': 0.44.1
+      '@ast-grep/cli-linux-arm64-gnu': 0.44.1
+      '@ast-grep/cli-linux-x64-gnu': 0.44.1
+      '@ast-grep/cli-win32-arm64-msvc': 0.44.1
+      '@ast-grep/cli-win32-ia32-msvc': 0.44.1
+      '@ast-grep/cli-win32-x64-msvc': 0.44.1
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -13056,8 +13056,8 @@ snapshots:
     dependencies:
       '@mdx-js/react': 3.1.1(@types/react@19.2.17)(react@19.2.6)
       '@storybook/csf-plugin': 10.4.6(esbuild@0.28.1)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@8.0.16(@types/node@25.9.1)(esbuild@0.28.1)(jiti@1.21.7)(terser@5.47.1))(webpack@5.106.2(esbuild@0.28.1))
-      '@storybook/icons': 2.0.2(react-dom@19.2.7(react@19.2.6))(react@19.2.6)
-      '@storybook/react-dom-shim': 10.4.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.6))(react@19.2.6)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+      '@storybook/icons': 2.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.6)
+      '@storybook/react-dom-shim': 10.4.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.6)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       react: 19.2.6
       react-dom: 19.2.7(react@19.2.6)
       storybook: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -13124,20 +13124,20 @@ snapshots:
       storybook: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       ts-dedent: 2.3.0
 
-  '@storybook/icons@2.0.2(react-dom@19.2.7(react@19.2.6))(react@19.2.6)':
+  '@storybook/icons@2.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.6)':
     dependencies:
       react: 19.2.6
-      react-dom: 19.2.7(react@19.2.6)
+      react-dom: 19.2.7(react@19.2.7)
 
   '@storybook/icons@2.0.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
 
-  '@storybook/react-dom-shim@10.4.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.6))(react@19.2.6)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
+  '@storybook/react-dom-shim@10.4.6(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.6)(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
     dependencies:
       react: 19.2.6
-      react-dom: 19.2.7(react@19.2.6)
+      react-dom: 19.2.7(react@19.2.7)
       storybook: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.17)(prettier@2.8.8)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
     optionalDependencies:
       '@types/react': 19.2.17
@@ -13478,7 +13478,7 @@ snapshots:
   '@types/react-router@5.1.20':
     dependencies:
       '@types/history': 4.7.11
-      '@types/react': 19.2.17
+      '@types/react': 19.2.14
 
   '@types/react@19.2.14':
     dependencies:
